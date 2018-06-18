@@ -1,70 +1,42 @@
-import { toOffset } from '../.internal/transform'
-const X_RATIO = toOffset(1).x
+import { Point } from 'pixi.js'
+import {
+    fromGridX,
+    fromGridY,
+    fromGlobalX,
+    fromGlobalY
+} from '../.internal/math'
 
-function Blob(x, y) {
-    this.x = x
-    this.y = y
-    this.size = 1
-}
-
-Blob.prototype = {
-    get posX() {
-        return this.x * X_RATIO
-    },
-
-    set posX(x) {
-        this.x = x / X_RATIO
-    },
-
-    get posY() {
-        return this.y
-    },
-
-    set posY(y) {
-        this.y = y
-    },
+class Blob {
+    constructor(x = 0, y = 0, radius = 1) {
+        this.pos = new Point(x, y)
+        this.vel = new Point(0, 0)
+        this.radius = radius
+        this.traits = []
+    }
 
     get top() {
-        return this.posY - this.size
-    },
+        return this.pos.y - this.radius
+    }
 
     get bottom() {
-        return this.posY + this.size
-    },
+        return this.pos.y + this.radius
+    }
 
     get left() {
-        return this.posX - this.size
-    },
+        return this.pos.x - this.radius
+    }
 
     get right() {
-        return this.posX + this.size
-    },
+        return this.pos.x + this.radius
+    }
 
-    set: function(x, y) {
-        this.x = x
-        this.y = y
-    },
-
-    setPos: function(x, y) {
-        this.posX = x
-        this.posY = y
-    },
-
-    setFromObject: function(obj) {
-        this.set(obj.x, obj.y)
-    },
-
-    setFromArray: function(arr) {
-        this.set(arr[0], arr[1])
-    },
-
-    distance: function(blob) {
-        let x = this.posX - blob.posX,
-            y = this.posY - blob.posY
+    distance(blob) {
+        let x = this.pos.x - blob.pos.x,
+            y = this.pos.y - blob.pos.y
         return Math.sqrt(x * x + y * y)
-    },
+    }
 
-    intersection: function(blob) {
+    intersection(blob) {
         let overlap =
             this.top < blob.bottom &&
             this.bottom > blob.top &&
@@ -77,19 +49,94 @@ Blob.prototype = {
         }
         // distance overlapping
         let dist = this.distance(blob)
-        if (dist > this.size + blob.size) {
+        if (dist > this.radius + blob.radius) {
             return false
         }
         return true
     }
-}
 
-Blob.fromObject = function(obj) {
-    return new Blob(obj.x, obj.y)
-}
+    intersectionX(blob) {
+        let overlap =
+            this.right > blob.left &&
+            this.left < blob.right
 
-Blob.fromArray = function(arr) {
-    return new Blob(arr[0], arr[1])
+        // basic box overlapping
+        if (overlap === false) {
+            return false
+        }
+        // distance overlapping
+        let dist = this.distance(blob)
+        if (dist > this.radius + blob.radius) {
+            return false
+        }
+        return true
+    }
+
+    intersectionY(blob) {
+        let overlap =
+            this.top < blob.bottom &&
+            this.bottom > blob.top
+
+        // basic box overlapping
+        if (overlap === false) {
+            return false
+        }
+        // distance overlapping
+        let dist = this.distance(blob)
+        if (dist > this.radius + blob.radius) {
+            return false
+        }
+        return true
+    }
+
+    setFromGrid(spec, x, y) {
+        this.pos.set(
+            fromGridX(spec, x),
+            fromGridY(spec, y)
+        )
+    }
+
+    setFromGlobal(spec, x, y) {
+        this.pos.set(
+            fromGlobalX(spec, x),
+            fromGlobalY(spec, y)
+        )
+    }
+
+    static fromGrid(spec, x, y, radius) {
+        if (radius === undefined) {
+            radius = spec.radius
+        }
+        return new Blob(
+            fromGridX(spec, x),
+            fromGridY(spec, y),
+            radius
+        )
+    }
+
+    static fromGlobal(spec, x, y, radius) {
+        if (radius === undefined) {
+            radius = spec.radius
+        }
+        return new Blob(
+            fromGlobalX(spec, x),
+            fromGlobalY(spec, y),
+            radius
+        )
+    }
+
+    addTrait(trait) {
+        this.traits.push(trait)
+        this[trait.name] = trait
+    }
+
+    update(deltaTime, spec) {
+        let index = -1
+        const length = this.traits.length
+        while (++index < length) {
+            this.traits[index].update(this, deltaTime, spec)
+        }
+    }
 }
 
 export default Blob
