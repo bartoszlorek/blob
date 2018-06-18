@@ -1,35 +1,34 @@
 import app from './app'
 import createSpec from './.internal/spec'
-import { toGrid } from './.internal/transform'
+import { fromGlobal, toGrid } from './.internal/math'
 
 import Blob from './models/Blob'
 import Mesh from './models/Mesh'
+import createPlayer from './entities/player'
+import createGround from './entities/ground'
 
-const spec = createSpec(app)
-const ground = new Mesh('ground', 0x26c6da)
-const player = new Mesh('player', 0xf44336)
-const pointer = new Blob(0, 0)
-player.blobs.add(pointer)
+const spec = createSpec(app, 24)
+const player = createPlayer(spec)
+const ground = createGround(spec)
+player.root.physics.add(ground)
 
 app.stage.addChild(ground.shape)
 app.stage.addChild(player.shape)
-ground.blobs.add(new Blob(0, 0))
-ground.blobs.add(new Blob(1, -1))
 
 app.renderer.view.addEventListener('click', e => {
-    let blob = Blob.fromObject(toGrid(spec, e.offsetX, e.offsetY))
-    blob.set(Math.round(blob.x), Math.round(blob.y))
+    let grid = toGrid(spec, fromGlobal(spec, e.offsetX, e.offsetY)),
+        blob = Blob.fromGrid(spec, Math.round(grid.x), Math.round(grid.y))
     ground.blobs.add(blob)
 })
 
-app.ticker.add(() => {
-    let pos = app.renderer.plugins.interaction.mouse.global
-    pointer.setFromObject(toGrid(spec, pos.x, pos.y))
+app.ticker.add(deltaTime => {
+    // let pos = app.renderer.plugins.interaction.mouse.global
+    // player.root.setFromGlobal(spec, pos.x, pos.y)
 
-    let inter = ground.intersection(pointer)
-    if (inter) {
-        console.log(inter)
-    }
+    // business logic
+    player.update(deltaTime, spec)
+
+    // presentation logic
     ground.render(spec)
     player.render(spec)
 })

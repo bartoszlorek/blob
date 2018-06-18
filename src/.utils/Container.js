@@ -1,42 +1,31 @@
-function Container(items, loaded, unloaded) {
-    this.items = items != null ? items.slice() : []
-    this.loaded = loaded || null
-    this.unloaded = unloaded || null
-}
+class Container {
+    constructor(items) {
+        this.items = items != null ? items.slice() : []
+    }
 
-Container.prototype = {
     get length() {
         return this.items.length
-    },
+    }
 
-    add: function(item) {
+    add(item) {
         let index = this.items.indexOf(item)
         if (index === -1) {
             this.items.push(item)
-            if (this.loaded && this.items.length === 1) {
-                this.loaded(this)
-            }
         }
-    },
+    }
 
-    remove: function(item) {
+    remove(item) {
         let index = this.items.indexOf(item)
-        if (index > -1) {
+        if (index !== -1) {
             this.items.splice(index, 1)
-            if (this.unloaded && !this.items.length) {
-                this.unloaded(this)
-            }
         }
-    },
+    }
 
-    empty: function() {
+    empty() {
         this.items = []
-        if (this.unloaded) {
-            this.unloaded(this)
-        }
-    },
+    }
 
-    forEach: function(iteratee) {
+    forEach(iteratee) {
         let index = -1
         const length = this.items.length
         while (++index < length) {
