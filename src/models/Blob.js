@@ -1,4 +1,4 @@
-import { Point } from 'pixi.js'
+import Vector from '../.utils/Vector'
 import {
     fromGridX,
     fromGridY,
@@ -8,8 +8,8 @@ import {
 
 class Blob {
     constructor(x = 0, y = 0, radius = 1) {
-        this.pos = new Point(x, y)
-        this.vel = new Point(0, 0)
+        this.pos = new Vector(x, y)
+        this.vel = new Vector(0, 0)
         this.radius = radius
         this.traits = []
     }
@@ -130,11 +130,11 @@ class Blob {
         this[trait.name] = trait
     }
 
-    update(deltaTime, spec) {
+    update(deltaTime) {
         let index = -1
         const length = this.traits.length
         while (++index < length) {
-            this.traits[index].update(this, deltaTime, spec)
+            this.traits[index].update(this, deltaTime)
         }
     }
 }

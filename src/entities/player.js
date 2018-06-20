@@ -8,10 +8,10 @@ import Jump from '../traits/Jump'
 
 function createPlayer(spec) {
     const mesh = new Mesh('player', 0xf44336)
-    const blob = new Blob(0, -250, spec.radius * .75)
+    const blob = new Blob(-250, -250, spec.radius * .75)
     mesh.blobs.add(blob)
 
-    blob.addTrait(new Physics())
+    blob.addTrait(new Physics(spec))
     blob.addTrait(new Move())
     blob.addTrait(new Jump())
 

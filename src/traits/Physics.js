@@ -1,30 +1,39 @@
 import Trait from './Trait'
-import { GRAVITY } from './Gravity'
+import Vector from '../.utils/Vector'
 
 const sign = value => (value > 0 ? 1 : -1)
+const GRAVITY = 0.001
 
 class Physics extends Trait {
-    constructor() {
+    constructor(spec) {
         super('physics')
+        this.spec = spec
         this.factor = 0.5
 
         // todo: array instead of single mesh
         this.collider = null
     }
 
-    update(entity, deltaTime, spec) {
+    update(entity, deltaTime) {
         entity.pos.x += entity.vel.x * deltaTime
         this.checkX(entity, deltaTime)
 
         entity.pos.y += entity.vel.y * deltaTime
         this.checkY(entity, deltaTime)
 
-        entity.vel.y += GRAVITY * deltaTime
+        let force = this.gravity(entity)
+        entity.vel.x += force.x * deltaTime
+        entity.vel.y += force.y * deltaTime
+    }
+
+    gravity(entity) {
+        let force = this.spec.gravityCenter.clone()
+        return force.subtract(entity.pos).multiplyScalar(GRAVITY)
     }
 
     potential(entity, match) {
         let value = (match.pos.y - entity.pos.y) / match.radius
-        return value > 1 ? 1 : (value < 0 ? 0 : value)
+        return value > 1 ? 1 : value < 0 ? 0 : value
     }
 
     friction(entity, match, absolute = true) {

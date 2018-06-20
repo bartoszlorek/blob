@@ -1,4 +1,5 @@
 import { toOffsetX, toOffsetY } from './math'
+import Vector from '../.utils/Vector'
 
 function createSpec(app, radius = 32) {
     const spec = {
@@ -6,15 +7,8 @@ function createSpec(app, radius = 32) {
         rootY: app.screen.height / 2,
         offsetX: toOffsetX(radius),
         offsetY: toOffsetY(radius),
-        gravity: {
-            get x() {
-                return spec.rootX
-            },
-            get y() {
-                return spec.rootY
-            },
-            value: 0.25
-        },
+        gravityCenter: new Vector(0, 0),
+        gravityValue: .4,
         radius
     }
 

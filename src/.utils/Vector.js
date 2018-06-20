@@ -164,3 +164,5 @@ class Vector {
         return Math.sqrt(this.distanceSq(vector))
     }
 }
+
+export default Vector

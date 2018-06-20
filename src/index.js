@@ -3,7 +3,6 @@ import createSpec from './.internal/spec'
 import { fromGlobal, toGrid } from './.internal/math'
 
 import Blob from './models/Blob'
-import Mesh from './models/Mesh'
 import createPlayer from './entities/player'
 import createGround from './entities/ground'
 
@@ -19,6 +18,7 @@ app.renderer.view.addEventListener('click', e => {
     let grid = toGrid(spec, fromGlobal(spec, e.offsetX, e.offsetY)),
         blob = Blob.fromGrid(spec, Math.round(grid.x), Math.round(grid.y))
     ground.blobs.add(blob)
+    console.log(ground.blobs)
 })
 
 app.ticker.add(deltaTime => {
@@ -26,7 +26,7 @@ app.ticker.add(deltaTime => {
     // player.root.setFromGlobal(spec, pos.x, pos.y)
 
     // business logic
-    player.update(deltaTime, spec)
+    player.update(deltaTime)
 
     // presentation logic
     ground.render(spec)

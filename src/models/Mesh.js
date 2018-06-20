@@ -30,9 +30,9 @@ class Mesh {
         })
     }
 
-    update(deltaTime, spec) {
+    update(deltaTime) {
         this.blobs.forEach(blob => {
-            blob.update(deltaTime, spec)
+            blob.update(deltaTime)
         })
     }
 
