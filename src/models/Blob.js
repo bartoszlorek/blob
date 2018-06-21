@@ -1,128 +1,57 @@
 import Vector from '../.utils/Vector'
-import {
-    fromGridX,
-    fromGridY,
-    fromGlobalX,
-    fromGlobalY
-} from '../.internal/math'
+
+export const EDGE = {
+    TOP: Symbol('top'),
+    BOTTOM: Symbol('bottom'),
+    LEFT: Symbol('left'),
+    RIGHT: Symbol('right')
+}
 
 class Blob {
-    constructor(x = 0, y = 0, radius = 1) {
+    constructor(x = 0, y = 0, size = 1) {
         this.pos = new Vector(x, y)
         this.vel = new Vector(0, 0)
-        this.radius = radius
+        this.size = size
         this.traits = []
     }
 
     get top() {
-        return this.pos.y - this.radius
+        return this.pos.y
+    }
+
+    set top(y) {
+        return this.pos.y = y
     }
 
     get bottom() {
-        return this.pos.y + this.radius
+        return this.pos.y + this.size
+    }
+
+    set bottom(y) {
+        return this.pos.y = y - this.size
     }
 
     get left() {
-        return this.pos.x - this.radius
+        return this.pos.x
+    }
+
+    set left(x) {
+        return this.pos.x = x
     }
 
     get right() {
-        return this.pos.x + this.radius
+        return this.pos.x + this.size
     }
 
-    distance(blob) {
-        let x = this.pos.x - blob.pos.x,
-            y = this.pos.y - blob.pos.y
-        return Math.sqrt(x * x + y * y)
+    set right(x) {
+        return this.pos.x = x - this.size
     }
 
     intersection(blob) {
-        let overlap =
-            this.top < blob.bottom &&
-            this.bottom > blob.top &&
-            this.right > blob.left &&
-            this.left < blob.right
-
-        // basic box overlapping
-        if (overlap === false) {
-            return false
-        }
-        // distance overlapping
-        let dist = this.distance(blob)
-        if (dist > this.radius + blob.radius) {
-            return false
-        }
-        return true
-    }
-
-    intersectionX(blob) {
-        let overlap =
-            this.right > blob.left &&
-            this.left < blob.right
-
-        // basic box overlapping
-        if (overlap === false) {
-            return false
-        }
-        // distance overlapping
-        let dist = this.distance(blob)
-        if (dist > this.radius + blob.radius) {
-            return false
-        }
-        return true
-    }
-
-    intersectionY(blob) {
-        let overlap =
-            this.top < blob.bottom &&
-            this.bottom > blob.top
-
-        // basic box overlapping
-        if (overlap === false) {
-            return false
-        }
-        // distance overlapping
-        let dist = this.distance(blob)
-        if (dist > this.radius + blob.radius) {
-            return false
-        }
-        return true
-    }
-
-    setFromGrid(spec, x, y) {
-        this.pos.set(
-            fromGridX(spec, x),
-            fromGridY(spec, y)
-        )
-    }
-
-    setFromGlobal(spec, x, y) {
-        this.pos.set(
-            fromGlobalX(spec, x),
-            fromGlobalY(spec, y)
-        )
-    }
-
-    static fromGrid(spec, x, y, radius) {
-        if (radius === undefined) {
-            radius = spec.radius
-        }
-        return new Blob(
-            fromGridX(spec, x),
-            fromGridY(spec, y),
-            radius
-        )
-    }
-
-    static fromGlobal(spec, x, y, radius) {
-        if (radius === undefined) {
-            radius = spec.radius
-        }
-        return new Blob(
-            fromGlobalX(spec, x),
-            fromGlobalY(spec, y),
-            radius
-        )
+        return this.top < blob.bottom
+            && this.bottom > blob.top
+            && this.right > blob.left
+            && this.left < blob.right
     }
 
     addTrait(trait) {
@@ -135,6 +64,14 @@ class Blob {
         const length = this.traits.length
         while (++index < length) {
             this.traits[index].update(this, deltaTime)
+        }
+    }
+
+    obstruct(edge, match) {
+        let index = -1
+        const length = this.traits.length
+        while (++index < length) {
+            this.traits[index].obstruct(this, edge, match)
         }
     }
 }
