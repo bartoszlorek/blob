@@ -3,8 +3,8 @@ import Trait from './Trait'
 class Jump extends Trait {
     constructor() {
         super('jump')
-        this.duration = 0.5
-        this.velocity = 6
+        this.duration = 0.25
+        this.velocity = 5
         this.engageTime = 0
     }
 

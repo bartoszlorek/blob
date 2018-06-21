@@ -8,7 +8,7 @@ import Jump from '../traits/Jump'
 
 function createPlayer(spec) {
     const mesh = new Mesh('player', 0xf44336)
-    const blob = new Blob(-250, -250, spec.radius * .75)
+    const blob = new Blob(0, -250, spec.size)
     mesh.blobs.add(blob)
 
     blob.addTrait(new Physics(spec))
@@ -19,9 +19,11 @@ function createPlayer(spec) {
     input.on('ArrowRight', state => {
         blob.move.dir += state ? 1 : -1
     })
+
     input.on('ArrowLeft', state => {
         blob.move.dir += state ? -1 : 1
     })
+
     input.on('Space', state => {
         if (state) {
             blob.jump.start()
