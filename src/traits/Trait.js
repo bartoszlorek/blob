@@ -3,9 +3,9 @@ class Trait {
         this.name = name
     }
 
-    update() {
-        console.warn('unhandled trait update')
-    }
+    update() {}
+
+    obstruct() {}
 }
 
 export default Trait
