@@ -16,16 +16,16 @@ class Mesh {
     clear() {
         this.shape.clear()
         this.shape.beginFill(this.color)
-        //this.shape.lineStyle(1, 0xffffff)
     }
 
     render(spec) {
         this.clear()
         this.blobs.forEach(blob => {
-            this.shape.drawCircle(
-                spec.rootX + blob.pos.x,
-                spec.rootY + blob.pos.y,
-                blob.radius
+            this.shape.drawRect(
+                spec.rootX + blob.pos.x - blob.size / 2,
+                spec.rootY + blob.pos.y - blob.size / 2,
+                blob.size,
+                blob.size
             )
         })
     }
@@ -46,24 +46,32 @@ class Mesh {
         return matches
     }
 
-    intersectionX(otherBlob) {
-        let matches = []
-        this.blobs.forEach(blob => {
-            if (blob.intersectionX(otherBlob)) {
-                matches.push(blob)
-            }
-        })
-        return matches
-    }
+    bounds() {
+        let top = 0,
+            bottom = 0,
+            left = 0,
+            right = 0
 
-    intersectionY(otherBlob) {
-        let matches = []
         this.blobs.forEach(blob => {
-            if (blob.intersectionY(otherBlob)) {
-                matches.push(blob)
+            if (blob.top < top) {
+                top = blob.top
+            }
+            if (blob.bottom > bottom) {
+                bottom = blob.bottom
+            }
+            if (blob.right > right) {
+                right = blob.right
+            }
+            if (blob.left < left) {
+                left = blob.left
             }
         })
-        return matches
+        return {
+            top,
+            bottom,
+            left,
+            right
+        }
     }
 }
 
