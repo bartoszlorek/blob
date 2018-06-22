@@ -2,10 +2,17 @@ import Vector from '../.utils/Vector'
 
 export const EDGE = {
     TOP: Symbol('top'),
+    RIGHT: Symbol('right'),
     BOTTOM: Symbol('bottom'),
-    LEFT: Symbol('left'),
-    RIGHT: Symbol('right')
+    LEFT: Symbol('left')
 }
+
+export const EDGE_ORDER = [
+    EDGE.TOP,
+    EDGE.RIGHT,
+    EDGE.BOTTOM,
+    EDGE.LEFT
+]
 
 class Blob {
     constructor(x = 0, y = 0, size = 1) {
