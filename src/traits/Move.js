@@ -4,9 +4,9 @@ class Move extends Trait {
     constructor() {
         super('move')
         this.dir = 0
-        this.acceleration = 0.75
-        this.deceleration = 0.5
-        this.dragFactor = 0.9
+        this.acceleration = 500
+        this.deceleration = 300
+        this.dragFactor = 0.95
     }
 
     update(entity, deltaTime) {

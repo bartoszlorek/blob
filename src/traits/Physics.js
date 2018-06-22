@@ -16,11 +16,10 @@ export const DIR_SHIFT = {
 }
 
 class Physics extends Trait {
-    constructor(level) {
+    constructor() {
         super('physics')
-        this.level = level
+        this.gravity = 1000
         this.dir = DIR.BOTTOM
-        this.gravity = 0.25
 
         this.bounds = {}
         this.solids = []

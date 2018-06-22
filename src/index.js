@@ -6,6 +6,7 @@ import Blob from './models/Blob'
 import createPlayer from './entities/player'
 import createGround from './entities/ground'
 
+const time = 1/60
 const spec = createSpec(app, 24)
 const player = createPlayer(spec)
 const ground = createGround(spec)
@@ -21,7 +22,9 @@ app.stage.addChild(player.shape)
 //     console.log(ground.blobs)
 // })
 
-app.ticker.add(deltaTime => {
+app.ticker.add(deltaFrame => {
+    const deltaTime = time * deltaFrame
+
     // let global = app.renderer.plugins.interaction.mouse.global,
     //     local = fromGlobal(spec, global.x, global.y)
     // player.root.pos.set(local.x, local.y)
