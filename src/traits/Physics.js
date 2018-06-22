@@ -1,11 +1,18 @@
 import Trait from './Trait'
-import { EDGE } from '../models/Blob'
+import { EDGE, EDGE_ORDER } from '../models/Blob'
 
 export const DIR = {
     TOP: Symbol('top'),
+    RIGHT: Symbol('right'),
     BOTTOM: Symbol('bottom'),
-    LEFT: Symbol('left'),
-    RIGHT: Symbol('right')
+    LEFT: Symbol('left')
+}
+
+export const DIR_SHIFT = {
+    [DIR.TOP]: 2,
+    [DIR.RIGHT]: 1,
+    [DIR.BOTTOM]: 0,
+    [DIR.LEFT]: 3
 }
 
 class Physics extends Trait {
@@ -17,17 +24,16 @@ class Physics extends Trait {
 
         this.bounds = {}
         this.solids = []
-        this.bodies = []
     }
 
     update(entity, deltaTime) {
         this.checkDirection(entity)
 
-        let { x } = this.rotateVelocity(entity, this.dir)
+        let { x } = this.rotateVector(entity.vel)
         entity.pos.x += x * deltaTime
         this.checkX(entity, x)
 
-        let { y } = this.rotateVelocity(entity, this.dir)
+        let { y } = this.rotateVector(entity.vel)
         entity.pos.y += y * deltaTime
         this.checkY(entity, y)
 
@@ -35,87 +41,40 @@ class Physics extends Trait {
     }
 
     checkX(entity, x) {
-        let matches = this.solids.intersection(entity)
-        matches.forEach(match => {
+        let matches = this.solids.intersection(entity),
+            index = -1
+
+        const length = matches.length
+        while (++index < length) {
+            let match = matches[index]
             if (x > 0) {
                 if (entity.right > match.left) {
-                    entity.obstruct(EDGE.RIGHT, match)
+                    entity.obstruct(this.rotateEdge(EDGE.RIGHT), match)
                 }
             } else if (x < 0) {
                 if (entity.left < match.right) {
-                    entity.obstruct(EDGE.LEFT, match)
+                    entity.obstruct(this.rotateEdge(EDGE.LEFT), match)
                 }
             }
-        })
+        }
     }
 
     checkY(entity, y) {
-        let matches = this.solids.intersection(entity)
-        matches.forEach(match => {
+        let matches = this.solids.intersection(entity),
+            index = -1
+
+        const length = matches.length
+        while (++index < length) {
+            let match = matches[index]
             if (y > 0) {
                 if (entity.bottom > match.top) {
-                    entity.obstruct(EDGE.BOTTOM, match)
+                    entity.obstruct(this.rotateEdge(EDGE.BOTTOM), match)
                 }
             } else if (y < 0) {
                 if (entity.top < match.bottom) {
-                    entity.obstruct(EDGE.TOP, match)
+                    entity.obstruct(this.rotateEdge(EDGE.TOP), match)
                 }
             }
-        })
-    }
-
-    obstruct(entity, edge, match) {
-        let vertical = this.dir === DIR.TOP || this.dir === DIR.BOTTOM
-
-        if (edge === EDGE.BOTTOM) {
-            entity.bottom = match.top
-            entity.vel[vertical ? 'y' : 'x'] = 0
-
-        } else if (edge === EDGE.TOP) {
-            entity.top = match.bottom
-            entity.vel[vertical ? 'y' : 'x'] = 0
-
-        } else if (edge === EDGE.LEFT) {
-            entity.left = match.right
-            entity.vel[vertical ? 'x' : 'y'] = 0
-
-        } else if (edge === EDGE.RIGHT) {
-            entity.right = match.left
-            entity.vel[vertical ? 'x' : 'y'] = 0
-        }
-    }
-
-    // gravity direction:
-    // bottom  x: x  y: y
-    // top     x:-x  y:-y
-    // left    x:-y  y: x
-    // right   x: y  y:-x
-
-    rotateVelocity(entity, dir) {
-        let x = entity.vel.x,
-            y = entity.vel.y
-
-        if (dir === DIR.TOP) {
-            return {
-                x: -x,
-                y: -y
-            }
-        }
-        if (dir === DIR.LEFT) {
-            return {
-                x: -y,
-                y: x
-            }
-        }
-        if (dir === DIR.RIGHT) {
-            return {
-                x: y,
-                y: -x
-            }
-        }
-        return {
-            x,
-            y
         }
     }
 
@@ -123,22 +82,89 @@ class Physics extends Trait {
         if (entity.left > this.bounds.left &&
             entity.right < this.bounds.right &&
             entity.bottom < this.bounds.top) {
-            return this.dir = DIR.BOTTOM
+            return (this.dir = DIR.BOTTOM)
         }
         if (entity.left > this.bounds.left &&
             entity.right < this.bounds.right &&
             entity.top > this.bounds.bottom) {
-            return this.dir = DIR.TOP
+            return (this.dir = DIR.TOP)
         }
         if (entity.top > this.bounds.top &&
             entity.bottom < this.bounds.bottom &&
             entity.left > this.bounds.right) {
-            return this.dir = DIR.LEFT
+            return (this.dir = DIR.LEFT)
         }
         if (entity.top > this.bounds.top &&
             entity.bottom < this.bounds.bottom &&
             entity.right < this.bounds.left) {
-            return this.dir = DIR.RIGHT
+            return (this.dir = DIR.RIGHT)
+        }
+    }
+
+    obstruct(entity, edge, match) {
+        let vertical = this.dir === DIR.TOP || this.dir === DIR.BOTTOM
+
+        if (edge.global === EDGE.BOTTOM) {
+            entity.bottom = match.top
+            entity.vel[vertical ? 'y' : 'x'] = 0
+
+        } else if (edge.global === EDGE.TOP) {
+            entity.top = match.bottom
+            entity.vel[vertical ? 'y' : 'x'] = 0
+ 
+        } else if (edge.global === EDGE.LEFT) {
+            entity.left = match.right
+            entity.vel[vertical ? 'x' : 'y'] = 0
+
+        } else if (edge.global === EDGE.RIGHT) {
+            entity.right = match.left
+            entity.vel[vertical ? 'x' : 'y'] = 0
+        }
+    }
+
+    rotateVector(vector) {
+        let x = vector.x,
+            y = vector.y
+
+        switch (this.dir) {
+            case DIR.TOP:
+                return {
+                    x: -x,
+                    y: -y
+                }
+            case DIR.BOTTOM:
+            default:
+                return {
+                    x,
+                    y
+                }
+            case DIR.LEFT:
+                return {
+                    x: -y,
+                    y: x
+                }
+            case DIR.RIGHT:
+                return {
+                    x: y,
+                    y: -x
+                }
+        }
+    }
+
+    rotateEdge(edge) {
+        let globalIndex = EDGE_ORDER.indexOf(edge)
+        if (globalIndex !== -1) {
+            let localIndex =
+                (globalIndex + DIR_SHIFT[this.dir]) % EDGE_ORDER.length
+            return {
+                global: EDGE_ORDER[globalIndex],
+                local: EDGE_ORDER[localIndex]
+            }
+        } else {
+            return {
+                global: EDGE.BOTTOM,
+                local: EDGE.BOTTOM
+            }
         }
     }
 
