@@ -1,5 +1,5 @@
 import Trait from './Trait'
-import { EDGE, EDGE_ORDER } from '../models/Blob'
+import { EDGE, EDGE_TABLE } from '../models/Blob'
 
 export const DIR = {
     TOP: Symbol('top'),
@@ -151,13 +151,13 @@ class Physics extends Trait {
     }
 
     rotateEdge(edge) {
-        let globalIndex = EDGE_ORDER.indexOf(edge)
+        let globalIndex = EDGE_TABLE.indexOf(edge)
         if (globalIndex !== -1) {
             let localIndex =
-                (globalIndex + DIR_SHIFT[this.dir]) % EDGE_ORDER.length
+                (globalIndex + DIR_SHIFT[this.dir]) % EDGE_TABLE.length
             return {
-                global: EDGE_ORDER[globalIndex],
-                local: EDGE_ORDER[localIndex]
+                global: EDGE_TABLE[globalIndex],
+                local: EDGE_TABLE[localIndex]
             }
         } else {
             return {
