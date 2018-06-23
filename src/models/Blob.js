@@ -7,7 +7,7 @@ export const EDGE = {
     LEFT: Symbol('left')
 }
 
-export const EDGE_ORDER = [
+export const EDGE_TABLE = [
     EDGE.TOP,
     EDGE.RIGHT,
     EDGE.BOTTOM,
