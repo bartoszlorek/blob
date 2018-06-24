@@ -1,4 +1,5 @@
 import Trait from './Trait'
+import ForceField from '../models/ForceField'
 import { EDGE, EDGE_TABLE } from '../models/Blob'
 
 export const DIR = {
@@ -21,6 +22,7 @@ class Physics extends Trait {
         this.gravity = 1000
         this.dir = DIR.BOTTOM
 
+        this.field = new ForceField()
         this.bounds = {}
         this.solids = []
     }
@@ -169,7 +171,7 @@ class Physics extends Trait {
 
     add(mesh) {
         this.solids = mesh
-        this.bounds = mesh.bounds()
+        this.field.add(mesh)
     }
 }
 
