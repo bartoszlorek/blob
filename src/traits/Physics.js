@@ -17,13 +17,12 @@ export const DIR_SHIFT = {
 }
 
 class Physics extends Trait {
-    constructor() {
+    constructor(glob) {
         super('physics')
         this.gravity = 1000
         this.dir = DIR.BOTTOM
 
-        this.field = new ForceField()
-        this.bounds = {}
+        this.field = new ForceField(glob.size)
         this.solids = []
     }
 
@@ -80,30 +79,24 @@ class Physics extends Trait {
     }
 
     checkDirection(entity) {
-        if (entity.left > this.bounds.left &&
-            entity.right < this.bounds.right &&
-            entity.bottom < this.bounds.top) {
-            return (this.dir = DIR.BOTTOM)
-        }
-        if (entity.left > this.bounds.left &&
-            entity.right < this.bounds.right &&
-            entity.top > this.bounds.bottom) {
-            return (this.dir = DIR.TOP)
-        }
-        if (entity.top > this.bounds.top &&
-            entity.bottom < this.bounds.bottom &&
-            entity.left > this.bounds.right) {
-            return (this.dir = DIR.LEFT)
-        }
-        if (entity.top > this.bounds.top &&
-            entity.bottom < this.bounds.bottom &&
-            entity.right < this.bounds.left) {
-            return (this.dir = DIR.RIGHT)
+        if (this.field.inTop(entity.pos)) {
+            this.dir = DIR.BOTTOM
+
+        } else if (this.field.inBottom(entity.pos)) {
+            this.dir = DIR.TOP
+
+        } else if (this.field.inLeft(entity.pos)) {
+            this.dir = DIR.RIGHT
+
+        } else if (this.field.inRight(entity.pos)) {
+            this.dir = DIR.LEFT
         }
     }
 
     obstruct(entity, edge, match) {
-        let vertical = this.dir === DIR.TOP || this.dir === DIR.BOTTOM
+        let vertical =
+            this.dir === DIR.TOP ||
+            this.dir === DIR.BOTTOM
 
         if (edge.global === EDGE.BOTTOM) {
             entity.bottom = match.top
