@@ -1,7 +1,7 @@
 import { Application } from 'pixi.js'
 
 const app = new Application({
-    antialias: true,
+    //antialias: true,
     //transparent: true,
     width: window.innerWidth,
     height: window.innerHeight,

@@ -28,17 +28,14 @@ const data = [
     [-1, 2]
 ]
 
-const fromGridX = (spec, x) => x * spec.size - spec.size / 2
-const fromGridY = (spec, y) => y * spec.size - spec.size / 2
-
-function createGround(spec) {
+function createGround(glob) {
     const mesh = new Mesh('ground', 0x26c6da)
 
     data.forEach(cell => mesh.blobs.add(
         new Blob(
-            fromGridX(spec, cell[0]),
-            fromGridY(spec, cell[1]),
-            spec.size
+            glob.gridToLocal(cell[0]),
+            glob.gridToLocal(cell[1]),
+            glob.size
         )
     ))
 

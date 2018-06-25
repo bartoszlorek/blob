@@ -23,35 +23,35 @@ class Blob {
     }
 
     get top() {
-        return this.pos.y
+        return this.pos.y - this.size / 2
     }
 
     set top(y) {
-        return this.pos.y = y
+        return this.pos.y = y + this.size / 2
     }
 
     get bottom() {
-        return this.pos.y + this.size
+        return this.pos.y + this.size / 2
     }
 
     set bottom(y) {
-        return this.pos.y = y - this.size
+        return this.pos.y = y - this.size / 2
     }
 
     get left() {
-        return this.pos.x
+        return this.pos.x - this.size / 2
     }
 
     set left(x) {
-        return this.pos.x = x
+        return this.pos.x = x + this.size / 2
     }
 
     get right() {
-        return this.pos.x + this.size
+        return this.pos.x + this.size / 2
     }
 
     set right(x) {
-        return this.pos.x = x - this.size
+        return this.pos.x = x - this.size / 2
     }
 
     intersection(blob) {

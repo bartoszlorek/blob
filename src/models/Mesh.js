@@ -16,14 +16,15 @@ class Mesh {
     clear() {
         this.shape.clear()
         this.shape.beginFill(this.color)
+        //this.shape.lineStyle(1, 0xffffff)
     }
 
-    render(spec) {
+    render(glob) {
         this.clear()
         this.blobs.forEach(blob => {
             this.shape.drawRect(
-                spec.rootX + blob.pos.x - blob.size / 2,
-                spec.rootY + blob.pos.y - blob.size / 2,
+                glob.rootX + blob.left,
+                glob.rootY + blob.top,
                 blob.size,
                 blob.size
             )
@@ -47,22 +48,22 @@ class Mesh {
     }
 
     bounds() {
-        let top = 0,
-            bottom = 0,
-            left = 0,
-            right = 0
+        let top,
+            bottom,
+            left,
+            right
 
         this.blobs.forEach(blob => {
-            if (blob.top < top) {
+            if (top === undefined || blob.top < top) {
                 top = blob.top
             }
-            if (blob.bottom > bottom) {
+            if (bottom === undefined || blob.bottom > bottom) {
                 bottom = blob.bottom
             }
-            if (blob.right > right) {
+            if (right === undefined || blob.right > right) {
                 right = blob.right
             }
-            if (blob.left < left) {
+            if (left === undefined || blob.left < left) {
                 left = blob.left
             }
         })
