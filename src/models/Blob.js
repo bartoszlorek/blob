@@ -19,6 +19,7 @@ class Blob {
         this.pos = new Vector(x, y)
         this.vel = new Vector(0, 0)
         this.size = size
+        this.mesh = null
         this.traits = []
     }
 

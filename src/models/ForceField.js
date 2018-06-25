@@ -31,11 +31,6 @@ class ForceField {
             && pos.x < this.bounds.left
     }
 
-    add(mesh) {
-        this.meshes.push(mesh)
-        this.calculate()
-    }
-
     calculate() {
         let maxLeft = 0,
             maxRight = 0

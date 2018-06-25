@@ -24,7 +24,7 @@ class Global {
     }
 
     localToGrid(pos) {
-        return Math.floor(pos / this.size)
+        return Math.round(pos / this.size) || 0
     }
 
     globalToLocalX(x) {

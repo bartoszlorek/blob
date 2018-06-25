@@ -1,37 +1,30 @@
 import app from './app'
 
 import Global from './models/Global'
-import Helper from './models/Helper'
-import Blob from './models/Blob'
+import Creator from './models/Creator'
+import Level from './models/Level'
+
+import data1_1 from './levels/1-1.json'
 import createPlayer from './entities/player'
-import createGround from './entities/ground'
 
 const glob = new Global(app, 24)
+const level = new Level(glob, data1_1)
+//const creator = new Creator(glob, level)
+
 const player = createPlayer(glob)
-const ground = createGround(glob)
-player.root.physics.add(ground)
+player.root.physics.addSolid(...level.solids)
 
-app.stage.addChild(ground.shape)
 app.stage.addChild(player.shape)
-
-// app.renderer.view.addEventListener('click', e => {
-//     let grid = toGrid(glob, fromGlobal(glob, e.offsetX, e.offsetY)),
-//         blob = Blob.fromGrid(glob, Math.round(grid.x), Math.round(grid.y))
-//     ground.blobs.add(blob)
-//     console.log(ground.blobs)
-// })
-
 app.ticker.add(deltaFrame => {
     const deltaTime = glob.time * deltaFrame
 
-    // let global = app.renderer.plugins.interaction.mouse.global,
-    //     local = fromGlobal(glob, global.x, global.y)
-    // player.root.pos.set(local.x, local.y)
-
     // business logic
+    level.update(deltaTime)
     player.update(deltaTime)
 
     // presentation logic
-    ground.render(glob)
+    level.render(glob)
     player.render(glob)
+
+    //creator.render(glob)
 })

@@ -21,7 +21,7 @@ class Mesh {
 
     render(glob) {
         this.clear()
-        this.blobs.forEach(blob => {
+        this.forEachBlob(blob => {
             this.shape.drawRect(
                 glob.rootX + blob.left,
                 glob.rootY + blob.top,
@@ -32,14 +32,14 @@ class Mesh {
     }
 
     update(deltaTime) {
-        this.blobs.forEach(blob => {
+        this.forEachBlob(blob => {
             blob.update(deltaTime)
         })
     }
 
     intersection(otherBlob) {
         let matches = []
-        this.blobs.forEach(blob => {
+        this.forEachBlob(blob => {
             if (blob.intersection(otherBlob)) {
                 matches.push(blob)
             }
@@ -47,32 +47,17 @@ class Mesh {
         return matches
     }
 
-    bounds() {
-        let top,
-            bottom,
-            left,
-            right
+    addBlob(blob) {
+        this.blobs.add(blob)
+        blob.mesh = this
+    }
 
-        this.blobs.forEach(blob => {
-            if (top === undefined || blob.top < top) {
-                top = blob.top
-            }
-            if (bottom === undefined || blob.bottom > bottom) {
-                bottom = blob.bottom
-            }
-            if (right === undefined || blob.right > right) {
-                right = blob.right
-            }
-            if (left === undefined || blob.left < left) {
-                left = blob.left
-            }
-        })
-        return {
-            top,
-            bottom,
-            left,
-            right
-        }
+    removeBlob(blob) {
+        this.blobs.remove(blob)
+    }
+
+    forEachBlob(iteratee) {
+        this.blobs.forEach(iteratee)
     }
 }
 

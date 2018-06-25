@@ -1,6 +1,7 @@
 import Trait from './Trait'
 import ForceField from '../models/ForceField'
 import { EDGE, EDGE_TABLE } from '../models/Blob'
+import forEachMesh from '../.internal/forEachMesh'
 
 export const DIR = {
     TOP: Symbol('top'),
@@ -41,41 +42,35 @@ class Physics extends Trait {
     }
 
     checkX(entity, x) {
-        let matches = this.solids.intersection(entity),
-            index = -1
-
-        const length = matches.length
-        while (++index < length) {
-            let match = matches[index]
-            if (x > 0) {
-                if (entity.right > match.left) {
-                    entity.obstruct(this.rotateEdge(EDGE.RIGHT), match)
-                }
-            } else if (x < 0) {
-                if (entity.left < match.right) {
-                    entity.obstruct(this.rotateEdge(EDGE.LEFT), match)
+        forEachMesh(this.solids, (blob, index, mesh) => {
+            if (entity.intersection(blob)) {
+                if (x > 0) {
+                    if (entity.right > blob.left) {
+                        entity.obstruct(this.rotateEdge(EDGE.RIGHT), blob, mesh)
+                    }
+                } else if (x < 0) {
+                    if (entity.left < blob.right) {
+                        entity.obstruct(this.rotateEdge(EDGE.LEFT), blob, mesh)
+                    }
                 }
             }
-        }
+        })
     }
 
     checkY(entity, y) {
-        let matches = this.solids.intersection(entity),
-            index = -1
-
-        const length = matches.length
-        while (++index < length) {
-            let match = matches[index]
-            if (y > 0) {
-                if (entity.bottom > match.top) {
-                    entity.obstruct(this.rotateEdge(EDGE.BOTTOM), match)
-                }
-            } else if (y < 0) {
-                if (entity.top < match.bottom) {
-                    entity.obstruct(this.rotateEdge(EDGE.TOP), match)
+        forEachMesh(this.solids, (blob, index, mesh) => {
+            if (entity.intersection(blob)) {
+                if (y > 0) {
+                    if (entity.bottom > blob.top) {
+                        entity.obstruct(this.rotateEdge(EDGE.BOTTOM), blob, mesh)
+                    }
+                } else if (y < 0) {
+                    if (entity.top < blob.bottom) {
+                        entity.obstruct(this.rotateEdge(EDGE.TOP), blob, mesh)
+                    }
                 }
             }
-        }
+        })
     }
 
     checkDirection(entity) {
@@ -162,9 +157,10 @@ class Physics extends Trait {
         }
     }
 
-    add(mesh) {
-        this.solids = mesh
-        this.field.add(mesh)
+    addSolid(...meshes) {
+        this.solids = this.solids.concat(meshes)
+        this.field.meshes = this.solids
+        this.field.calculate()
     }
 }
 

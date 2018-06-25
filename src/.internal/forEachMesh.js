@@ -3,7 +3,7 @@ function forEachMesh(meshes, iteratee) {
     const length = meshes.length
 
     while (++index < length) {
-        meshes[index].blobs.forEach(blob => {
+        meshes[index].forEachBlob(blob => {
             return iteratee(blob, index, meshes[index])
         })
     }
