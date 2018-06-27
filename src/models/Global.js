@@ -17,6 +17,9 @@ class Global {
     update() {
         this.rootX = this.app.screen.width / 2
         this.rootY = this.app.screen.height / 2
+
+        // todo: optimize better fitting
+        this.app.stage.filterArea = this.app.screen
     }
 
     addLayer(layer) {

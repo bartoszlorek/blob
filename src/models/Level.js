@@ -1,3 +1,4 @@
+import { GlowFilter } from '@pixi/filter-glow'
 import Layer from './Layer'
 import Entity from './Entity'
 
@@ -17,6 +18,7 @@ class Level {
         this.ground = new Layer('ground', GROUND_COLOR)
         this.bombs = new Layer('bombs', BOMBS_COLOR)
         this.prize = new Layer('prize', PRIZE_COLOR)
+        this.prize.graphics.filters = [new GlowFilter(10, 1, 0, PRIZE_COLOR)]
 
         this.createFromData(data, 'ground')
         this.createFromData(data, 'bombs')

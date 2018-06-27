@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/bartoszlorek/blob#readme",
   "dependencies": {
-    "gl-matrix": "^2.6.1",
+    "@pixi/filter-glow": "^2.5.0",
+    "@pixi/filter-rgb-split": "^2.5.0",
     "lodash": "^4.17.10",
     "pixi.js": "^4.8.1"
   },
