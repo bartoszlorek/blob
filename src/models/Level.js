@@ -1,35 +1,33 @@
-import Mesh from './Mesh'
-import Blob from './Blob'
+import Layer from './Layer'
+import Entity from './Entity'
 
 import Shine from '../traits/Shine'
 import Explosive from '../traits/Explosive'
 
-const GROUND_COLOR = 0xd1d8db
+const GROUND_COLOR = 0xdb1278
 const ENEMY_COLOR = 0xf44336
-const BOMBS_COLOR = 0x333333
-const PRIZE_COLOR = 0xdabc27
+const BOMBS_COLOR = 0x0b46a4
+const PRIZE_COLOR = 0xf7dd2c
 
 class Level {
-    constructor(glob, data) {
-        this.glob = glob
+    constructor(global, data) {
+        this.global = global
 
-        this.ground = new Mesh('ground', GROUND_COLOR)
-        this.bombs = new Mesh('bombs', BOMBS_COLOR)
-        this.prize = new Mesh('prize', PRIZE_COLOR)
+        this.ground = new Layer('ground', GROUND_COLOR)
+        this.bombs = new Layer('bombs', BOMBS_COLOR)
+        this.prize = new Layer('prize', PRIZE_COLOR)
 
-        data.ground.forEach(this.fromData(this.ground))
-        data.bombs.forEach(this.fromData(this.bombs))
-        data.prize.forEach(this.fromData(this.prize))
+        this.createFromData(data, 'ground')
+        this.createFromData(data, 'bombs')
+        this.createFromData(data, 'prize')
 
-        glob.app.stage.addChild(this.ground.shape)
-        glob.app.stage.addChild(this.bombs.shape)
-        glob.app.stage.addChild(this.prize.shape)
+        global.addLayer(this.ground)
+        global.addLayer(this.bombs)
+        global.addLayer(this.prize)
 
         // traits
-        this.prize.root.addTrait(new Shine(glob.size))
-        this.bombs.forEachBlob(blob => {
-            blob.addTrait(new Explosive(this))
-        })
+        this.prize.head.addTrait(new Shine(global.size))
+        this.bombs.forEach(entity => entity.addTrait(new Explosive(this)))
 
         console.log(this)
     }
@@ -38,23 +36,25 @@ class Level {
         return [this.ground, this.bombs]
     }
 
-    fromData(mesh) {
-        return pos => mesh.addBlob(new Blob(
-            this.glob.gridToLocal(pos[0]),
-            this.glob.gridToLocal(pos[1]),
-            this.glob.size
-        ))
+    createFromData(data, layerName) {
+        data[layerName].forEach(pos => {
+            this[layerName].append(new Entity(
+                this.global.gridToLocal(pos[0]),
+                this.global.gridToLocal(pos[1]),
+                this.global.size
+            ))
+        })
     }
 
-    render(glob) {
-        this.ground.render(glob)
-        this.bombs.render(glob)
-        this.prize.render(glob)
+    render(global) {
+        this.ground.render(global)
+        this.bombs.render(global)
+        this.prize.render(global)
     }
 
-    update(glob) {
-        this.prize.update(glob)
-        this.bombs.update(glob)
+    update(global) {
+        this.bombs.update(global)
+        this.prize.update(global)
     }
 }
 

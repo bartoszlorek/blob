@@ -6,7 +6,7 @@ class Killable extends Trait {
     }
 
     obstruct(entity, edge, match) {
-        if (match.mesh.name === 'bombs') {
+        if (match.parent.name === 'bombs') {
             match.explosive.start(entity)
         }
     }

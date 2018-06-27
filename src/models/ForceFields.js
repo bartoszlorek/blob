@@ -1,9 +1,9 @@
-import forEachMesh from '../.internal/forEachMesh'
+import forEach from '../.utils/forEach'
 
-class ForceField {
+class ForceFields {
     constructor(radius = 1) {
         this.radius = radius
-        this.meshes = []
+        this.layers = []
         this.bounds = {}
     }
 
@@ -36,13 +36,15 @@ class ForceField {
             maxRight = 0
 
         // maximum horizontal positions
-        forEachMesh(this.meshes, blob => {
-            if (blob.left < maxLeft) {
-                maxLeft = blob.left
-            }
-            if (blob.right > maxRight) {
-                maxRight = blob.right
-            }
+        forEach(this.layers, layer => {
+            layer.forEach(entity => {
+                if (entity.left < maxLeft) {
+                    maxLeft = entity.left
+                }
+                if (entity.right > maxRight) {
+                    maxRight = entity.right
+                }
+            })
         })
 
         let maxTopLeft = 0,
@@ -51,23 +53,25 @@ class ForceField {
             maxBottomRight = 0
 
         // maximum vertical positions in radius
-        forEachMesh(this.meshes, blob => {
-            if (blob.pos.x < maxLeft + this.radius) {
-                if (blob.top < maxTopLeft) {
-                    maxTopLeft = blob.top
+        forEach(this.layers, layer => {
+            layer.forEach(entity => {
+                if (entity.pos.x < maxLeft + this.radius) {
+                    if (entity.top < maxTopLeft) {
+                        maxTopLeft = entity.top
+                    }
+                    if (entity.bottom > maxBottomLeft) {
+                        maxBottomLeft = entity.bottom
+                    }
+    
+                } else if (entity.pos.x > maxRight - this.radius) {
+                    if (entity.top < maxTopRight) {
+                        maxTopRight = entity.top
+                    }
+                    if (entity.bottom > maxBottomRight) {
+                        maxBottomRight = entity.bottom
+                    }
                 }
-                if (blob.bottom > maxBottomLeft) {
-                    maxBottomLeft = blob.bottom
-                }
-
-            } else if (blob.pos.x > maxRight - this.radius) {
-                if (blob.top < maxTopRight) {
-                    maxTopRight = blob.top
-                }
-                if (blob.bottom > maxBottomRight) {
-                    maxBottomRight = blob.bottom
-                }
-            }
+            })
         })
 
         this.bounds = {
@@ -79,4 +83,4 @@ class ForceField {
     }
 }
 
-export default ForceField
+export default ForceFields

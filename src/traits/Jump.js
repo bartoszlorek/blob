@@ -1,5 +1,5 @@
 import Trait from './Trait'
-import { EDGE } from '../models/Blob'
+import { EDGE } from '../models/Entity'
 
 class Jump extends Trait {
     constructor() {

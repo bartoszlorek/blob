@@ -1,40 +1,40 @@
 import Keyboard from '../models/Keyboard'
-import Mesh from '../models/Mesh'
-import Blob from '../models/Blob'
+import Layer from '../models/Layer'
+import Entity from '../models/Entity'
 
 import Physics from '../traits/Physics'
 import Killable from '../traits/Killable'
 import Move from '../traits/Move'
 import Jump from '../traits/Jump'
 
-function createPlayer(spec) {
-    const mesh = new Mesh('player', 0x26c6da)
-    const blob = new Blob(0, -250, spec.size)
-    mesh.blobs.add(blob)
+function createPlayer(global) {
+    const layer = new Layer('player', 0x01fe81)
+    const entity = new Entity(0, -250, global.size)
+    layer.append(entity)
 
-    blob.addTrait(new Physics(spec))
-    blob.addTrait(new Killable())
-    blob.addTrait(new Move())
-    blob.addTrait(new Jump())
+    entity.addTrait(new Physics(global))
+    entity.addTrait(new Killable())
+    entity.addTrait(new Move())
+    entity.addTrait(new Jump())
 
     const input = new Keyboard()
     input.on('ArrowRight', state => {
-        blob.move.dir += state ? 1 : -1
+        entity.move.dir += state ? 1 : -1
     })
 
     input.on('ArrowLeft', state => {
-        blob.move.dir += state ? -1 : 1
+        entity.move.dir += state ? -1 : 1
     })
 
     input.on('Space', state => {
         if (state) {
-            blob.jump.start()
+            entity.jump.start()
         } else {
-            blob.jump.cancel()
+            entity.jump.cancel()
         }
     })
 
-    return mesh
+    return layer
 }
 
 export default createPlayer

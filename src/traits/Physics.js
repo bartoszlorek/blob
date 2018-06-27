@@ -1,7 +1,7 @@
 import Trait from './Trait'
-import ForceField from '../models/ForceField'
-import { EDGE, EDGE_TABLE } from '../models/Blob'
-import forEachMesh from '../.internal/forEachMesh'
+import ForceFields from '../models/ForceFields'
+import { EDGE, EDGE_TABLE } from '../models/Entity'
+import forEach from '../.utils/forEach'
 
 export const DIR = {
     TOP: Symbol('top'),
@@ -18,13 +18,13 @@ export const DIR_SHIFT = {
 }
 
 class Physics extends Trait {
-    constructor(glob) {
+    constructor(global) {
         super('physics')
         this.gravity = 1000
         this.dir = DIR.BOTTOM
 
-        this.field = new ForceField(glob.size)
-        this.solids = []
+        this.fields = new ForceFields(global.size)
+        this.layers = []
     }
 
     update(entity, deltaTime) {
@@ -42,48 +42,52 @@ class Physics extends Trait {
     }
 
     checkX(entity, x) {
-        forEachMesh(this.solids, (blob, index, mesh) => {
-            if (entity.intersection(blob)) {
-                if (x > 0) {
-                    if (entity.right > blob.left) {
-                        entity.obstruct(this.rotateEdge(EDGE.RIGHT), blob, mesh)
-                    }
-                } else if (x < 0) {
-                    if (entity.left < blob.right) {
-                        entity.obstruct(this.rotateEdge(EDGE.LEFT), blob, mesh)
+        forEach(this.layers, layer => {
+            layer.forEach(other => {
+                if (entity.intersection(other)) {
+                    if (x > 0) {
+                        if (entity.right > other.left) {
+                            entity.obstruct(this.rotateEdge(EDGE.RIGHT), other)
+                        }
+                    } else if (x < 0) {
+                        if (entity.left < other.right) {
+                            entity.obstruct(this.rotateEdge(EDGE.LEFT), other)
+                        }
                     }
                 }
-            }
+            })
         })
     }
 
     checkY(entity, y) {
-        forEachMesh(this.solids, (blob, index, mesh) => {
-            if (entity.intersection(blob)) {
-                if (y > 0) {
-                    if (entity.bottom > blob.top) {
-                        entity.obstruct(this.rotateEdge(EDGE.BOTTOM), blob, mesh)
-                    }
-                } else if (y < 0) {
-                    if (entity.top < blob.bottom) {
-                        entity.obstruct(this.rotateEdge(EDGE.TOP), blob, mesh)
+        forEach(this.layers, layer => {
+            layer.forEach(other => {
+                if (entity.intersection(other)) {
+                    if (y > 0) {
+                        if (entity.bottom > other.top) {
+                            entity.obstruct(this.rotateEdge(EDGE.BOTTOM), other)
+                        }
+                    } else if (y < 0) {
+                        if (entity.top < other.bottom) {
+                            entity.obstruct(this.rotateEdge(EDGE.TOP), other)
+                        }
                     }
                 }
-            }
+            })
         })
     }
 
     checkDirection(entity) {
-        if (this.field.inTop(entity.pos)) {
+        if (this.fields.inTop(entity.pos)) {
             this.dir = DIR.BOTTOM
 
-        } else if (this.field.inBottom(entity.pos)) {
+        } else if (this.fields.inBottom(entity.pos)) {
             this.dir = DIR.TOP
 
-        } else if (this.field.inLeft(entity.pos)) {
+        } else if (this.fields.inLeft(entity.pos)) {
             this.dir = DIR.RIGHT
 
-        } else if (this.field.inRight(entity.pos)) {
+        } else if (this.fields.inRight(entity.pos)) {
             this.dir = DIR.LEFT
         }
     }
@@ -157,10 +161,10 @@ class Physics extends Trait {
         }
     }
 
-    addSolid(...meshes) {
-        this.solids = this.solids.concat(meshes)
-        this.field.meshes = this.solids
-        this.field.calculate()
+    addLayers(...layers) {
+        this.layers = this.layers.concat(layers)
+        this.fields.layers = this.layers
+        this.fields.calculate()
     }
 }
 

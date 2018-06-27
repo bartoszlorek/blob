@@ -14,12 +14,13 @@ export const EDGE_TABLE = [
     EDGE.LEFT
 ]
 
-class Blob {
+class Entity {
     constructor(x = 0, y = 0, size = 1) {
         this.pos = new Vector(x, y)
         this.vel = new Vector(0, 0)
         this.size = size
-        this.mesh = null
+
+        this.parent = null
         this.traits = []
     }
 
@@ -28,7 +29,7 @@ class Blob {
     }
 
     set top(y) {
-        return this.pos.y = y + this.size / 2
+        return (this.pos.y = y + this.size / 2)
     }
 
     get bottom() {
@@ -36,7 +37,7 @@ class Blob {
     }
 
     set bottom(y) {
-        return this.pos.y = y - this.size / 2
+        return (this.pos.y = y - this.size / 2)
     }
 
     get left() {
@@ -44,7 +45,7 @@ class Blob {
     }
 
     set left(x) {
-        return this.pos.x = x + this.size / 2
+        return (this.pos.x = x + this.size / 2)
     }
 
     get right() {
@@ -52,14 +53,16 @@ class Blob {
     }
 
     set right(x) {
-        return this.pos.x = x - this.size / 2
+        return (this.pos.x = x - this.size / 2)
     }
 
-    intersection(blob) {
-        return this.top < blob.bottom
-            && this.bottom > blob.top
-            && this.right > blob.left
-            && this.left < blob.right
+    intersection(entity) {
+        return (
+            this.top < entity.bottom &&
+            this.bottom > entity.top &&
+            this.right > entity.left &&
+            this.left < entity.right
+        )
     }
 
     addTrait(trait) {
@@ -84,4 +87,4 @@ class Blob {
     }
 }
 
-export default Blob
+export default Entity

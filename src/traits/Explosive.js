@@ -17,7 +17,7 @@ class Explosive extends Trait {
             return
         }
         if (this.timeout < 0) {
-            entity.mesh.removeBlob(entity)
+            entity.parent.remove(entity)
             console.log('boom!')
         }
         this.timeout -= deltaTime

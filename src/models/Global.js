@@ -19,6 +19,10 @@ class Global {
         this.rootY = this.app.screen.height / 2
     }
 
+    addLayer(layer) {
+        this.app.stage.addChild(layer.graphics)
+    }
+
     gridToLocal(pos) {
         return pos * this.size
     }
