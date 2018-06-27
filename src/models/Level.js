@@ -11,6 +11,7 @@ const PRIZE_COLOR = 0xf7dd2c
 
 class Level {
     constructor(global, data) {
+        this.name = data.name
         this.global = global
 
         this.ground = new Layer('ground', GROUND_COLOR)

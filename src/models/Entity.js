@@ -57,12 +57,10 @@ class Entity {
     }
 
     intersection(entity) {
-        return (
-            this.top < entity.bottom &&
-            this.bottom > entity.top &&
-            this.right > entity.left &&
-            this.left < entity.right
-        )
+        return this.top < entity.bottom
+            && this.bottom > entity.top
+            && this.right > entity.left
+            && this.left < entity.right
     }
 
     addTrait(trait) {

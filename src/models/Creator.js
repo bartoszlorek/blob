@@ -1,31 +1,31 @@
 import { Graphics } from 'pixi.js'
 
 class Creator {
-    constructor(glob, level) {
-        this.glob = glob
+    constructor(global, level) {
+        this.global = global
         this.level = level
-        this.interaction = glob.app.renderer.plugins.interaction
+        this.interaction = global.app.renderer.plugins.interaction
 
         this.pointer = new Graphics()
         this.pointer.lineStyle(1, 0x000000)
-        this.pointer.drawRect(0, 0, glob.size, glob.size)
+        this.pointer.drawRect(0, 0, global.size, global.size)
 
-        glob.app.stage.addChild(this.pointer)
-        glob.app.renderer.view.addEventListener('click', e => {
-            let x = glob.globalToGridX(e.offsetX),
-                y = glob.globalToGridY(e.offsetY)
+        global.app.stage.addChild(this.pointer)
+        global.app.renderer.view.addEventListener('click', e => {
+            let x = global.globalToGridX(e.offsetX),
+                y = global.globalToGridY(e.offsetY)
             console.log(x, y)
         })
     }
 
-    render(glob) {
+    render(global) {
         let pos = this.interaction.mouse.global,
-            x = glob.globalToGridX(pos.x),
-            y = glob.globalToGridY(pos.y)
+            x = global.globalToGridX(pos.x),
+            y = global.globalToGridY(pos.y)
 
         this.pointer.position.set(
-            glob.rootX + glob.gridToLocal(x) - glob.size / 2,
-            glob.rootY + glob.gridToLocal(y) - glob.size / 2
+            global.rootX + global.gridToLocal(x) - global.size / 2,
+            global.rootY + global.gridToLocal(y) - global.size / 2
         )
     }
 }

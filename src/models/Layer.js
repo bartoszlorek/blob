@@ -1,4 +1,5 @@
 import { Graphics } from 'pixi.js'
+import forEach from '../.utils/forEach'
 
 class Layer {
     constructor(name, color = 0xe6e6e6) {
@@ -60,13 +61,7 @@ class Layer {
     }
 
     forEach(iteratee) {
-        let index = -1
-        const length = this.children.length
-        while (++index < length) {
-            if (iteratee(this.children[index], index, this) === false) {
-                return
-            }
-        }
+        forEach(this.children, iteratee)
     }
 }
 

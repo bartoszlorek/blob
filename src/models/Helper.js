@@ -3,21 +3,21 @@ import { Graphics } from 'pixi.js'
 class Helper {
     constructor(data) {
         this.data = data
-        this.shape = new Graphics()
+        this.graphics = new Graphics()
     }
 
-    renderBox(glob) {
-        this.shape.clear()
-        this.shape.lineStyle(1)
-        this.shape.drawRect(
-            glob.rootX + this.data.left,
-            glob.rootY + this.data.top,
+    renderBox(global) {
+        this.graphics.clear()
+        this.graphics.lineStyle(1)
+        this.graphics.drawRect(
+            global.rootX + this.data.left,
+            global.rootY + this.data.top,
             Math.abs(this.data.left) + Math.abs(this.data.right),
             Math.abs(this.data.top) + Math.abs(this.data.bottom)
         )
     }
 
-    renderPoint(glob) {
+    renderPoint(global) {
 
     }
 }
