@@ -1,61 +1,37 @@
-import { GlowFilter } from '@pixi/filter-glow'
-import Layer from './Layer'
-import Entity from './Entity'
-
-import Shine from '../traits/Shine'
-import Explosive from '../traits/Explosive'
-
-const GROUND_COLOR = 0xdb1278
-const ENEMY_COLOR = 0xf44336
-const BOMBS_COLOR = 0x0b46a4
-const PRIZE_COLOR = 0xf7dd2c
+import createPlayer from '../layers/player'
+import createGround from '../layers/ground'
+import createPrize from '../layers/prize'
+import createBombs from '../layers/bombs'
 
 class Level {
     constructor(global, data) {
         this.name = data.name
         this.global = global
 
-        this.ground = new Layer('ground', GROUND_COLOR)
-        this.bombs = new Layer('bombs', BOMBS_COLOR)
-        this.prize = new Layer('prize', PRIZE_COLOR)
-        this.prize.graphics.filters = [new GlowFilter(10, 1, 0, PRIZE_COLOR)]
+        this.player = createPlayer(global, this, data['player'])
+        this.ground = createGround(global, this, data['ground'])
+        this.prize = createPrize(global, this, data['prize'])
+        this.bombs = createBombs(global, this, data['bombs'])
 
-        this.createFromData(data, 'ground')
-        this.createFromData(data, 'bombs')
-        this.createFromData(data, 'prize')
+        this.player.head.physics.addLayers(this.ground, this.bombs)
 
         global.addLayer(this.ground)
         global.addLayer(this.bombs)
         global.addLayer(this.prize)
-
-        // traits
-        this.prize.head.addTrait(new Shine(global.size))
-        this.bombs.forEach(entity => entity.addTrait(new Explosive(this)))
+        global.addLayer(this.player)
 
         console.log(this)
     }
 
-    get solids() {
-        return [this.ground, this.bombs]
-    }
-
-    createFromData(data, layerName) {
-        data[layerName].forEach(pos => {
-            this[layerName].append(new Entity(
-                this.global.gridToLocal(pos[0]),
-                this.global.gridToLocal(pos[1]),
-                this.global.size
-            ))
-        })
-    }
-
     render(global) {
+        this.player.render(global)
         this.ground.render(global)
-        this.bombs.render(global)
         this.prize.render(global)
+        this.bombs.render(global)
     }
 
     update(global) {
+        this.player.update(global)
         this.bombs.update(global)
         this.prize.update(global)
     }

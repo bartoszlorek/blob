@@ -7,9 +7,12 @@ import Killable from '../traits/Killable'
 import Move from '../traits/Move'
 import Jump from '../traits/Jump'
 
-function createPlayer(global) {
-    const layer = new Layer('player', 0x01fe81)
+const PLAYER_COLOR = 0x01fe81
+
+function createPlayer(global, level, data) {
+    const layer = new Layer('player', PLAYER_COLOR)
     const entity = new Entity(0, -250, global.size)
+    layer.level = level || null
     layer.append(entity)
 
     entity.addTrait(new Physics(global))
