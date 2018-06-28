@@ -1,8 +1,13 @@
+import padBounds from '../.utils/padBounds'
+
+const STAGE_PADDING = 10
+
 class Global {
     constructor(app, size = 32) {
         this.app = app
         this.size = size
         this.time = 1/60
+        this.resize()
         this.update()
 
         window.addEventListener('resize', () => {
@@ -10,16 +15,20 @@ class Global {
                 window.innerWidth,
                 window.innerHeight
             )
-            this.update()
+            this.resize()
         })
+
+        console.log(this)
     }
 
-    update() {
+    resize() {
         this.rootX = this.app.screen.width / 2
         this.rootY = this.app.screen.height / 2
+    }
 
-        // todo: optimize better fitting
-        this.app.stage.filterArea = this.app.screen
+    update(deltaTime) {
+        let bounds = this.app.stage.getBounds()
+        this.app.stage.filterArea = padBounds(bounds, STAGE_PADDING)
     }
 
     addLayer(layer) {
