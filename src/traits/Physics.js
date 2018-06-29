@@ -17,6 +17,9 @@ export const DIR_SHIFT = {
     [DIR.LEFT]: 3
 }
 
+const CORNER_ALIGN_THRESHOLD = 2
+const DIR_CHANGE_FACTOR = 0.5
+
 class Physics extends Trait {
     constructor(global) {
         super('physics')
@@ -25,6 +28,11 @@ class Physics extends Trait {
 
         this.fields = new ForceFields(global.size)
         this.layers = []
+    }
+
+    get isVertical() {
+        return this.dir === DIR.TOP
+            || this.dir === DIR.BOTTOM
     }
 
     update(entity, deltaTime) {
@@ -44,15 +52,16 @@ class Physics extends Trait {
     checkX(entity, x) {
         forEach(this.layers, layer => {
             layer.forEach(other => {
-                if (entity.intersection(other)) {
-                    if (x > 0) {
-                        if (entity.right > other.left) {
-                            entity.obstruct(this.rotateEdge(EDGE.RIGHT), other)
-                        }
-                    } else if (x < 0) {
-                        if (entity.left < other.right) {
-                            entity.obstruct(this.rotateEdge(EDGE.LEFT), other)
-                        }
+                if (!entity.intersection(other)) {
+                    return
+                }
+                if (x > 0) {
+                    if (entity.right > other.left) {
+                        entity.obstruct(this.rotateEdge(EDGE.RIGHT), other)
+                    }
+                } else if (x < 0) {
+                    if (entity.left < other.right) {
+                        entity.obstruct(this.rotateEdge(EDGE.LEFT), other)
                     }
                 }
             })
@@ -62,15 +71,19 @@ class Physics extends Trait {
     checkY(entity, y) {
         forEach(this.layers, layer => {
             layer.forEach(other => {
-                if (entity.intersection(other)) {
-                    if (y > 0) {
-                        if (entity.bottom > other.top) {
-                            entity.obstruct(this.rotateEdge(EDGE.BOTTOM), other)
-                        }
-                    } else if (y < 0) {
-                        if (entity.top < other.bottom) {
-                            entity.obstruct(this.rotateEdge(EDGE.TOP), other)
-                        }
+                if (!entity.intersection(other)) {
+                    return
+                }
+                if (y > 0) {
+                    if (entity.bottom > other.top) {
+                        entity.obstruct(this.rotateEdge(EDGE.BOTTOM), other)
+                    }
+                } else if (y < 0) {
+                    if (this.shouldAlignCorner(entity, other)) {
+                        entity.right = other.left
+                    }
+                    if (entity.top < other.bottom) {
+                        entity.obstruct(this.rotateEdge(EDGE.TOP), other)
                     }
                 }
             })
@@ -78,6 +91,8 @@ class Physics extends Trait {
     }
 
     checkDirection(entity) {
+        const lastDir = this.dir
+
         if (this.fields.inTop(entity.pos)) {
             this.dir = DIR.BOTTOM
 
@@ -90,28 +105,29 @@ class Physics extends Trait {
         } else if (this.fields.inRight(entity.pos)) {
             this.dir = DIR.LEFT
         }
+
+        if (this.dir !== lastDir) {
+            entity.vel.x *= 1 + DIR_CHANGE_FACTOR
+            entity.vel.y *= DIR_CHANGE_FACTOR
+        }
     }
 
     obstruct(entity, edge, match) {
-        let vertical =
-            this.dir === DIR.TOP ||
-            this.dir === DIR.BOTTOM
-
         if (edge.global === EDGE.BOTTOM) {
             entity.bottom = match.top
-            entity.vel[vertical ? 'y' : 'x'] = 0
+            entity.vel[this.isVertical ? 'y' : 'x'] = 0
 
         } else if (edge.global === EDGE.TOP) {
             entity.top = match.bottom
-            entity.vel[vertical ? 'y' : 'x'] = 0
+            entity.vel[this.isVertical ? 'y' : 'x'] = 0
  
         } else if (edge.global === EDGE.LEFT) {
             entity.left = match.right
-            entity.vel[vertical ? 'x' : 'y'] = 0
+            entity.vel[this.isVertical ? 'x' : 'y'] = 0
 
         } else if (edge.global === EDGE.RIGHT) {
             entity.right = match.left
-            entity.vel[vertical ? 'x' : 'y'] = 0
+            entity.vel[this.isVertical ? 'x' : 'y'] = 0
         }
     }
 
@@ -159,6 +175,11 @@ class Physics extends Trait {
                 local: EDGE.BOTTOM
             }
         }
+    }
+
+    shouldAlignCorner(entity, other) {
+        return entity.left - other.right < CORNER_ALIGN_THRESHOLD
+            && entity.right - other.left < CORNER_ALIGN_THRESHOLD
     }
 
     addLayers(...layers) {
