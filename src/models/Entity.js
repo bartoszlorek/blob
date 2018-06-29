@@ -19,6 +19,7 @@ class Entity {
         this.pos = new Vector(x, y)
         this.vel = new Vector(0, 0)
         this.size = size
+        this.visible = true
 
         this.parent = null
         this.traits = []

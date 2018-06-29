@@ -23,12 +23,14 @@ class Layer {
     render(global) {
         this.clear()
         this.forEach(entity => {
-            this.graphics.drawRect(
-                global.rootX + entity.left,
-                global.rootY + entity.top,
-                entity.size,
-                entity.size
-            )
+            if (entity.visible) {
+                this.graphics.drawRect(
+                    global.rootX + entity.left,
+                    global.rootY + entity.top,
+                    entity.size,
+                    entity.size
+                )
+            }
         })
     }
 

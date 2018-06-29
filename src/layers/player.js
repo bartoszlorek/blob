@@ -7,7 +7,7 @@ import Killable from '../traits/Killable'
 import Move from '../traits/Move'
 import Jump from '../traits/Jump'
 
-const PLAYER_COLOR = 0x01fe81
+const PLAYER_COLOR = 0x00fd83
 
 function createPlayer(global, level, data) {
     const layer = new Layer('player', PLAYER_COLOR)

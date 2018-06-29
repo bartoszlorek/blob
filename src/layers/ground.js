@@ -1,7 +1,7 @@
 import Layer from '../models/Layer'
 import Entity from '../models/Entity'
 
-const GROUND_COLOR = 0xdb1278
+const GROUND_COLOR = 0xd91677
 
 function createGround(global, level, data) {
     const layer = new Layer('ground', GROUND_COLOR)

@@ -4,15 +4,12 @@ import Entity from '../models/Entity'
 
 import Shine from '../traits/Shine'
 
-const PRIZE_COLOR = 0xf7dd2c
+const PRIZE_COLOR = 0xf2dc30
 
 function createPrize(global, level, data) {
     const layer = new Layer('prize', PRIZE_COLOR)
     layer.level = level || null
-
-    layer.graphics.filters = [
-        new GlowFilter(10, 1, 0, PRIZE_COLOR)
-    ]
+    layer.graphics.filters = [new GlowFilter(10, 1, 0, PRIZE_COLOR)]
 
     data.forEach(pos => {
         const entity = new Entity(
