@@ -1,3 +1,6 @@
+import { loader, extras, Container, filters } from 'pixi.js'
+import { RGBSplitFilter } from '@pixi/filter-rgb-split'
+
 import padBounds from '../.utils/padBounds'
 
 const STAGE_PADDING = 10
@@ -7,8 +10,19 @@ class Global {
         this.app = app
         this.size = size
         this.time = 1/60
-        this.resize()
-        this.update()
+
+        this.background = new Container()
+        this.foreground = new Container()
+        this.foreground.filters = [
+            new RGBSplitFilter([1, 0], [-1, 0], [0, 2]),
+            new filters.BlurFilter(0.25)
+        ]
+        this.background.addChild(new extras.TilingSprite(
+            loader.resources.space.texture
+        ))
+
+        app.stage.addChild(this.background)
+        app.stage.addChild(this.foreground)
 
         window.addEventListener('resize', () => {
             app.renderer.resize(
@@ -18,21 +32,34 @@ class Global {
             this.resize()
         })
 
-        console.log(this)
+        this.resize()
+        this.update()
     }
 
     resize() {
         this.rootX = this.app.screen.width / 2
         this.rootY = this.app.screen.height / 2
+
+        // fit background image
+        const bg = this.background.children[0]
+        bg.width = this.app.screen.width
+        bg.height = this.app.screen.height
+        bg.tileScale.y = this.app.screen.height / bg.texture.height
     }
 
     update(deltaTime) {
-        let bounds = this.app.stage.getBounds()
-        this.app.stage.filterArea = padBounds(bounds, STAGE_PADDING)
+        let bounds = this.foreground.getBounds()
+        this.foreground.filterArea = padBounds(bounds, STAGE_PADDING)
     }
 
     addLayer(layer) {
-        this.app.stage.addChild(layer.graphics)
+        this.foreground.addChild(layer.graphics)
+    }
+
+    clearLayers() {
+        while (this.foreground.children[0]) {
+            this.foreground.removeChild(this.foreground.children[0])
+        }
     }
 
     gridToLocal(pos) {
