@@ -3,18 +3,20 @@ import Entity from '../models/Entity'
 
 const GROUND_COLOR = 0xd91677
 
-function createGround(global, level, data) {
+function createGround(data, global, level) {
     const layer = new Layer('ground', GROUND_COLOR)
-    layer.level = level || null
+    layer.solid = true
 
-    data.forEach(pos => {
-        const entity = new Entity(
-            global.gridToLocal(pos[0]),
-            global.gridToLocal(pos[1]),
-            global.size
-        )
-        layer.append(entity)
-    })
+    if (data['ground']) {
+        data['ground'].forEach(pos => {
+            const entity = new Entity(
+                global.gridToLocal(pos[0]),
+                global.gridToLocal(pos[1]),
+                global.size
+            )
+            layer.append(entity)
+        })
+    }
 
     return layer
 }

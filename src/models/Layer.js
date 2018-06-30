@@ -5,19 +5,21 @@ class Layer {
     constructor(name, color = 0xe6e6e6) {
         this.name = name
         this.color = color
+        this.solid = false
 
         this.graphics = new Graphics()
         this.children = []
+        this.level = null
     }
 
     get head() {
         return this.children[0]
     }
 
-    clear() {
-        this.graphics.clear()
-        this.graphics.beginFill(this.color)
-        //this.graphics.lineStyle(1, 0xffffff)
+    update(deltaTime) {
+        this.forEach(entity => {
+            entity.update(deltaTime)
+        })
     }
 
     render(global) {
@@ -34,10 +36,10 @@ class Layer {
         })
     }
 
-    update(deltaTime) {
-        this.forEach(entity => {
-            entity.update(deltaTime)
-        })
+    clear() {
+        this.graphics.clear()
+        this.graphics.beginFill(this.color)
+        //this.graphics.lineStyle(1, 0xffffff)
     }
 
     append(entity) {

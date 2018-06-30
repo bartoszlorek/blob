@@ -36,7 +36,7 @@ class Explosive extends Trait {
                 entity.pos.y,
                 entity.size
             )
-            level.effect.append(blast)
+            level.effects.append(blast)
             blast.addTrait(new Animation())
             blast.animation
                 .add('blast', [
@@ -55,10 +55,10 @@ class Explosive extends Trait {
             this.destroy(entity)
 
             if (level.player.head) {
-                level.player.head.physics.fields.calculate()
+                level.forces.calculate(level.solids)
             } else {
                 // todo: proper game over
-                setTimeout(() => level.gameOver(), 1000)
+                setTimeout(() => level.global.over$.emit(), 1000)
             }
         }
 

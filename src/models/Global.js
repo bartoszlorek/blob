@@ -1,65 +1,45 @@
-import { loader, extras, Container, filters } from 'pixi.js'
-import { RGBSplitFilter } from '@pixi/filter-rgb-split'
-
-import padBounds from '../.utils/padBounds'
-
-const STAGE_PADDING = 10
+import { fromEvent, Subject } from 'rxjs'
 
 class Global {
     constructor(app, size = 32) {
         this.app = app
         this.size = size
-        this.time = 1/60
+        this.time = 1 / 60
+        this.level = null
 
-        this.background = new Container()
-        this.foreground = new Container()
-        this.foreground.filters = [
-            new RGBSplitFilter([1, 0], [-1, 0], [0, 2]),
-            new filters.BlurFilter(0.25)
-        ]
-        this.background.addChild(new extras.TilingSprite(
-            loader.resources.space.texture
-        ))
+        this.start$ = new Subject()
+        this.over$ = new Subject()
+        this.start$.emit = () => this.start$.next(this)
+        this.over$.emit = () => this.over$.next(this)
 
-        app.stage.addChild(this.background)
-        app.stage.addChild(this.foreground)
-
-        window.addEventListener('resize', () => {
-            app.renderer.resize(
-                window.innerWidth,
-                window.innerHeight
-            )
-            this.resize()
-        })
-
+        this.resize$ = fromEvent(window, 'resize')
+        this.resize$.subscribe(() => this.resize())
         this.resize()
-        this.update()
+
+        console.log(this)
     }
 
     resize() {
+        this.app.renderer.resize(window.innerWidth, window.innerHeight)
         this.rootX = this.app.screen.width / 2
         this.rootY = this.app.screen.height / 2
-
-        // fit background image
-        const bg = this.background.children[0]
-        bg.width = this.app.screen.width
-        bg.height = this.app.screen.height
-        bg.tileScale.y = this.app.screen.height / bg.texture.height
     }
 
-    update(deltaTime) {
-        let bounds = this.foreground.getBounds()
-        this.foreground.filterArea = padBounds(bounds, STAGE_PADDING)
-    }
-
-    addLayer(layer) {
-        this.foreground.addChild(layer.graphics)
-    }
-
-    clearLayers() {
-        while (this.foreground.children[0]) {
-            this.foreground.removeChild(this.foreground.children[0])
+    mount(level) {
+        if (this.level !== null) {
+            this.unmount()
         }
+        this.app.stage.addChild(level._container)
+        this.level = level
+        level.global = this
+        level.onMount(this)
+    }
+
+    unmount() {
+        this.app.stage.removeChild(this.level)
+        this.level.onUnmount(this)
+        this.level.global = null
+        this.level = null
     }
 
     gridToLocal(pos) {

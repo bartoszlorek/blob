@@ -9,13 +9,12 @@ import Jump from '../traits/Jump'
 
 const PLAYER_COLOR = 0x00fd83
 
-function createPlayer(global, level, data) {
+function createPlayer(data, global, level) {
     const layer = new Layer('player', PLAYER_COLOR)
     const entity = new Entity(0, -250, global.size)
-    layer.level = level || null
     layer.append(entity)
 
-    entity.addTrait(new Physics(global))
+    entity.addTrait(new Physics())
     entity.addTrait(new Killable())
     entity.addTrait(new Move())
     entity.addTrait(new Jump())
