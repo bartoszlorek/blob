@@ -3,7 +3,6 @@ import forEach from '../.utils/forEach'
 class ForceFields {
     constructor(radius = 1) {
         this.radius = radius
-        this.layers = []
         this.bounds = {}
     }
 
@@ -31,12 +30,12 @@ class ForceFields {
             && pos.x < this.bounds.left
     }
 
-    calculate() {
+    calculate(layers) {
         let maxLeft = 0,
             maxRight = 0
 
         // maximum horizontal positions
-        forEach(this.layers, layer => {
+        forEach(layers, layer => {
             layer.forEach(entity => {
                 if (entity.left < maxLeft) {
                     maxLeft = entity.left
@@ -53,7 +52,7 @@ class ForceFields {
             maxBottomRight = 0
 
         // maximum vertical positions in radius
-        forEach(this.layers, layer => {
+        forEach(layers, layer => {
             layer.forEach(entity => {
                 if (entity.pos.x < maxLeft + this.radius) {
                     if (entity.top < maxTopLeft) {

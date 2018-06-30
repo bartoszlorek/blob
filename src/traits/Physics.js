@@ -1,5 +1,4 @@
 import Trait from './Trait'
-import ForceFields from '../models/ForceFields'
 import { EDGE, EDGE_TABLE } from '../models/Entity'
 import forEach from '../.utils/forEach'
 
@@ -21,13 +20,10 @@ const CORNER_ALIGN_THRESHOLD = 2
 const DIR_CHANGE_FACTOR = 0.5
 
 class Physics extends Trait {
-    constructor(global) {
+    constructor() {
         super('physics')
         this.gravity = 1000
         this.dir = DIR.BOTTOM
-
-        this.fields = new ForceFields(global.size)
-        this.layers = []
     }
 
     get isVertical() {
@@ -50,7 +46,7 @@ class Physics extends Trait {
     }
 
     checkX(entity, x) {
-        forEach(this.layers, layer => {
+        forEach(entity.parent.level.solids, layer => {
             layer.forEach(other => {
                 if (!entity.intersection(other)) {
                     return
@@ -69,7 +65,7 @@ class Physics extends Trait {
     }
 
     checkY(entity, y) {
-        forEach(this.layers, layer => {
+        forEach(entity.parent.level.solids, layer => {
             layer.forEach(other => {
                 if (!entity.intersection(other)) {
                     return
@@ -91,18 +87,19 @@ class Physics extends Trait {
     }
 
     checkDirection(entity) {
+        const { forces } = entity.parent.level
         const lastDir = this.dir
 
-        if (this.fields.inTop(entity.pos)) {
+        if (forces.inTop(entity.pos)) {
             this.dir = DIR.BOTTOM
 
-        } else if (this.fields.inBottom(entity.pos)) {
+        } else if (forces.inBottom(entity.pos)) {
             this.dir = DIR.TOP
 
-        } else if (this.fields.inLeft(entity.pos)) {
+        } else if (forces.inLeft(entity.pos)) {
             this.dir = DIR.RIGHT
 
-        } else if (this.fields.inRight(entity.pos)) {
+        } else if (forces.inRight(entity.pos)) {
             this.dir = DIR.LEFT
         }
 
@@ -180,12 +177,6 @@ class Physics extends Trait {
     shouldAlignCorner(entity, other) {
         return entity.left - other.right < CORNER_ALIGN_THRESHOLD
             && entity.right - other.left < CORNER_ALIGN_THRESHOLD
-    }
-
-    addLayers(...layers) {
-        this.layers = this.layers.concat(layers)
-        this.fields.layers = this.layers
-        this.fields.calculate()
     }
 }
 
