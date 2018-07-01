@@ -1,3 +1,4 @@
+import { loader } from 'pixi.js'
 import Trait from './Trait'
 import { EDGE } from '../models/Entity'
 
@@ -36,6 +37,9 @@ class Jump extends Trait {
         }
 
         if (this.engageTime > 0) {
+            if (this.ready === 1) {
+                loader.resources.jump.data.play()
+            }
             entity.vel.y = -this.velocity
             this.engageTime -= deltaTime
         }
@@ -45,6 +49,9 @@ class Jump extends Trait {
 
     obstruct(entity, edge) {
         if (edge.local === EDGE.BOTTOM) {
+            if (this.ready < 0) {
+                loader.resources.blop.data.play()
+            }
             this.ready = 1
         } else if (edge.local === EDGE.TOP) {
             this.cancel()

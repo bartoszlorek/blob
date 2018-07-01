@@ -45,7 +45,9 @@ class Level {
         ]
 
         // todo: better background handling
-        const gradient = new extras.TilingSprite(loader.resources.space.texture)
+        const gradient = new extras.TilingSprite(
+            loader.resources.gradient.texture
+        )
         this._background.addChild(gradient)
     }
 
