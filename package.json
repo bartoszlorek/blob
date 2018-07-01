@@ -24,6 +24,7 @@
     "@pixi/filter-rgb-split": "^2.5.0",
     "lodash": "^4.17.10",
     "pixi.js": "^4.8.1",
+    "redux": "^4.0.0",
     "rxjs": "^6.2.1"
   },
   "devDependencies": {
