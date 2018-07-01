@@ -12,7 +12,10 @@ class Animation extends Trait {
         return this
     }
 
-    play(name) {
+    play(name, frames, loop) {
+        if (frames !== undefined) {
+            this.add(name, frames, loop)
+        }
         let keyframe = this.keyframes.filter(a => a.name === name)
         if (keyframe[0] !== undefined) {
             keyframe[0].play()
