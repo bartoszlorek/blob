@@ -1,6 +1,7 @@
 import { Container, filters, loader, extras } from 'pixi.js'
 import { RGBSplitFilter } from '@pixi/filter-rgb-split'
 import padBounds from '../.utils/padBounds'
+import forEach from '../.utils/forEach'
 
 import ForceFields from '../models/ForceFields'
 import Background from '../models/Background'
@@ -25,9 +26,12 @@ class Level {
     constructor(data) {
         this.name = data.name
         this.data = data
+
         this.global = null
-        this.forces = new ForceFields()
+        this.layers = {}
+        this.layerNames = []
         this.solids = []
+        this.forces = new ForceFields()
 
         this._foreground = new Container()
         this._background = new Container()
@@ -51,24 +55,27 @@ class Level {
         this.forces.radius = global.size
         this.forces.calculate(this.solids)
 
-        global.over$.subscribe(() => {
+        this.handlePlayerDeath = global.onPlayerDeath$.subscribe(() => {
             this.clear()
             this.create()
         })
-        global.resize$.subscribe(() => {
+        this.handleResize = global.onResize$.subscribe(() => {
             this.fitBackground()
         })
     }
 
     onUnmount(global) {
         this.clear()
+        this.handlePlayerDeath.unsubscribe()
+        this.handleResize.unsubscribe()
     }
 
     create() {
         LAYER_FACTORIES.forEach(factory => {
             const layer = factory(this.data, this.global, this)
             this._foreground.addChild(layer.graphics)
-            this[layer.name] = layer
+            this.layers[layer.name] = layer
+            this.layerNames.push(layer.name)
             layer.level = this
 
             if (layer.solid) {
@@ -79,21 +86,19 @@ class Level {
 
     update(deltaTime) {
         this.fitForegroundArea()
-        this.bombs.update(deltaTime)
-        this.effects.update(deltaTime)
-        this.player.update(deltaTime)
-        this.prize.update(deltaTime)
+        forEach(this.layerNames, name => {
+            this.layers[name].update(deltaTime)
+        })
     }
 
     render(global) {
-        this.bombs.render(global)
-        this.effects.render(global)
-        this.ground.render(global)
-        this.player.render(global)
-        this.prize.render(global)
+        forEach(this.layerNames, name => {
+            this.layers[name].render(global)
+        })
     }
 
     clear() {
+        this.layerNames = []
         while (this._foreground.children[0]) {
             this._foreground.removeChild(this._foreground.children[0])
         }
@@ -111,6 +116,10 @@ class Level {
             sprite.height = screen.height
             sprite.tileScale.y = screen.height / sprite.texture.height
         })
+    }
+
+    inRange(entity, range, layers) {
+        console.log(entity)
     }
 }
 

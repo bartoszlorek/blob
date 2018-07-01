@@ -5,6 +5,8 @@ import Trait from './Trait'
 import Blink from './Blink'
 import Animation from './Animation'
 
+import { loseLife } from '../state/actions'
+
 class Explosive extends Trait {
     constructor(range = 0) {
         super('explosive')
@@ -31,38 +33,40 @@ class Explosive extends Trait {
             this.exploded = true
 
             const { level } = entity.parent
-            const blast = new Entity(
-                entity.pos.x,
-                entity.pos.y,
-                entity.size
-            )
-            level.effects.append(blast)
-            blast.addTrait(new Animation())
-            blast.animation
-                .add('blast', [
-                    [0.01, () => blast.size += this.range],
-                    [0.10, () => blast.size += this.range],
-                    [0.18, () => blast.size -= this.range / 2],
-                    [0.20, () => this.destroy(blast)]
-                ])
-                .play('blast')
+            level.layers.effects.append(this.createFlash(entity))
 
             const affected = this.affect(entity, [
-                level.ground,
-                level.player
+                level.layers.ground,
+                level.layers.player
             ])
             affected.forEach(this.destroy)
             this.destroy(entity)
 
-            if (level.player.head) {
+            if (level.layers.player.head) {
                 level.forces.calculate(level.solids)
             } else {
                 // todo: proper game over
-                setTimeout(() => level.global.over$.emit(), 1000)
+                setTimeout(() => level.global.state.dispatch(loseLife()), 1000)
             }
         }
 
         this.timer -= deltaTime
+    }
+
+    createFlash(source) {
+        const flash = new Entity(
+            source.pos.x,
+            source.pos.y,
+            source.size
+        )
+        flash.addTrait(new Animation())
+        flash.animation.play('flash', [
+            [0.01, () => flash.size += this.range],
+            [0.10, () => flash.size += this.range],
+            [0.18, () => flash.size -= this.range / 2],
+            [0.20, () => this.destroy(flash)]
+        ])
+        return flash
     }
 
     affect(bomb, layers) {

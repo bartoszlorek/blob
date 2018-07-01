@@ -1,20 +1,38 @@
-import { fromEvent, Subject } from 'rxjs'
+import { fromEvent, Subject, from } from 'rxjs'
+import rxEmitter from '../.utils/rxEmitter'
 
 class Global {
-    constructor(app, size = 32) {
+    constructor(app, state, size = 32) {
         this.app = app
+        this.state = state
+        this.level = null
         this.size = size
         this.time = 1 / 60
-        this.level = null
 
-        this.start$ = new Subject()
-        this.over$ = new Subject()
-        this.start$.emit = () => this.start$.next(this)
-        this.over$.emit = () => this.over$.next(this)
-
-        this.resize$ = fromEvent(window, 'resize')
-        this.resize$.subscribe(() => this.resize())
+        // global events
+        this.onStateChange$ = from(state)
+        this.onPlayerDeath$ = rxEmitter(new Subject(), this)
+        this.onLevelClear$ = rxEmitter(new Subject(), this)
+        this.onGameOver$ = rxEmitter(new Subject(), this)
+        this.onResize$ = fromEvent(window, 'resize')
+        this.onResize$.subscribe(() => this.resize())
         this.resize()
+
+        // global bindings
+        let prevState = state
+        this.onStateChange$.subscribe(nextState => {
+            if (prevState.lives > nextState.lives) {
+                this.onPlayerDeath$.emit()
+            }
+            if (nextState.lives < 0) {
+                this.onGameOver$.emit()
+            }
+            prevState = nextState
+        })
+
+        this.onGameOver$.subscribe(() => {
+            console.log('game over!')
+        })
 
         console.log(this)
     }
@@ -36,7 +54,7 @@ class Global {
     }
 
     unmount() {
-        this.app.stage.removeChild(this.level)
+        this.app.stage.removeChild(this.level._container)
         this.level.onUnmount(this)
         this.level.global = null
         this.level = null

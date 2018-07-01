@@ -1,5 +1,6 @@
 import { loader } from 'pixi.js'
 import app from './app'
+import state from './state/store'
 
 //import Creator from './models/Creator'
 import Global from './models/Global'
@@ -13,7 +14,7 @@ loader
     .load()
 
 function initialize() {
-    const global = new Global(app, 24)
+    const global = new Global(app, state, 24)
     const level = new Level(data)
     global.mount(level)
 
