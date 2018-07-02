@@ -6,15 +6,12 @@ export default loader
         { name: 'gradient', url: 'assets/gradient.png' },
 
         // sounds
-        //{ name: 'music', url: 'assets/music.mp3' },
-        { name: 'jump', url: 'assets/jump2.mp3' },
-        { name: 'blop', url: 'assets/blop.mp3' }
+        //{ name: 'pluck', url: 'assets/pluck.mp3' },
+        //{ name: 'jump', url: 'assets/jump.mp3' },
+        { name: 'pluck', url: 'assets/synth_pluck.mp3' },
+        { name: 'jump', url: 'assets/synth_jump.mp3' }
     ])
     .on('complete', (loader, assets) => {
-        assets.jump.data.volume = 0.25
-        assets.blop.data.volume = 0.15
-
-        //assets.music.data.loop = true
-        //assets.music.data.volume = 0.1
-        //assets.music.data.play()
+        assets.pluck.data.volume = 0.04
+        assets.jump.data.volume = 0.15
     })

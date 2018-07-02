@@ -1,6 +1,6 @@
-import { loader } from 'pixi.js'
 import Trait from './Trait'
 import { EDGE } from '../models/Entity'
+import Sound from '../models/Sound'
 
 class Jump extends Trait {
     constructor() {
@@ -12,6 +12,9 @@ class Jump extends Trait {
         this.ready = 0
         this.requestTime = 0
         this.engageTime = 0
+
+        this.pluckSound = new Sound('pluck')
+        this.jumpSound = new Sound('jump')
     }
 
     get falling() {
@@ -38,7 +41,7 @@ class Jump extends Trait {
 
         if (this.engageTime > 0) {
             if (this.ready === 1) {
-                loader.resources.jump.data.play()
+                this.jumpSound.play()
             }
             entity.vel.y = -this.velocity
             this.engageTime -= deltaTime
@@ -50,7 +53,7 @@ class Jump extends Trait {
     obstruct(entity, edge) {
         if (edge.local === EDGE.BOTTOM) {
             if (this.ready < 0) {
-                loader.resources.blop.data.play()
+                this.pluckSound.play()
             }
             this.ready = 1
         } else if (edge.local === EDGE.TOP) {
