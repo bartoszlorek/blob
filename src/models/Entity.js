@@ -57,6 +57,14 @@ class Entity {
         return (this.pos.x = x - this.size / 2)
     }
 
+    get ownerLevel() {
+        return this.parent != null ? this.parent.level : null
+    }
+
+    get ownerGlobal() {
+        return this.ownerLevel && this.ownerLevel.global || null
+    }
+
     intersection(entity) {
         return this.top < entity.bottom
             && this.bottom > entity.top
