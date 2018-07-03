@@ -3,6 +3,7 @@ import Layer from '../models/Layer'
 import Entity from '../models/Entity'
 
 import Shine from '../traits/Shine'
+import Collectable from '../traits/Collectable'
 
 const PRIZE_COLOR = 0xf2dc30
 
@@ -18,6 +19,7 @@ function createPrize(data, global, level) {
                 global.size
             )
             entity.addTrait(new Shine(global.size))
+            entity.addTrait(new Collectable())
             layer.append(entity)
         })
     }
