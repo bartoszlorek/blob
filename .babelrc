@@ -1,4 +1,9 @@
 {
   "plugins": ["lodash"],
-  "presets": ["env"]
+  "presets": ["env", "react"],
+  "env": {
+    "development": {
+        "plugins": ["babel-plugin-styled-components"]
+    }
+  }
 }

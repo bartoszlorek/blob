@@ -7,16 +7,21 @@ module.exports = {
         path: path.join(__dirname, 'public'),
         filename: 'scripts.js'
     },
+    resolve: {
+        extensions: ['.js', '.jsx']
+    },
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.jsx?$/,
                 exclude: /node_modules/,
                 loaders: ['babel-loader']
             }
         ]
     },
     externals: {
-        'pixi.js': 'PIXI'
+        'pixi.js': 'PIXI',
+        'react': 'React',
+        'react-dom': 'ReactDOM'
     }
 }

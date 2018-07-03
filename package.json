@@ -24,13 +24,19 @@
     "@pixi/filter-rgb-split": "^2.5.0",
     "lodash": "^4.17.10",
     "pixi.js": "^4.8.1",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-redux": "^5.0.7",
     "redux": "^4.0.0",
-    "rxjs": "^6.2.1"
+    "rxjs": "^6.2.1",
+    "styled-components": "^3.3.3"
   },
   "devDependencies": {
     "babel-loader": "^7.1.4",
     "babel-plugin-lodash": "^3.3.4",
+    "babel-plugin-styled-components": "^1.5.1",
     "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
     "jest-cli": "^23.1.0",
     "webpack": "^4.12.0",
     "webpack-cli": "^3.0.8",

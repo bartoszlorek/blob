@@ -1,3 +1,8 @@
+import React from 'react'
+import { render } from 'react-dom'
+import { Provider } from 'react-redux'
+import GUI from './gui/GUI'
+
 import app from './app'
 import loader from './loader'
 import state from './state/store'
@@ -21,3 +26,10 @@ loader.load((loader, assets) => {
         //creator.render(global)
     })
 })
+
+render(
+    <Provider store={state}>
+        <GUI />
+    </Provider>,
+    document.getElementById('gui')
+)
