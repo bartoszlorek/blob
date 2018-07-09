@@ -5,6 +5,7 @@ import forEach from '../.utils/forEach'
 
 import ForceFields from '../models/ForceFields'
 import Background from '../models/Background'
+import MapGenerator from '../models/MapGenerator'
 
 import createBombs from '../layers/bombs'
 import createEffects from '../layers/effects'
@@ -84,6 +85,9 @@ class Level {
                 this.solids.push(layer)
             }
         })
+
+        const map = new MapGenerator(global, 10, 4)
+        console.log(map.getInitialPoints(4))
     }
 
     update(deltaTime) {
