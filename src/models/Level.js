@@ -74,6 +74,11 @@ class Level {
     }
 
     create() {
+        const map = new MapGenerator(global, 24, 16)
+        this.data.ground = map.generate(2, [
+            [0, 0], [-5, 2], [3, 2], [10, 4]
+        ])
+
         LAYER_FACTORIES.forEach(factory => {
             const layer = factory(this.data, this.global, this)
             this._foreground.addChild(layer.graphics)
@@ -85,9 +90,6 @@ class Level {
                 this.solids.push(layer)
             }
         })
-
-        const map = new MapGenerator(global, 10, 4)
-        console.log(map.getInitialPoints(4))
     }
 
     update(deltaTime) {
