@@ -22,15 +22,18 @@ class Grid {
     }
 
     contains(x, y) {
-        return x >= 0 && x < this.cols
-            && y >= 0 && y < this.rows
+        return x >= 0 && x < this.cols && y >= 0 && y < this.rows
     }
 
-    neighbours(x, y) {
+    neighbours(x, y, bySides) {
         let result = []
         for (let i = x - 1; i <= x + 1; i++) {
             for (let j = y - 1; j <= y + 1; j++) {
-                if (!(i === x && j === y) && this.contains(i, j)) {
+                let allowed = bySides
+                    ?  (i === x || j === y)
+                    : !(i === x && j === y)
+
+                if (allowed && this.contains(i, j)) {
                     result.push(this.cells[i][j])
                 }
             }
@@ -50,10 +53,12 @@ class Grid {
 
     toArray() {
         let result = []
-        this.forEach((data, x, y) => (
-            result.push({ data, x, y })
-        ))
+        this.forEach((data, x, y) => result.push({ data, x, y }))
         return result
+    }
+
+    clone() {
+        return new Grid(this.cols, this.rows, (x, y) => this.cells[x][y])
     }
 }
 
