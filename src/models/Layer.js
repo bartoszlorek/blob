@@ -5,7 +5,6 @@ class Layer {
   constructor(name, color = 0xe6e6e6) {
     this.name = name;
     this.color = color;
-    this.solid = false;
 
     this.graphics = new Graphics();
     this.entities = new EntityContainer();

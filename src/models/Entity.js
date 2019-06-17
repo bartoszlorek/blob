@@ -1,4 +1,5 @@
 import Vector from '@utils/Vector';
+import {arrayForEach} from '@utils/array';
 
 export const EDGE = {
   TOP: Symbol('top'),
@@ -53,7 +54,7 @@ class Entity {
   }
 
   get ownerLevel() {
-    return this.parent != null ? this.parent.level : null;
+    return (this.parent && this.parent.level) || null;
   }
 
   get ownerGlobal() {
@@ -75,19 +76,15 @@ class Entity {
   }
 
   update(deltaTime) {
-    let index = -1;
-    const length = this.traits.length;
-    while (++index < length) {
-      this.traits[index].update(this, deltaTime);
-    }
+    arrayForEach(this.traits, trait => {
+      trait.update(this, deltaTime);
+    });
   }
 
   obstruct(edge, match) {
-    let index = -1;
-    const length = this.traits.length;
-    while (++index < length) {
-      this.traits[index].obstruct(this, edge, match);
-    }
+    arrayForEach(this.traits, trait => {
+      trait.obstruct(this, edge, match);
+    });
   }
 }
 

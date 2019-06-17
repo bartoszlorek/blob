@@ -1,62 +1,40 @@
-import {fromEvent, Subject, from} from 'rxjs';
-import rxEmitter from '@utils/rxEmitter';
+import Events from '@models/Events';
 
 class Global {
   constructor(app, state, size = 32) {
     this.app = app;
     this.state = state;
-    this.level = null;
     this.size = size;
     this.time = 1 / 60;
+    this.level = null;
 
-    // global events
-    this.onStateChange$ = from(state);
-    this.onPlayerDeath$ = rxEmitter(new Subject(), this);
-    this.onLevelClear$ = rxEmitter(new Subject(), this);
-    this.onGameOver$ = rxEmitter(new Subject(), this);
-    this.onResize$ = fromEvent(window, 'resize');
-    this.onResize$.subscribe(() => this.resize());
+    this.events = new Events();
+    this.events.onResize(() => this.resize());
     this.resize();
-
-    // global bindings
-    let prevState = state;
-    this.onStateChange$.subscribe(nextState => {
-      if (prevState.lives > nextState.lives) {
-        this.onPlayerDeath$.emit();
-      }
-      if (nextState.lives < 0) {
-        this.onGameOver$.emit();
-      }
-      prevState = nextState;
-    });
-
-    this.onGameOver$.subscribe(() => {
-      console.log('game over!');
-    });
-
-    console.log(this);
   }
 
   resize() {
     this.app.renderer.resize(window.innerWidth, window.innerHeight);
     this.rootX = this.app.screen.width / 2;
     this.rootY = this.app.screen.height / 2;
+
+    if (this.level) {
+      this.level.resize();
+    }
   }
 
   load(level) {
     if (this.level !== null) {
       this.unload();
     }
-    this.app.stage.addChild(level._container);
+    this.app.stage.addChild(level.elements);
     this.level = level;
-    level.global = this;
-    level.onLoad(this);
+    level.load(this);
   }
 
   unload() {
-    this.app.stage.removeChild(this.level._container);
-    this.level.onUnload(this);
-    this.level.global = null;
+    this.app.stage.removeChild(this.level.elements);
+    this.level.unload(this);
     this.level = null;
   }
 

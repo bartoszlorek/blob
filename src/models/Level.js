@@ -1,7 +1,8 @@
 import {Container, filters, loader, extras} from 'pixi.js';
 import {RGBSplitFilter} from '@pixi/filter-rgb-split';
-import padBounds from '@utils/padBounds';
 import {arrayForEach} from '@utils/array';
+import {objectForEach} from '@utils/object';
+import padBounds from '@utils/padBounds';
 
 import Background from '@models/Background';
 import PhysicsEngine from '@models/PhysicsEngine';
@@ -13,8 +14,9 @@ import createPlayer from '@layers/createPlayer';
 import createPrizes from '@layers/createPrizes';
 
 const STAGE_PADDING = 10;
+const rigidBodies = ['ground', 'bombs'];
 
-const LAYER_FACTORIES = [
+const factories = [
   createGround,
   createBombs,
   createPrizes,
@@ -24,101 +26,75 @@ const LAYER_FACTORIES = [
 
 class Level {
   constructor(data) {
-    this.name = data.name;
-    this.data = data;
+    this._data = data;
 
+    this.name = data.name;
     this.global = null;
     this.layers = {};
-    this.layerNames = [];
     this.physics = new PhysicsEngine();
 
-    this._foreground = new Container();
-    this._background = new Container();
-    this._container = new Container();
-    this._container.addChild(this._background);
-    this._container.addChild(this._foreground);
+    this.foreground = new Container();
+    this.background = new Container();
+    this.elements = new Container();
+    this.elements.addChild(this.background);
+    this.elements.addChild(this.foreground);
 
-    this._foreground.filters = [
+    this.foreground.filters = [
       new RGBSplitFilter([1, 0], [-1, 0], [0, 2]),
       new filters.BlurFilter(0.25)
     ];
 
-    // todo: better background handling
-    const gradient = new extras.TilingSprite(loader.resources.gradient.texture);
-    this._background.addChild(gradient);
+    this.background.addChild(
+      new extras.TilingSprite(loader.resources.gradient.texture)
+    );
   }
 
-  onLoad(global) {
-    this.create();
-    this.fitBackground();
-    // cache physics
+  load(global) {
+    this.global = global;
+    this.resize();
 
-    this.handlePlayerDeath = global.onPlayerDeath$.subscribe(() => {
-      this.clear();
-      this.create();
-    });
-    this.handleResize = global.onResize$.subscribe(() => {
-      this.fitBackground();
-    });
-  }
-
-  onUnload(global) {
-    this.clear();
-    this.handlePlayerDeath.unsubscribe();
-    this.handleResize.unsubscribe();
-  }
-
-  create() {
-    LAYER_FACTORIES.forEach(factory => {
-      const layer = factory(this.data, this.global, this);
-      this._foreground.addChild(layer.graphics);
-
-      this.layers[layer.name] = layer;
-      this.layerNames.push(layer.name);
+    arrayForEach(factories, factory => {
+      const layer = factory(this._data, global, this);
       layer.level = this;
 
-      if (layer.solid) {
+      this.foreground.addChild(layer.graphics);
+      this.layers[layer.name] = layer;
+
+      if (rigidBodies.includes(layer.name)) {
         this.physics.addRigidBody(layer);
       }
     });
+
+    // cache physics
   }
 
+  unload() {}
+
   update(deltaTime) {
-    this.fitForegroundArea();
-    arrayForEach(this.layerNames, name => {
-      this.layers[name].update(deltaTime);
-    });
+    objectForEach(this.layers, layer => layer.update(deltaTime));
+    this.resizeForeground();
   }
 
   render(global) {
-    arrayForEach(this.layerNames, name => {
-      this.layers[name].render(global);
-    });
+    objectForEach(this.layers, layer => layer.render(global));
   }
 
-  clear() {
-    this.layerNames = [];
-    while (this._foreground.children[0]) {
-      this._foreground.removeChild(this._foreground.children[0]);
-    }
+  resize() {
+    this.resizeBackground();
   }
 
-  fitForegroundArea() {
-    let bounds = this._foreground.getBounds();
-    this._foreground.filterArea = padBounds(bounds, STAGE_PADDING);
+  resizeForeground() {
+    const bounds = this.foreground.getBounds();
+    this.foreground.filterArea = padBounds(bounds, STAGE_PADDING);
   }
 
-  fitBackground() {
+  resizeBackground() {
     const {screen} = this.global.app;
-    this._background.children.forEach(sprite => {
+    this.background.children.forEach(sprite => {
       sprite.width = screen.width;
       sprite.height = screen.height;
       sprite.tileScale.y = screen.height / sprite.texture.height;
     });
-  }
-
-  inRange(entity, range, layers) {
-    console.log(entity);
   }
 }
 

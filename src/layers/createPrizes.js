@@ -11,18 +11,17 @@ function createPrizes(data, global, level) {
   const layer = new Layer('prizes', PRIZES_COLOR);
   layer.graphics.filters = [new GlowFilter(10, 1, 0, PRIZES_COLOR)];
 
-  if (data['prizes']) {
-    data['prizes'].forEach(pos => {
-      const entity = new Entity(
-        global.gridToLocal(pos[0]),
-        global.gridToLocal(pos[1]),
-        global.size
-      );
-      entity.addTrait(new Shine(global.size));
-      entity.addTrait(new Collectable());
-      layer.append(entity);
-    });
-  }
+  data['prizes'].forEach(pos => {
+    const entity = new Entity(
+      global.gridToLocal(pos[0]),
+      global.gridToLocal(pos[1]),
+      global.size
+    );
+
+    entity.addTrait(new Shine(global.size));
+    entity.addTrait(new Collectable());
+    layer.append(entity);
+  });
 
   return layer;
 }
