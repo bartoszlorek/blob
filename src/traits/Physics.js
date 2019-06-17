@@ -1,183 +1,101 @@
-import Trait from './Trait'
-import { EDGE, EDGE_TABLE } from '../models/Entity'
-import forEach from '../.utils/forEach'
+import {arrayForEach} from '@utils/array';
+import {EDGE} from '@models/Entity';
+import Trait from '@traits/Trait';
 
-export const DIR = {
-    TOP: Symbol('top'),
-    RIGHT: Symbol('right'),
-    BOTTOM: Symbol('bottom'),
-    LEFT: Symbol('left')
-}
-
-export const DIR_SHIFT = {
-    [DIR.TOP]: 2,
-    [DIR.RIGHT]: 1,
-    [DIR.BOTTOM]: 0,
-    [DIR.LEFT]: 3
-}
-
-const CORNER_ALIGN_THRESHOLD = 2
-const DIR_CHANGE_FACTOR = 0.5
+const CORNER_ALIGN_THRESHOLD = 2;
 
 class Physics extends Trait {
-    constructor() {
-        super('physics')
-        this.gravity = 1000
-        this.dir = DIR.BOTTOM
-    }
+  constructor() {
+    super('physics');
+  }
 
-    get isVertical() {
-        return this.dir === DIR.TOP
-            || this.dir === DIR.BOTTOM
-    }
+  update(entity, deltaTime) {
+    const {physics} = entity.ownerLevel;
 
-    update(entity, deltaTime) {
-        this.checkDirection(entity)
+    entity.pos.x += entity.vel.x * deltaTime;
+    this.checkCollisionX(entity, entity.vel.x);
 
-        let { x } = this.rotateVector(entity.vel)
-        entity.pos.x += x * deltaTime
-        this.checkX(entity, x)
+    entity.pos.y += entity.vel.y * deltaTime;
+    this.checkCollisionY(entity, entity.vel.y);
 
-        let { y } = this.rotateVector(entity.vel)
-        entity.pos.y += y * deltaTime
-        this.checkY(entity, y)
+    physics.applyGravity(entity, deltaTime);
+  }
 
-        entity.vel.y += this.gravity * deltaTime
-    }
+  checkCollisionX(entity, x) {
+    const {physics} = entity.ownerLevel;
 
-    checkX(entity, x) {
-        forEach(entity.parent.level.solids, layer => {
-            layer.forEach(other => {
-                if (!entity.intersection(other)) {
-                    return
-                }
-                if (x > 0) {
-                    if (entity.right > other.left) {
-                        entity.obstruct(this.rotateEdge(EDGE.RIGHT), other)
-                    }
-                } else if (x < 0) {
-                    if (entity.left < other.right) {
-                        entity.obstruct(this.rotateEdge(EDGE.LEFT), other)
-                    }
-                }
-            })
-        })
-    }
-
-    checkY(entity, y) {
-        forEach(entity.parent.level.solids, layer => {
-            layer.forEach(other => {
-                if (!entity.intersection(other)) {
-                    return
-                }
-                if (y > 0) {
-                    if (entity.bottom > other.top) {
-                        entity.obstruct(this.rotateEdge(EDGE.BOTTOM), other)
-                    }
-                } else if (y < 0) {
-                    if (this.shouldAlignCorner(entity, other)) {
-                        entity.right = other.left
-                    }
-                    if (entity.top < other.bottom) {
-                        entity.obstruct(this.rotateEdge(EDGE.TOP), other)
-                    }
-                }
-            })
-        })
-    }
-
-    checkDirection(entity) {
-        const { forces } = entity.parent.level
-        const lastDir = this.dir
-
-        if (forces.inTop(entity.pos)) {
-            this.dir = DIR.BOTTOM
-
-        } else if (forces.inBottom(entity.pos)) {
-            this.dir = DIR.TOP
-
-        } else if (forces.inLeft(entity.pos)) {
-            this.dir = DIR.RIGHT
-
-        } else if (forces.inRight(entity.pos)) {
-            this.dir = DIR.LEFT
+    arrayForEach(physics.rigidBodies, layer => {
+      layer.entities.forEach(other => {
+        if (!entity.intersection(other)) {
+          return;
         }
-
-        if (this.dir !== lastDir) {
-            entity.vel.x *= 1 + DIR_CHANGE_FACTOR
-            entity.vel.y *= DIR_CHANGE_FACTOR
+        if (x > 0) {
+          if (entity.right > other.left) {
+            entity.obstruct(EDGE.RIGHT, other);
+          }
+        } else if (x < 0) {
+          if (entity.left < other.right) {
+            entity.obstruct(EDGE.LEFT, other);
+          }
         }
-    }
+      });
+    });
+  }
 
-    obstruct(entity, edge, match) {
-        if (edge.global === EDGE.BOTTOM) {
-            entity.bottom = match.top
-            entity.vel[this.isVertical ? 'y' : 'x'] = 0
+  checkCollisionY(entity, y) {
+    const {physics} = entity.ownerLevel;
 
-        } else if (edge.global === EDGE.TOP) {
-            entity.top = match.bottom
-            entity.vel[this.isVertical ? 'y' : 'x'] = 0
- 
-        } else if (edge.global === EDGE.LEFT) {
-            entity.left = match.right
-            entity.vel[this.isVertical ? 'x' : 'y'] = 0
-
-        } else if (edge.global === EDGE.RIGHT) {
-            entity.right = match.left
-            entity.vel[this.isVertical ? 'x' : 'y'] = 0
+    arrayForEach(physics.rigidBodies, layer => {
+      layer.entities.forEach(other => {
+        if (!entity.intersection(other)) {
+          return;
         }
-    }
-
-    rotateVector(vector) {
-        let x = vector.x,
-            y = vector.y
-
-        switch (this.dir) {
-            case DIR.TOP:
-                return {
-                    x: -x,
-                    y: -y
-                }
-            case DIR.BOTTOM:
-            default:
-                return {
-                    x,
-                    y
-                }
-            case DIR.LEFT:
-                return {
-                    x: -y,
-                    y: x
-                }
-            case DIR.RIGHT:
-                return {
-                    x: y,
-                    y: -x
-                }
+        if (y > 0) {
+          if (entity.bottom > other.top) {
+            entity.obstruct(EDGE.BOTTOM, other);
+          }
+        } else if (y < 0) {
+          if (this.shouldAlignPositions(entity, other)) {
+            entity.right = other.left;
+          }
+          if (entity.top < other.bottom) {
+            entity.obstruct(EDGE.TOP, other);
+          }
         }
-    }
+      });
+    });
+  }
 
-    rotateEdge(edge) {
-        let globalIndex = EDGE_TABLE.indexOf(edge)
-        if (globalIndex !== -1) {
-            let localIndex =
-                (globalIndex + DIR_SHIFT[this.dir]) % EDGE_TABLE.length
-            return {
-                global: EDGE_TABLE[globalIndex],
-                local: EDGE_TABLE[localIndex]
-            }
-        } else {
-            return {
-                global: EDGE.BOTTOM,
-                local: EDGE.BOTTOM
-            }
-        }
-    }
+  obstruct(entity, edge, match) {
+    switch (edge) {
+      case EDGE.BOTTOM:
+        entity.bottom = match.top;
+        entity.vel.y = 0;
+        break;
 
-    shouldAlignCorner(entity, other) {
-        return entity.left - other.right < CORNER_ALIGN_THRESHOLD
-            && entity.right - other.left < CORNER_ALIGN_THRESHOLD
+      case EDGE.TOP:
+        entity.top = match.bottom;
+        entity.vel.y = 0;
+        break;
+
+      case EDGE.LEFT:
+        entity.left = match.right;
+        entity.vel.x = 0;
+        break;
+
+      case EDGE.RIGHT:
+        entity.right = match.left;
+        entity.vel.x = 0;
+        break;
     }
+  }
+
+  shouldAlignPositions(entity, other) {
+    return (
+      entity.left - other.right < CORNER_ALIGN_THRESHOLD &&
+      entity.right - other.left < CORNER_ALIGN_THRESHOLD
+    );
+  }
 }
 
-export default Physics
+export default Physics;

@@ -1,96 +1,93 @@
-import forEach from '../.utils/forEach'
-import Entity from '../models/Entity'
+import {arrayForEach} from '@utils/array';
+import Entity from '@models/Entity';
 
-import Trait from './Trait'
-import Blink from './Blink'
-import Animation from './Animation'
+import Trait from '@traits/Trait';
+import Blink from '@traits/Blink';
+import Animation from '@traits/Animation';
 
-import { loseLife } from '../state/actions'
+import {loseLife} from '@state/actions';
 
 class Explosive extends Trait {
-    constructor(range = 0) {
-        super('explosive')
-        this.range = range
-        this.timer = 0.25
+  constructor(range = 0) {
+    super('explosive');
+    this.range = range;
+    this.timer = 0.25;
 
-        this.ignition = -1
-        this.exploded = false
+    this.ignition = -1;
+    this.exploded = false;
+  }
+
+  start() {
+    this.ignition++;
+  }
+
+  update(entity, deltaTime) {
+    if (this.ignition < 0 || this.exploded) {
+      return false;
+    }
+    if (this.ignition === 0) {
+      entity.addTrait(new Blink(0.1));
+      this.ignition++;
+    } else if (this.timer < 0) {
+      this.exploded = true;
+
+      const {level} = entity.parent;
+      level.layers.effects.append(this.createFlash(entity));
+
+      const affected = this.affect(entity, [
+        level.layers.ground,
+        level.layers.player
+      ]);
+      affected.forEach(this.destroy);
+      this.destroy(entity);
+
+      if (level.layers.player.head) {
+        // todo: purge physics cache
+      } else {
+        // todo: proper game over
+        setTimeout(() => level.global.state.dispatch(loseLife()), 1000);
+      }
     }
 
-    start() {
-        this.ignition++
-    }
+    this.timer -= deltaTime;
+  }
 
-    update(entity, deltaTime) {
-        if (this.ignition < 0 || this.exploded) {
-            return false
+  createFlash(source) {
+    const flash = new Entity(source.pos.x, source.pos.y, source.size);
+    flash.addTrait(new Animation());
+    flash.animation.play('flash', [
+      [0.01, () => (flash.size += this.range)],
+      [0.1, () => (flash.size += this.range)],
+      [0.18, () => (flash.size -= this.range / 2)],
+      [0.2, () => this.destroy(flash)]
+    ]);
+    return flash;
+  }
+
+  affect(bomb, layers) {
+    let result = [];
+    arrayForEach(layers, layer => {
+      layer.entities.forEach(entity => {
+        if (this.intersection(bomb, entity)) {
+          result.push(entity);
         }
-        if (this.ignition === 0) {
-            entity.addTrait(new Blink(0.1))
-            this.ignition++
+      });
+    });
+    return result;
+  }
 
-        } else if (this.timer < 0) {
-            this.exploded = true
+  destroy(entity) {
+    entity.parent.remove(entity);
+  }
 
-            const { level } = entity.parent
-            level.layers.effects.append(this.createFlash(entity))
-
-            const affected = this.affect(entity, [
-                level.layers.ground,
-                level.layers.player
-            ])
-            affected.forEach(this.destroy)
-            this.destroy(entity)
-
-            if (level.layers.player.head) {
-                level.forces.calculate(level.solids)
-            } else {
-                // todo: proper game over
-                setTimeout(() => level.global.state.dispatch(loseLife()), 1000)
-            }
-        }
-
-        this.timer -= deltaTime
-    }
-
-    createFlash(source) {
-        const flash = new Entity(
-            source.pos.x,
-            source.pos.y,
-            source.size
-        )
-        flash.addTrait(new Animation())
-        flash.animation.play('flash', [
-            [0.01, () => flash.size += this.range],
-            [0.10, () => flash.size += this.range],
-            [0.18, () => flash.size -= this.range / 2],
-            [0.20, () => this.destroy(flash)]
-        ])
-        return flash
-    }
-
-    affect(bomb, layers) {
-        let result = []
-        forEach(layers, layer => {
-            layer.forEach(entity => {
-                if (this.intersection(bomb, entity)) {
-                    result.push(entity)
-                }
-            })
-        })
-        return result
-    }
-
-    destroy(entity) {
-        entity.parent.remove(entity)
-    }
-
-    intersection(bomb, entity) {
-        return bomb.top - this.range < entity.bottom
-            && bomb.bottom + this.range > entity.top
-            && bomb.right + this.range > entity.left
-            && bomb.left - this.range < entity.right
-    }
+  intersection(bomb, entity) {
+    return (
+      bomb.top - this.range < entity.bottom &&
+      bomb.bottom + this.range > entity.top &&
+      bomb.right + this.range > entity.left &&
+      bomb.left - this.range < entity.right
+    );
+  }
 }
 
-export default Explosive
+export default Explosive;

@@ -1,11 +1,11 @@
 class Trait {
-    constructor(name) {
-        this.name = name
-    }
+  constructor(name) {
+    this.name = name;
+  }
 
-    update() {}
+  update() {}
 
-    obstruct() {}
+  obstruct() {}
 }
 
-export default Trait
+export default Trait;

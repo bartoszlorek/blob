@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "allowSyntheticDefaultImports": false,
+    "baseUrl": "./",
+    "paths": {
+      "@gui": ["src/gui/*"],
+      "@layers": ["src/layers/*"],
+      "@levels": ["src/levels/*"],
+      "@models": ["src/models/*"],
+      "@state": ["src/state/*"],
+      "@traits": ["src/traits/*"],
+      "@utils": ["src/utils/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
