@@ -1,6 +1,6 @@
 import Trait from '@traits/Trait';
-import {EDGE} from '@models/Entity';
 import Sound from '@models/Sound';
+import {EDGE} from '@models/PhysicsEngine';
 
 class Jump extends Trait {
   constructor() {

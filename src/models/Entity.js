@@ -1,15 +1,6 @@
 import Vector from '@utils/Vector';
 import {arrayForEach} from '@utils/array';
 
-export const EDGE = {
-  TOP: Symbol('top'),
-  RIGHT: Symbol('right'),
-  BOTTOM: Symbol('bottom'),
-  LEFT: Symbol('left')
-};
-
-export const EDGE_TABLE = [EDGE.TOP, EDGE.RIGHT, EDGE.BOTTOM, EDGE.LEFT];
-
 class Entity {
   constructor(x = 0, y = 0, size = 1) {
     this.pos = new Vector(x, y);
