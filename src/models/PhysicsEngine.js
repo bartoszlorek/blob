@@ -40,7 +40,7 @@ class PhysicsEngine {
   }
 
   applyGravity(entity) {
-    this.gravity.applyForceTo(entity.vel);
+    this.gravity.applyTo(entity.vel);
   }
 
   calculateGravityDirection(entity) {

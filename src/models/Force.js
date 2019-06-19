@@ -19,7 +19,7 @@ class Force {
     };
   }
 
-  applyForceTo(vector) {
+  applyTo(vector) {
     vector.x += this.vector.x * this.factor;
     vector.y += this.vector.y * this.factor;
   }
