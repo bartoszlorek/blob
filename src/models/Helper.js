@@ -64,9 +64,8 @@ class Helper {
       this.level = this.global.level;
       this.level.helpers.addChild(this.graphics);
     }
-    this.pending = false;
-    this.graphics.clear();
 
+    this.graphics.clear();
     arrayForEach(this.tasks, task => {
       if (task.type === 'point') {
         this.graphics.beginFill(this.color);
@@ -85,6 +84,7 @@ class Helper {
     });
 
     this.tasks = [];
+    this.pending = false;
   }
 }
 
