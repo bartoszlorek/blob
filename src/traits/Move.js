@@ -1,25 +1,37 @@
 import Trait from '@traits/Trait';
 
 class Move extends Trait {
-  constructor() {
+  constructor(physics) {
     super('move');
-    this.dir = 0;
+
+    if (!physics) {
+      throw 'Trait `move` requires Physics Engine';
+    }
+    this.physics = physics;
+    this.direction = 0;
+
+    // parameters
     this.acceleration = 500;
     this.deceleration = 300;
     this.dragFactor = 0.95;
   }
 
   update(entity, deltaTime) {
-    const absX = Math.abs(entity.vel.x);
+    const {invertedAxis, gravity} = this.physics;
+    const axis = gravity.vertical ? 'x' : 'y';
 
-    if (this.dir !== 0) {
-      entity.vel.x += this.acceleration * deltaTime * this.dir;
-    } else if (entity.vel.x !== 0) {
-      const deceleration = Math.min(absX, this.deceleration * deltaTime);
-      entity.vel.x += entity.vel.x > 0 ? -deceleration : deceleration;
+    const velocity = entity.vel[axis];
+    const absolute = Math.abs(velocity);
+    const direction = invertedAxis ? -this.direction : this.direction;
+
+    if (direction !== 0) {
+      entity.vel[axis] += this.acceleration * deltaTime * direction;
+    } else if (velocity !== 0) {
+      const deceleration = Math.min(absolute, this.deceleration * deltaTime);
+      entity.vel[axis] += velocity > 0 ? -deceleration : deceleration;
     }
 
-    entity.vel.x *= this.dragFactor;
+    entity.vel[axis] *= this.dragFactor;
   }
 }
 

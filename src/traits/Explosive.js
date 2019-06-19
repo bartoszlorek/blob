@@ -42,7 +42,7 @@ class Explosive extends Trait {
       this.destroy(entity);
 
       if (level.layers.player.head) {
-        // todo: purge physics cache
+        level.physics.updateBounds();
       } else {
         // todo: proper game over
         setTimeout(() => level.global.state.dispatch(loseLife()), 1000);

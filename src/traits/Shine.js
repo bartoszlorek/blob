@@ -4,8 +4,10 @@ class Shine extends Trait {
   constructor(size) {
     super('shine');
     this.size = size;
-    this.speed = 5;
     this.timer = 0;
+
+    // parameters
+    this.speed = 5;
   }
 
   update(entity, deltaTime) {

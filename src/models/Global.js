@@ -29,12 +29,12 @@ class Global {
     }
     this.app.stage.addChild(level.elements);
     this.level = level;
-    level.load(this);
+    level.onLoad(this);
   }
 
   unload() {
     this.app.stage.removeChild(this.level.elements);
-    this.level.unload(this);
+    this.level.onUnload();
     this.level = null;
   }
 

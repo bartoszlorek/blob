@@ -14,7 +14,7 @@ import createPlayer from '@layers/createPlayer';
 import createPrizes from '@layers/createPrizes';
 
 const STAGE_PADDING = 10;
-const rigidBodies = ['ground', 'bombs'];
+const solidLayers = ['ground', 'bombs'];
 
 const factories = [
   createGround,
@@ -49,7 +49,7 @@ class Level {
     );
   }
 
-  load(global) {
+  onLoad(global) {
     this.global = global;
     this.resize();
 
@@ -60,15 +60,13 @@ class Level {
       this.foreground.addChild(layer.graphics);
       this.layers[layer.name] = layer;
 
-      if (rigidBodies.includes(layer.name)) {
-        this.physics.addRigidBody(layer);
+      if (solidLayers.includes(layer.name)) {
+        this.physics.addSolids(layer);
       }
     });
-
-    // cache physics
   }
 
-  unload() {}
+  onUnload() {}
 
   update(deltaTime) {
     objectForEach(this.layers, layer => layer.update(deltaTime));

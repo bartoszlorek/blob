@@ -1,7 +1,7 @@
 import {arrayForEach} from '@utils/array';
-import Vector from '@utils/Vector';
-
-const CORNER_ALIGN_THRESHOLD = 2;
+import {mergeBounds} from '@utils/bounds';
+import Raycast from '@models/Raycast';
+import Force from '@models/Force';
 
 export const EDGE = {
   TOP: Symbol('top'),
@@ -10,25 +10,66 @@ export const EDGE = {
   LEFT: Symbol('left')
 };
 
+// direction:
+// [ 0,  1 ] bottom
+// [ 0, -1 ] top
+// [ 1,  0 ] right
+// [-1,  0 ] left
+
 class PhysicsEngine {
-  constructor(rigidBodies = []) {
-    this.rigidBodies = rigidBodies;
-    this.gravityForce = 25;
-    this.gravityDirection = new Vector(0, 1);
-    this.gravity = new Vector(0, 0);
+  constructor() {
+    this.gravity = new Force({x: 0, y: 1}, 25);
+    this.solids = [];
+    this.bounds = null;
   }
 
-  addRigidBody(layer) {
-    this.rigidBodies.push(layer);
+  get invertedAxis() {
+    const {x, y} = this.gravity.vector;
+    return Math.round(x) > Math.round(y);
+  }
+
+  addSolids(layer) {
+    this.solids.push(layer);
+    this.updateBounds();
+  }
+
+  updateBounds() {
+    this.bounds = mergeBounds(
+      ...this.solids.map(layer => layer.entities.bounds())
+    );
   }
 
   applyGravity(entity) {
-    entity.vel.x += this.gravityDirection.x * this.gravityForce;
-    entity.vel.y += this.gravityDirection.y * this.gravityForce;
+    this.gravity.applyForceTo(entity.vel);
+  }
+
+  calculateGravityDirection(entity) {
+    if (this.solids.length === 0) {
+      return;
+    }
+
+    // outside bounds
+    if (entity.bottom < this.bounds.top) {
+      this.gravity.setForce(0, 1);
+    } else if (entity.top > this.bounds.bottom) {
+      this.gravity.setForce(0, -1);
+    } else if (entity.right < this.bounds.left) {
+      this.gravity.setForce(1, 0);
+    } else if (entity.left > this.bounds.right) {
+      this.gravity.setForce(-1, 0);
+    }
+
+    // const raycast = new Raycast(entity.ownerGlobal, this.solids, this.bounds);
+    // const top = raycast.scan(entity.pos, new Vector(0, -1));
+    // const right = raycast.scan(entity.pos, new Vector(1, 0));
+    // const bottom = raycast.scan(entity.pos, new Vector(0, 1));
+    // const left = raycast.scan(entity.pos, new Vector(-1, 0));
+
+    // console.log({top, right, bottom, left});
   }
 
   applyCollisionX(entity) {
-    arrayForEach(this.rigidBodies, layer => {
+    arrayForEach(this.solids, layer => {
       layer.entities.forEach(other => {
         if (!entity.intersection(other)) {
           return;
@@ -47,7 +88,7 @@ class PhysicsEngine {
   }
 
   applyCollisionY(entity) {
-    arrayForEach(this.rigidBodies, layer => {
+    arrayForEach(this.solids, layer => {
       layer.entities.forEach(other => {
         if (!entity.intersection(other)) {
           return;
@@ -57,23 +98,12 @@ class PhysicsEngine {
             entity.obstruct(EDGE.BOTTOM, other);
           }
         } else if (entity.vel.y < 0) {
-          // todo: check if it's still needed
-          if (this.shouldAlignPositions(entity, other)) {
-            entity.right = other.left;
-          }
           if (entity.top < other.bottom) {
             entity.obstruct(EDGE.TOP, other);
           }
         }
       });
     });
-  }
-
-  shouldAlignPositions(entity, other) {
-    return (
-      entity.left - other.right < CORNER_ALIGN_THRESHOLD &&
-      entity.right - other.left < CORNER_ALIGN_THRESHOLD
-    );
   }
 }
 

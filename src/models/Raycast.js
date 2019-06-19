@@ -1,14 +1,10 @@
-import {mergeBounds} from '@utils/bounds';
+import {sign} from '@utils/math';
 
 class Raycast {
-  constructor(level, layers = []) {
-    this.global = level.global;
-    this.layers = layers.map(name => level.layers[name]);
-
-    // todo: pass cached bounds
-    this.bounds = mergeBounds(
-      ...this.layers.map(layer => layer.entities.bounds())
-    );
+  constructor(global, layers = [], bounds) {
+    this.global = global;
+    this.layers = layers;
+    this.bounds = bounds;
   }
 
   scan(origin, dir) {
@@ -64,10 +60,6 @@ class Raycast {
       return Math.abs(this.global.localToGrid(left) - extend - originGridX);
     }
   }
-}
-
-function sign(value) {
-  return value / Math.abs(value) || 0;
 }
 
 export default Raycast;

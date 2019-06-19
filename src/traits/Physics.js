@@ -9,13 +9,14 @@ class Physics extends Trait {
   update(entity, deltaTime) {
     const {physics} = entity.ownerLevel;
 
+    physics.calculateGravityDirection(entity);
+    physics.applyGravity(entity, deltaTime);
+
     entity.pos.x += entity.vel.x * deltaTime;
     physics.applyCollisionX(entity);
 
     entity.pos.y += entity.vel.y * deltaTime;
     physics.applyCollisionY(entity);
-
-    physics.applyGravity(entity, deltaTime);
   }
 
   obstruct(entity, edge, match) {
