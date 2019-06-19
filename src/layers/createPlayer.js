@@ -1,9 +1,6 @@
-import Vector from '@utils/Vector';
-
 import Keyboard from '@models/Keyboard';
 import Layer from '@models/Layer';
 import Entity from '@models/Entity';
-import Raycast from '@models/Raycast';
 
 import Physics from '@traits/Physics';
 import Killable from '@traits/Killable';
@@ -19,35 +16,23 @@ function createPlayer(data, global, level) {
 
   entity.addTrait(new Physics());
   entity.addTrait(new Killable());
-  entity.addTrait(new Move());
+  entity.addTrait(new Move(level.physics));
   entity.addTrait(new Jump());
 
   const input = new Keyboard();
-  input.on('ArrowRight', state => {
-    entity.move.dir += state ? 1 : -1;
+  input.on('ArrowRight', pressed => {
+    entity.move.direction += pressed ? 1 : -1;
   });
 
-  input.on('ArrowLeft', state => {
-    entity.move.dir += state ? -1 : 1;
+  input.on('ArrowLeft', pressed => {
+    entity.move.direction += pressed ? -1 : 1;
   });
 
-  input.on('Space', state => {
-    if (state) {
+  input.on('Space', pressed => {
+    if (pressed) {
       entity.jump.start();
     } else {
       entity.jump.cancel();
-    }
-  });
-
-  input.on('Enter', state => {
-    if (state) {
-      const raycast = new Raycast(level, ['ground']);
-      const top = raycast.scan(entity.pos, new Vector(0, -1));
-      const right = raycast.scan(entity.pos, new Vector(1, 0));
-      const bottom = raycast.scan(entity.pos, new Vector(0, 1));
-      const left = raycast.scan(entity.pos, new Vector(-1, 0));
-
-      console.log({top, right, bottom, left});
     }
   });
 

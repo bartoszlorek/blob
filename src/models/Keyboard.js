@@ -19,10 +19,10 @@ class Keyboard {
     if (!this.events.has(code)) {
       return;
     }
-    const keyState = event.type === 'keydown' ? PRESSED : RELEASED;
-    if (this.states.get(code) !== keyState) {
-      this.states.set(code, keyState);
-      this.events.get(code)(keyState);
+    const pressed = event.type === 'keydown';
+    if (this.states.get(code) !== pressed) {
+      this.states.set(code, pressed);
+      this.events.get(code)(pressed);
     }
   }
 
