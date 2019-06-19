@@ -18,7 +18,7 @@ const solidLayers = ['ground', 'bombs'];
 
 const factories = [
   createGround,
-  createBombs,
+  // createBombs,
   createPrizes,
   createEffects,
   createPlayer
@@ -33,11 +33,14 @@ class Level {
     this.layers = {};
     this.physics = new PhysicsEngine();
 
-    this.foreground = new Container();
     this.background = new Container();
+    this.foreground = new Container();
+    this.helpers = new Container();
+
     this.elements = new Container();
     this.elements.addChild(this.background);
     this.elements.addChild(this.foreground);
+    this.elements.addChild(this.helpers);
 
     this.foreground.filters = [
       new RGBSplitFilter([1, 0], [-1, 0], [0, 2]),
