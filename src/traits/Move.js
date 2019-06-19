@@ -17,12 +17,13 @@ class Move extends Trait {
   }
 
   update(entity, deltaTime) {
-    const {invertedAxis, gravity} = this.physics;
-    const axis = gravity.vertical ? 'x' : 'y';
+    const {direction: dir, vertical} = this.physics.gravity;
+    const invert = dir.x > 0 || dir.y < 0;
+    const axis = vertical ? 'x' : 'y';
 
     const velocity = entity.vel[axis];
     const absolute = Math.abs(velocity);
-    const direction = invertedAxis ? -this.direction : this.direction;
+    const direction = invert ? -this.direction : this.direction;
 
     if (direction !== 0) {
       entity.vel[axis] += this.acceleration * deltaTime * direction;

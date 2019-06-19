@@ -23,11 +23,6 @@ class PhysicsEngine {
     this.bounds = null;
   }
 
-  get invertedAxis() {
-    const {x, y} = this.gravity.vector;
-    return Math.round(x) > Math.round(y);
-  }
-
   addSolids(layer) {
     this.solids.push(layer);
     this.updateBounds();

@@ -17,7 +17,7 @@ function createPlayer(data, global, level) {
   entity.addTrait(new Physics());
   entity.addTrait(new Killable());
   entity.addTrait(new Move(level.physics));
-  entity.addTrait(new Jump());
+  entity.addTrait(new Jump(level.physics));
 
   const input = new Keyboard();
   input.on('ArrowRight', pressed => {

@@ -3,8 +3,13 @@ import Sound from '@models/Sound';
 import {EDGE} from '@models/PhysicsEngine';
 
 class Jump extends Trait {
-  constructor() {
+  constructor(physics) {
     super('jump');
+
+    if (!physics) {
+      throw 'Trait `jump` requires Physics Engine';
+    }
+    this.physics = physics;
     this.ready = 0;
     this.requestTime = 0;
     this.engageTime = 0;
@@ -44,7 +49,11 @@ class Jump extends Trait {
       if (this.ready === 1) {
         this.jumpSound.play();
       }
-      entity.vel.y = -this.velocity;
+      const {direction, vertical} = this.physics.gravity;
+      const invert = direction.y < 0 || direction.x < 0;
+      const axis = vertical ? 'y' : 'x';
+
+      entity.vel[axis] = invert ? this.velocity : -this.velocity;
       this.engageTime -= deltaTime;
     }
 
@@ -52,12 +61,26 @@ class Jump extends Trait {
   }
 
   obstruct(entity, edge) {
-    if (edge === EDGE.BOTTOM) {
+    const {direction} = this.physics.gravity;
+
+    const obstructedFromTop =
+      (direction.y > 0 && edge === EDGE.TOP) ||
+      (direction.y < 0 && edge === EDGE.BOTTOM) ||
+      (direction.x > 0 && edge === EDGE.LEFT) ||
+      (direction.x < 0 && edge === EDGE.RIGHT);
+
+    const obstructedFromBottom =
+      (direction.y > 0 && edge === EDGE.BOTTOM) ||
+      (direction.y < 0 && edge === EDGE.TOP) ||
+      (direction.x > 0 && edge === EDGE.RIGHT) ||
+      (direction.x < 0 && edge === EDGE.LEFT);
+
+    if (obstructedFromBottom) {
       if (this.ready < 0) {
         this.pluckSound.play();
       }
       this.ready = 1;
-    } else if (edge === EDGE.TOP) {
+    } else if (obstructedFromTop) {
       this.cancel();
     }
   }
