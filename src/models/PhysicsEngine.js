@@ -1,5 +1,6 @@
 import {arrayForEach} from '@utils/array';
 import {mergeBounds} from '@utils/bounds';
+import Vector from '@utils/Vector';
 import Raycast from '@models/Raycast';
 import Force from '@models/Force';
 
@@ -44,23 +45,69 @@ class PhysicsEngine {
     }
 
     // outside bounds
-    if (entity.bottom < this.bounds.top) {
+    if (entity.bottom <= this.bounds.top) {
       this.gravity.setForce(0, 1);
-    } else if (entity.top > this.bounds.bottom) {
+    } else if (entity.top >= this.bounds.bottom) {
       this.gravity.setForce(0, -1);
-    } else if (entity.right < this.bounds.left) {
+    } else if (entity.right <= this.bounds.left) {
       this.gravity.setForce(1, 0);
-    } else if (entity.left > this.bounds.right) {
+    } else if (entity.left >= this.bounds.right) {
       this.gravity.setForce(-1, 0);
+
+      // corner case
+    } else if (this.isCornerCase(entity)) {
+      console.log('corner');
+
+      // raycasting
+    } else {
+      const raycast = new Raycast(entity.ownerGlobal, this.solids, this.bounds);
+
+      const bottom = {
+        value: raycast.scan(entity.pos, new Vector(0, 1)),
+        force: new Vector(0, 1),
+        label: 'bottom'
+      };
+      const top = {
+        value: raycast.scan(entity.pos, new Vector(0, -1)),
+        force: new Vector(0, -1),
+        label: 'top'
+      };
+      const right = {
+        value: raycast.scan(entity.pos, new Vector(1, 0)),
+        force: new Vector(1, 0),
+        label: 'right'
+      };
+      const left = {
+        value: raycast.scan(entity.pos, new Vector(-1, 0)),
+        force: new Vector(-1, 0),
+        label: 'left'
+      };
+
+      const y = sortPair(top, bottom);
+      const x = sortPair(left, right);
+
+      // common cases
+      if (y.type === 'solid-solid' && x.type === 'solid-solid') {
+        console.log('solid-solid solid-solid');
+      } else if (y.type === 'solid-border' && x.type === 'solid-border') {
+        if (y[0].value.distance < x[0].value.distance) {
+          this.gravity.setForce(y[0].force.x, y[0].force.y);
+        } else if (x[0].value.distance < y[0].value.distance) {
+          this.gravity.setForce(x[0].force.x, x[0].force.y);
+        } else if (y[1].value.distance < x[1].value.distance) {
+          this.gravity.setForce(y[0].force.x, y[0].force.y);
+        } else if (x[1].value.distance < y[1].value.distance) {
+          this.gravity.setForce(x[0].force.x, x[0].force.y);
+        } else {
+          this.gravity.setForce(y[0].force.x, y[0].force.y);
+        }
+      } else if (
+        (y.type === 'solid-solid' && x.type === 'solid-border') ||
+        (y.type === 'solid-border' && x.type === 'solid-solid')
+      ) {
+        console.log('solid-solid solid-border');
+      }
     }
-
-    // const raycast = new Raycast(entity.ownerGlobal, this.solids, this.bounds);
-    // const top = raycast.scan(entity.pos, new Vector(0, -1));
-    // const right = raycast.scan(entity.pos, new Vector(1, 0));
-    // const bottom = raycast.scan(entity.pos, new Vector(0, 1));
-    // const left = raycast.scan(entity.pos, new Vector(-1, 0));
-
-    // console.log({top, right, bottom, left});
   }
 
   applyCollisionX(entity) {
@@ -100,6 +147,23 @@ class PhysicsEngine {
       });
     });
   }
+
+  isCornerCase(entity) {
+    return false;
+  }
+}
+
+function sortPair(a, b) {
+  const pair = [];
+
+  if (a.value.type === 'solid') {
+    pair.push(a, b);
+  } else {
+    pair.push(b, a);
+  }
+
+  pair.type = `${pair[0].value.type}-${pair[1].value.type}`;
+  return pair;
 }
 
 export default PhysicsEngine;

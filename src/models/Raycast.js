@@ -7,10 +7,10 @@ class Raycast {
     this.bounds = bounds;
   }
 
-  scan(origin, dir) {
+  scan(origin, direction) {
     const originGridX = this.global.localToGrid(origin.x);
     const originGridY = this.global.localToGrid(origin.y);
-    const horizontal = dir.y === 0;
+    const horizontal = direction.y === 0;
     const targets = [];
 
     this.layers.forEach(layer => {
@@ -21,7 +21,7 @@ class Raycast {
         const x = entityGridX - originGridX;
         const y = entityGridY - originGridY;
 
-        if (sign(x) === dir.x && sign(y) === dir.y) {
+        if (sign(x) === direction.x && sign(y) === direction.y) {
           const distance = Math.abs(horizontal ? x : y);
           targets.push(distance);
         }
@@ -37,27 +37,27 @@ class Raycast {
 
     return {
       type: 'border',
-      distance: this._getDistanceToBound(origin, dir)
+      distance: this._getDistanceToBound(origin, direction)
     };
   }
 
-  _getDistanceToBound(origin, dir) {
+  _getDistanceToBound(origin, direction) {
     const {top, right, bottom, left} = this.bounds;
     const originGridX = this.global.localToGrid(origin.x);
     const originGridY = this.global.localToGrid(origin.y);
-    const extend = 1;
+    const extend = this.global.size / 2;
 
-    if (dir.y === -1) {
-      return Math.abs(this.global.localToGrid(top) - extend - originGridY);
+    if (direction.y === -1) {
+      return Math.abs(this.global.localToGrid(top - extend) - originGridY);
     }
-    if (dir.x === 1) {
-      return Math.abs(this.global.localToGrid(right) + extend - originGridX);
+    if (direction.x === 1) {
+      return Math.abs(this.global.localToGrid(right + extend) - originGridX);
     }
-    if (dir.y === 1) {
-      return Math.abs(this.global.localToGrid(bottom) + extend - originGridY);
+    if (direction.y === 1) {
+      return Math.abs(this.global.localToGrid(bottom + extend) - originGridY);
     }
-    if (dir.x === -1) {
-      return Math.abs(this.global.localToGrid(left) - extend - originGridX);
+    if (direction.x === -1) {
+      return Math.abs(this.global.localToGrid(left - extend) - originGridX);
     }
   }
 }

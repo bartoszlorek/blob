@@ -1,6 +1,7 @@
 import Trait from '@traits/Trait';
 import Sound from '@models/Sound';
 import {EDGE} from '@models/PhysicsEngine';
+import Force from '@models/Force';
 
 class Jump extends Trait {
   constructor(physics) {
@@ -10,6 +11,7 @@ class Jump extends Trait {
       throw 'Trait `jump` requires Physics Engine';
     }
     this.physics = physics;
+    this.velocity = new Force({x: 0, y: -1}, 50, 0.6);
     this.ready = 0;
     this.requestTime = 0;
     this.engageTime = 0;
@@ -18,8 +20,7 @@ class Jump extends Trait {
     this.jumpSound = new Sound('jump');
 
     // parameters
-    this.velocity = 200;
-    this.duration = 0.3;
+    this.duration = 0.25;
     this.gracePeriod = 0.1; // able to jump again before landing
   }
 
@@ -49,11 +50,9 @@ class Jump extends Trait {
       if (this.ready === 1) {
         this.jumpSound.play();
       }
-      const {direction, vertical} = this.physics.gravity;
-      const invert = direction.y < 0 || direction.x < 0;
-      const axis = vertical ? 'y' : 'x';
-
-      entity.vel[axis] = invert ? this.velocity : -this.velocity;
+      const {x, y} = this.physics.gravity.rotateByForce(0, -1);
+      this.velocity.applyTo(entity.vel);
+      this.velocity.setForce(x, y);
       this.engageTime -= deltaTime;
     }
 
