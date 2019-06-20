@@ -2,6 +2,7 @@ import Trait from '@traits/Trait';
 import Sound from '@models/Sound';
 import {EDGE} from '@models/PhysicsEngine';
 import Force from '@models/Force';
+import Vector from '@models/Vector';
 
 class Jump extends Trait {
   constructor(physics) {
@@ -11,7 +12,11 @@ class Jump extends Trait {
       throw 'Trait `jump` requires Physics Engine';
     }
     this.physics = physics;
-    this.velocity = new Force({x: 0, y: -1}, 50, 0.6);
+    this.velocity = new Force(0, -1, {
+      strength: 50,
+      bias: 0.6
+    });
+
     this.ready = 0;
     this.requestTime = 0;
     this.engageTime = 0;
@@ -50,9 +55,10 @@ class Jump extends Trait {
       if (this.ready === 1) {
         this.jumpSound.play();
       }
-      const {x, y} = this.physics.gravity.rotateByForce(0, -1);
+
+      const up = this.physics.rotateVector(new Vector(0, -1));
       this.velocity.applyTo(entity.vel);
-      this.velocity.setForce(x, y);
+      this.velocity.setForce(up.x, up.y);
       this.engageTime -= deltaTime;
     }
 
@@ -61,6 +67,8 @@ class Jump extends Trait {
 
   obstruct(entity, edge) {
     const {direction} = this.physics.gravity;
+
+    this.physics.rotateEdge(edge);
 
     const obstructedFromTop =
       (direction.y > 0 && edge === EDGE.TOP) ||

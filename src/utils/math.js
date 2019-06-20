@@ -5,3 +5,7 @@ export function lerp(from, to, bias) {
 export function sign(value) {
   return value / Math.abs(value) || 0;
 }
+
+export function modIndex(index, length) {
+  return ((index % length) + length) % length;
+}

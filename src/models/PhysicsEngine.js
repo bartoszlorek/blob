@@ -1,6 +1,7 @@
 import {arrayForEach} from '@utils/array';
 import {mergeBounds} from '@utils/bounds';
-import Vector from '@utils/Vector';
+import {modIndex} from '@utils/math';
+import Vector from '@models/Vector';
 import Raycast from '@models/Raycast';
 import Force from '@models/Force';
 
@@ -11,15 +12,9 @@ export const EDGE = {
   LEFT: Symbol('left')
 };
 
-// direction:
-// [ 0,  1 ] bottom
-// [ 0, -1 ] top
-// [ 1,  0 ] right
-// [-1,  0 ] left
-
 class PhysicsEngine {
   constructor() {
-    this.gravity = new Force({x: 0, y: 1}, 25);
+    this.gravity = new Force(0, 1, {strength: 25});
     this.solids = [];
     this.bounds = null;
   }
@@ -37,6 +32,39 @@ class PhysicsEngine {
 
   applyGravity(entity) {
     this.gravity.applyTo(entity.vel);
+  }
+
+  rotateVector(vector) {
+    const {direction} = this.gravity;
+
+    if (direction.y < 0) {
+      vector.x = -vector.x;
+      vector.y = -vector.y;
+    } else if (direction.x > 0) {
+      vector.x = vector.y;
+      vector.y = -vector.x;
+    } else if (direction.x < 0) {
+      vector.x = -vector.y;
+      vector.y = vector.x;
+    }
+    return vector;
+  }
+
+  rotateEdge(edge) {
+    const table = Object.values(EDGE);
+    const index = table.indexOf(edge);
+    const {direction} = this.gravity;
+
+    let shift = 0;
+    if (direction.x < 0) {
+      shift = 1;
+    } else if (direction.y < 0) {
+      shift = 2;
+    } else if (direction.x > 0) {
+      shift = 3;
+    }
+    const rotatedIndex = modIndex(index - shift, 4);
+    return table[rotatedIndex];
   }
 
   calculateGravityDirection(entity) {

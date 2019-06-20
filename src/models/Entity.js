@@ -1,5 +1,5 @@
-import Vector from '@utils/Vector';
 import {arrayForEach} from '@utils/array';
+import Vector from '@models/Vector';
 
 class Entity {
   constructor(x = 0, y = 0, size = 1) {
@@ -17,7 +17,7 @@ class Entity {
   }
 
   set top(y) {
-    return (this.pos.y = y + this.size / 2);
+    this.pos.y = y + this.size / 2;
   }
 
   get bottom() {
@@ -25,7 +25,7 @@ class Entity {
   }
 
   set bottom(y) {
-    return (this.pos.y = y - this.size / 2);
+    this.pos.y = y - this.size / 2;
   }
 
   get left() {
@@ -33,7 +33,7 @@ class Entity {
   }
 
   set left(x) {
-    return (this.pos.x = x + this.size / 2);
+    this.pos.x = x + this.size / 2;
   }
 
   get right() {
@@ -41,7 +41,15 @@ class Entity {
   }
 
   set right(x) {
-    return (this.pos.x = x - this.size / 2);
+    this.pos.x = x - this.size / 2;
+  }
+
+  get gridX() {
+    return this.ownerGlobal.localToGrid(this.x);
+  }
+
+  get gridY() {
+    return this.ownerGlobal.localToGrid(this.y);
   }
 
   get ownerLevel() {
