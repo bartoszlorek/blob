@@ -1,16 +1,24 @@
 import Events from '@models/Events';
 
 class Global {
-  constructor(app, state, size = 32) {
+  constructor(app, size = 24) {
     this.app = app;
-    this.state = state;
     this.size = size;
-    this.time = 1 / 60;
     this.level = null;
+
+    // parameters
+    this.time = 1 / 60;
 
     this.events = new Events();
     this.events.onResize(() => this.resize());
     this.resize();
+  }
+
+  tick(callback) {
+    this.app.ticker.add(deltaFrame => {
+      const deltaTime = deltaFrame * this.time;
+      callback(deltaTime);
+    });
   }
 
   resize() {

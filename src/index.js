@@ -1,6 +1,5 @@
 import app from './app';
 import loader from './loader';
-import state from '@state/store';
 
 import Helper from '@models/Helper';
 import Global from '@models/Global';
@@ -8,15 +7,13 @@ import Level from '@models/Level';
 import data from '@levels/1-1.json';
 
 loader.load((loader, assets) => {
-  const global = new Global(app, state, 24);
-  const level = new Level(data);
+  const global = new Global(app, 24);
   const helper = new Helper(global);
 
+  const level = new Level(data);
   global.load(level);
 
-  app.ticker.add(deltaFrame => {
-    const deltaTime = global.time * deltaFrame;
-
+  global.tick(deltaTime => {
     level.update(deltaTime);
     level.render(global);
 

@@ -1,11 +1,8 @@
 import {arrayForEach} from '@utils/array';
 import Entity from '@models/Entity';
-
 import Trait from '@traits/Trait';
 import Blink from '@traits/Blink';
 import Animation from '@traits/Animation';
-
-import {loseLife} from '@state/actions';
 
 class Explosive extends Trait {
   constructor(range = 0) {
@@ -44,8 +41,7 @@ class Explosive extends Trait {
       if (level.layers.player.head) {
         level.physics.updateBounds();
       } else {
-        // todo: proper game over
-        setTimeout(() => level.global.state.dispatch(loseLife()), 1000);
+        console.log('dead!');
       }
     }
 

@@ -1,5 +1,4 @@
 import Trait from '@traits/Trait';
-import {gainScore} from '@state/actions';
 
 class Collectable extends Trait {
   constructor() {
@@ -9,7 +8,7 @@ class Collectable extends Trait {
   update(entity, deltaTime) {
     let player = entity.ownerLevel.layers.player.head;
     if (player !== undefined && player.intersection(entity)) {
-      entity.ownerGlobal.state.dispatch(gainScore(100));
+      console.log('score!');
     }
   }
 }
