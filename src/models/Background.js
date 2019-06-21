@@ -1,8 +1,8 @@
-import {extras} from 'pixi.js';
+import {TilingSprite} from 'pixi.js';
 
 class Background {
   constructor(texture) {
-    this.sprite = new extras.TilingSprite(texture);
+    this.sprite = new TilingSprite(texture);
   }
 
   resize(global) {

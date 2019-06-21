@@ -29,8 +29,6 @@ module.exports = {
     ]
   },
   externals: {
-    'pixi.js': 'PIXI',
-    react: 'React',
-    'react-dom': 'ReactDOM'
+    'pixi.js': 'PIXI'
   }
 };

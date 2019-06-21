@@ -1,5 +1,6 @@
-import {Container, filters, loader, extras} from 'pixi.js';
+import {Container, TilingSprite, filters} from 'pixi.js';
 import {RGBSplitFilter} from '@pixi/filter-rgb-split';
+import loader from '../loader';
 import {arrayForEach} from '@utils/array';
 import {objectForEach} from '@utils/object';
 import padBounds from '@utils/padBounds';
@@ -48,7 +49,7 @@ class Level {
     ];
 
     this.background.addChild(
-      new extras.TilingSprite(loader.resources.gradient.texture)
+      new TilingSprite(loader.resources.gradient.texture)
     );
   }
 

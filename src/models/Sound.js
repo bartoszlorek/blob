@@ -1,4 +1,4 @@
-import {loader} from 'pixi.js';
+import loader from '../loader';
 
 class Sound {
   constructor(...names) {

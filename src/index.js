@@ -6,7 +6,7 @@ import Global from '@models/Global';
 import Level from '@models/Level';
 import data from '@levels/1-1.json';
 
-loader.load((loader, assets) => {
+loader.load(() => {
   const global = new Global(app, 24);
   const helper = new Helper(global);
 
