@@ -1,32 +1,32 @@
-import {Graphics} from 'pixi.js';
+import {arrayForEach} from '@utils/array';
 
 class Creator {
-  constructor(global, level) {
+  constructor(global) {
     this.global = global;
-    this.level = level;
     this.interaction = global.app.renderer.plugins.interaction;
+    this.points = [];
 
-    this.pointer = new Graphics();
-    this.pointer.lineStyle(1, 0x000000);
-    this.pointer.drawRect(0, 0, global.size, global.size);
-
-    global.app.stage.addChild(this.pointer);
     global.app.renderer.view.addEventListener('click', e => {
-      let x = global.globalToGridX(e.offsetX),
-        y = global.globalToGridY(e.offsetY);
-      console.log(x, y);
+      const x = global.globalToGridX(e.offsetX);
+      const y = global.globalToGridY(e.offsetY);
+      this.points.push({x, y});
+      this.printJSON();
     });
   }
 
-  render(global) {
-    let pos = this.interaction.mouse.global,
-      x = global.globalToGridX(pos.x),
-      y = global.globalToGridY(pos.y);
+  forEach(callback) {
+    const {x, y} = this.interaction.mouse.global;
+    const current = {
+      x: this.global.globalToGridX(x),
+      y: this.global.globalToGridX(y)
+    };
 
-    this.pointer.position.set(
-      global.rootX + global.gridToLocal(x) - global.size / 2,
-      global.rootY + global.gridToLocal(y) - global.size / 2
-    );
+    arrayForEach([...this.points, current], callback);
+  }
+
+  printJSON() {
+    const array = this.points.map(point => [point.x, point.y]);
+    console.log(JSON.stringify(array));
   }
 }
 

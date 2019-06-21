@@ -7,6 +7,7 @@ class Helper {
     this.graphics = null;
     this.level = null;
 
+    this.enabled = true;
     this.pending = false;
     this.tasks = [];
 
@@ -51,11 +52,10 @@ class Helper {
   }
 
   _requestRender() {
-    if (this.pending) {
-      return;
+    if (!this.pending && this.enabled) {
+      setImmediate(() => this._render());
+      this.pending = true;
     }
-    setImmediate(() => this._render());
-    this.pending = true;
   }
 
   _render() {
