@@ -17,11 +17,11 @@ loader.load(() => {
     level.update(deltaTime);
     level.render(global);
 
-    const {pos} = level.layers.player.head;
-    helper.renderBounds(level.physics.bounds);
-    helper.renderBox({
-      x: global.gridToLocal(global.localToGrid(pos.x)),
-      y: global.gridToLocal(global.localToGrid(pos.y))
-    });
+    // const {pos} = level.layers.player.head;
+    // helper.renderBounds(level.physics.bounds);
+    // helper.renderBox({
+    //   x: global.gridToLocal(global.localToGrid(pos.x)),
+    //   y: global.gridToLocal(global.localToGrid(pos.y))
+    // });
   });
 });

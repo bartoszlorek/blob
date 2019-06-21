@@ -1,6 +1,3 @@
-const PRESSED = 1;
-const RELEASED = 0;
-
 class Keyboard {
   constructor(view) {
     this.states = new Map();

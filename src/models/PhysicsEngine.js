@@ -36,16 +36,17 @@ class PhysicsEngine {
 
   rotateVector(vector) {
     const {direction} = this.gravity;
+    const {x, y} = vector;
 
     if (direction.y < 0) {
-      vector.x = -vector.x;
-      vector.y = -vector.y;
+      vector.x = -x;
+      vector.y = -y;
     } else if (direction.x > 0) {
-      vector.x = vector.y;
-      vector.y = -vector.x;
+      vector.x = y;
+      vector.y = -x;
     } else if (direction.x < 0) {
-      vector.x = -vector.y;
-      vector.y = vector.x;
+      vector.x = -y;
+      vector.y = x;
     }
     return vector;
   }

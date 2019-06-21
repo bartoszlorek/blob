@@ -19,21 +19,18 @@ function createPlayer(data, global, level) {
   entity.addTrait(new Move(level.physics));
   entity.addTrait(new Jump(level.physics));
 
+  // todo: remove listeners on level unload
   const input = new Keyboard();
   input.on('ArrowRight', pressed => {
-    entity.move.direction += pressed ? 1 : -1;
+    entity.move[pressed ? 'forward' : 'stop']();
   });
 
   input.on('ArrowLeft', pressed => {
-    entity.move.direction += pressed ? -1 : 1;
+    entity.move[pressed ? 'backward' : 'stop']();
   });
 
   input.on('Space', pressed => {
-    if (pressed) {
-      entity.jump.start();
-    } else {
-      entity.jump.cancel();
-    }
+    entity.jump[pressed ? 'start' : 'cancel']();
   });
 
   return layer;
