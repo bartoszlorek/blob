@@ -19,7 +19,7 @@ const solidLayers = ['ground', 'bombs'];
 
 const factories = [
   createGround,
-  // createBombs,
+  createBombs,
   createPrizes,
   createEffects,
   createPlayer

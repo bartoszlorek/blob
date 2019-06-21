@@ -7,10 +7,8 @@ import Killable from '@traits/Killable';
 import Move from '@traits/Move';
 import Jump from '@traits/Jump';
 
-const PLAYER_COLOR = 0x00fd83;
-
 function createPlayer(data, global, level) {
-  const layer = new Layer('player', PLAYER_COLOR);
+  const layer = new Layer('player', 0x2de2e6);
   const entity = new Entity(0, -250, global.size);
   layer.append(entity);
 

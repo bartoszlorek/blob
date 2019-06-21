@@ -5,11 +5,10 @@ import Entity from '@models/Entity';
 import Shine from '@traits/Shine';
 import Collectable from '@traits/Collectable';
 
-const PRIZES_COLOR = 0xf2dc30;
-
 function createPrizes(data, global, level) {
-  const layer = new Layer('prizes', PRIZES_COLOR);
-  layer.graphics.filters = [new GlowFilter(10, 1, 0, PRIZES_COLOR)];
+  const color = 0xf2dc30;
+  const layer = new Layer('prizes', color);
+  layer.graphics.filters = [new GlowFilter(10, 1, 0, color)];
 
   data['prizes'].forEach(pos => {
     const entity = new Entity(
