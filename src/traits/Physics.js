@@ -9,7 +9,7 @@ class Physics extends Trait {
   update(entity, deltaTime) {
     const {physics} = entity.ownerLevel;
 
-    physics.calculateGravityDirection(entity);
+    physics.calculateGravity(entity);
     physics.applyGravity(entity);
 
     entity.pos.x += entity.vel.x * deltaTime;

@@ -1,5 +1,5 @@
-import {createBounds} from '@utils/bounds';
 import Container from '@models/Container';
+import Bounds from '@models/Bounds';
 
 class EntityContainer extends Container {
   constructor() {
@@ -8,7 +8,7 @@ class EntityContainer extends Container {
   }
 
   bounds() {
-    return createBounds(this.items);
+    return new Bounds(this.items);
   }
 }
 

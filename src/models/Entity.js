@@ -45,11 +45,11 @@ class Entity {
   }
 
   get gridX() {
-    return this.ownerGlobal.localToGrid(this.x);
+    return this.ownerGlobal.localToGrid(this.pos.x);
   }
 
   get gridY() {
-    return this.ownerGlobal.localToGrid(this.y);
+    return this.ownerGlobal.localToGrid(this.pos.y);
   }
 
   get ownerLevel() {
