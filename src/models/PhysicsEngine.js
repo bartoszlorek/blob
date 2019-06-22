@@ -47,40 +47,6 @@ class PhysicsEngine {
     }
   }
 
-  rotateVector(vector) {
-    const {direction} = this.gravity;
-    const {x, y} = vector;
-
-    if (direction.y < 0) {
-      vector.x = -x;
-      vector.y = -y;
-    } else if (direction.x > 0) {
-      vector.x = y;
-      vector.y = -x;
-    } else if (direction.x < 0) {
-      vector.x = -y;
-      vector.y = x;
-    }
-    return vector;
-  }
-
-  rotateEdge(edge) {
-    const table = Object.values(EDGE);
-    const index = table.indexOf(edge);
-    const {direction} = this.gravity;
-
-    let shift = 0;
-    if (direction.x < 0) {
-      shift = 1;
-    } else if (direction.y < 0) {
-      shift = 2;
-    } else if (direction.x > 0) {
-      shift = 3;
-    }
-    const rotatedIndex = modIndex(index - shift, 4);
-    return table[rotatedIndex];
-  }
-
   applyCollisionX(entity) {
     arrayForEach(this.solids, layer => {
       layer.entities.forEach(other => {
@@ -117,6 +83,40 @@ class PhysicsEngine {
         }
       });
     });
+  }
+
+  rotateVector(vector) {
+    const {direction} = this.gravity;
+    const {x, y} = vector;
+
+    if (direction.y < 0) {
+      vector.x = -x;
+      vector.y = -y;
+    } else if (direction.x > 0) {
+      vector.x = y;
+      vector.y = -x;
+    } else if (direction.x < 0) {
+      vector.x = -y;
+      vector.y = x;
+    }
+    return vector;
+  }
+
+  rotateEdge(edge) {
+    const table = Object.values(EDGE);
+    const index = table.indexOf(edge);
+    const {direction} = this.gravity;
+
+    let shift = 0;
+    if (direction.x < 0) {
+      shift = 1;
+    } else if (direction.y < 0) {
+      shift = 2;
+    } else if (direction.x > 0) {
+      shift = 3;
+    }
+    const rotatedIndex = modIndex(index - shift, 4);
+    return table[rotatedIndex];
   }
 }
 

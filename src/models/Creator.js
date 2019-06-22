@@ -18,7 +18,7 @@ class Creator {
     const {x, y} = this.interaction.mouse.global;
     const current = {
       x: this.global.globalToGridX(x),
-      y: this.global.globalToGridX(y)
+      y: this.global.globalToGridY(y)
     };
 
     arrayForEach([...this.points, current], callback);
