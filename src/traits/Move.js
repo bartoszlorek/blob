@@ -1,3 +1,4 @@
+import {lerp} from '@utils/math';
 import Trait from '@traits/Trait';
 import Vector from '@models/Vector';
 
@@ -15,6 +16,7 @@ class Move extends Trait {
     this.acceleration = 500;
     this.deceleration = 300;
     this.dragFactor = 0.95;
+    this.alignThreshold = 0.65;
   }
 
   forward() {
@@ -43,6 +45,27 @@ class Move extends Trait {
     }
 
     entity.vel[axis] *= this.dragFactor;
+  }
+
+  obstruct(entity) {
+    if (this.direction !== 0) {
+      return;
+    }
+    const axis = this.physics.gravity.vertical ? 'x' : 'y';
+    const base = entity.pos[axis] / entity.size;
+
+    const n = Math.abs(base) % 1;
+    const align = (n < 0.5 ? 1 - n : n) * 2 - 1;
+
+    if (align > this.alignThreshold) {
+      const aligned = Math.round(base) * entity.size;
+      entity.pos[axis] = lerp(entity.pos[axis], aligned, 0.2);
+
+      // to compensate lerp error
+      if (align > 0.99) {
+        entity.pos[axis] = aligned;
+      }
+    }
   }
 }
 
