@@ -1,8 +1,9 @@
-export function createMatrix(rows, cols) {
-  const array = [];
-
-  for (let x = 0; x < rows; x++) {
-    array.push(new Array(cols));
+export function matrixForEach(matrix, iteratee) {
+  for (let x = 0; x < matrix.length; x++) {
+    for (let y = 0; y < matrix[x].length; y++) {
+      if (iteratee(matrix[x][y], x, y) === false) {
+        return;
+      }
+    }
   }
-  return array;
 }

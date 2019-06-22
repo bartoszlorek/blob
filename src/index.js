@@ -6,7 +6,7 @@ import Helper from '@models/Helper';
 import Global from '@models/Global';
 import Level from '@models/Level';
 
-import data from '@levels/1-3.json';
+import data from '@levels/1-1.json';
 
 loader.load(() => {
   const global = new Global(app, 24);
@@ -21,12 +21,14 @@ loader.load(() => {
     level.update(deltaTime);
     level.render(global);
 
-    const {pos} = level.layers.player.head;
+    const {head} = level.layers.player;
+    if (head) {
+      helper.renderBox({
+        x: global.gridToLocal(global.localToGrid(head.pos.x)),
+        y: global.gridToLocal(global.localToGrid(head.pos.y))
+      });
+    }
     helper.renderBounds(level.physics.bounds);
-    helper.renderBox({
-      x: global.gridToLocal(global.localToGrid(pos.x)),
-      y: global.gridToLocal(global.localToGrid(pos.y))
-    });
     pointer.forEach(point => {
       helper.renderBox({
         x: global.gridToLocal(point.x),

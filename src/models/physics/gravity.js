@@ -1,7 +1,7 @@
 import {createRaycast} from '@models/physics/raycast';
 import {arrayForEach} from '@utils/array';
-import {createMatrix} from '@utils/matrix';
 import Vector from '@models/Vector';
+import Matrix from '@models/Matrix';
 
 const SOLID_SOLID = Symbol('solid-solid');
 const SOLID_BORDER = Symbol('solid-border');
@@ -89,29 +89,18 @@ function outsideBounds(entity, bounds) {
 }
 
 function isCornerCase(entity, layers) {
-  const mat = createMatrix(3, 3);
+  const neighbours = new Matrix(3, 3);
+  const {entries: e} = neighbours;
 
-  // set matrix of closest neighbours
   arrayForEach(layers, layer => {
-    layer.entities.forEach(other => {
-      if (
-        other.gridX >= entity.gridX - 1 &&
-        other.gridY >= entity.gridY - 1 &&
-        other.gridX <= entity.gridX + 1 &&
-        other.gridY <= entity.gridY + 1
-      ) {
-        const x = other.gridX - entity.gridX + 1;
-        const y = other.gridY - entity.gridY + 1;
-        mat[x][y] = true;
-      }
-    });
+    neighbours.merge(layer.entities.closest(entity, 1));
   });
 
   return (
-    (mat[2][0] && !mat[1][0] && !mat[2][1]) || // top-right
-    (mat[2][2] && !mat[2][1] && !mat[1][2]) || // bottom-right
-    (mat[0][2] && !mat[1][2] && !mat[0][1]) || // bottom-left
-    (mat[0][0] && !mat[0][1] && !mat[1][0]) // top-left
+    (e[2][0] && !e[1][0] && !e[2][1]) || // top-right
+    (e[2][2] && !e[2][1] && !e[1][2]) || // bottom-right
+    (e[0][2] && !e[1][2] && !e[0][1]) || // bottom-left
+    (e[0][0] && !e[0][1] && !e[1][0]) // top-left
   );
 }
 

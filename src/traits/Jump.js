@@ -68,7 +68,8 @@ class Jump extends Trait {
   obstruct(entity, edge) {
     const {direction} = this.physics.gravity;
 
-    this.physics.rotateEdge(edge);
+    // todo: rotate top edge
+    // this.physics.rotateEdge(edge);
 
     const obstructedFromTop =
       (direction.y > 0 && edge === EDGE.TOP) ||
