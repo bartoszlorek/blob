@@ -13,7 +13,10 @@ export const EDGE = {
 
 class PhysicsEngine {
   constructor() {
-    this.gravity = new Force(0, 1, {strength: 25});
+    this.gravity = new Force(0, 1, {
+      strength: 25,
+      bias: 0.4
+    });
     this.solids = [];
     this.bounds = null;
   }
