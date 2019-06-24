@@ -16,6 +16,7 @@ class Layer {
   }
 
   update(deltaTime) {
+    this.entities.memo.clear();
     this.entities.forEach(entity => {
       entity.update(deltaTime);
     });
