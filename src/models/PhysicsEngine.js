@@ -15,7 +15,7 @@ class PhysicsEngine {
   constructor() {
     this.gravity = new Force(0, 1, {
       strength: 25,
-      bias: 0.4
+      dexterity: 0.6
     });
     this.solids = [];
     this.bounds = null;

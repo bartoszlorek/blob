@@ -13,8 +13,8 @@ class Jump extends Trait {
     }
     this.physics = physics;
     this.velocity = new Force(0, -1, {
-      strength: 50,
-      bias: 0.6
+      strength: 100,
+      dexterity: 0.6
     });
 
     this.ready = 0;
@@ -25,7 +25,7 @@ class Jump extends Trait {
     this.jumpSound = new Sound('jump');
 
     // parameters
-    this.duration = 0.25;
+    this.duration = 0.1;
     this.gracePeriod = 0.1; // able to jump again before landing
   }
 

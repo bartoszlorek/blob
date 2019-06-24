@@ -6,6 +6,8 @@ class Haptic extends Trait {
   constructor(...layers) {
     super('haptic');
     this.layers = layers;
+
+    // parameters
     this.color = 0xffa3b7;
   }
 

@@ -1,3 +1,4 @@
+// bias 0-1
 export function lerp(from, to, bias) {
   return (1 - bias) * from + bias * to;
 }
