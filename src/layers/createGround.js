@@ -1,5 +1,6 @@
 import Layer from '@models/Layer';
 import Entity from '@models/Entity';
+import Colorful from '@traits/Colorful';
 
 function createGround(data, global, level) {
   const layer = new Layer('ground', 0xff3864);
@@ -11,6 +12,7 @@ function createGround(data, global, level) {
       global.size
     );
 
+    entity.addTrait(new Colorful());
     layer.append(entity);
   });
 

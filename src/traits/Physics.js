@@ -19,25 +19,25 @@ class Physics extends Trait {
     physics.applyCollisionY(entity);
   }
 
-  obstruct(entity, edge, match) {
+  obstruct(entity, edge, other) {
     switch (edge) {
       case EDGE.BOTTOM:
-        entity.bottom = match.top;
+        entity.bottom = other.top;
         entity.vel.y = 0;
         break;
 
       case EDGE.TOP:
-        entity.top = match.bottom;
+        entity.top = other.bottom;
         entity.vel.y = 0;
         break;
 
       case EDGE.LEFT:
-        entity.left = match.right;
+        entity.left = other.right;
         entity.vel.x = 0;
         break;
 
       case EDGE.RIGHT:
-        entity.right = match.left;
+        entity.right = other.left;
         entity.vel.x = 0;
         break;
     }

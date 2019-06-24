@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "webpack-dev-server --content-base public/",
-    "build": "webpack -p",
-    "test": "jest",
-    "test-watch": "npm test -- --watch"
+    "build": "webpack -p"
   },
   "repository": {
     "type": "git",
@@ -29,6 +27,7 @@
     "babel-jest": "^24.8.0",
     "babel-loader": "^8.0.6",
     "jest": "^24.8.0",
+    "jest-canvas-mock": "^2.1.0",
     "webpack": "^4.35.0",
     "webpack-cli": "^3.3.4",
     "webpack-dev-server": "^3.7.2"

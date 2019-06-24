@@ -20,7 +20,7 @@ class EntityContainer extends Container {
       const x = other.gridX - entity.gridX + radius;
       const y = other.gridY - entity.gridY + radius;
       if (x >= 0 && x < size && y >= 0 && y < size) {
-        area.entries[x][y] = true;
+        area.entries[x][y] = other;
       }
     });
 

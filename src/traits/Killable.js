@@ -5,9 +5,9 @@ class Killable extends Trait {
     super('killable');
   }
 
-  obstruct(entity, edge, match) {
-    if (match.parent.name === 'bombs') {
-      match.explosive.start(entity);
+  obstruct(entity, edge, other) {
+    if (other.parent.name === 'bombs') {
+      other.explosive.start(entity);
     }
   }
 }

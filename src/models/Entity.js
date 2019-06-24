@@ -8,6 +8,7 @@ class Entity {
     this.size = size;
 
     this.visible = true;
+    this.color = null;
     this.parent = null;
     this.traits = [];
   }
@@ -80,9 +81,9 @@ class Entity {
     });
   }
 
-  obstruct(edge, match) {
+  obstruct(edge, other) {
     arrayForEach(this.traits, trait => {
-      trait.obstruct(this, edge, match);
+      trait.obstruct(this, edge, other);
     });
   }
 }

@@ -5,7 +5,7 @@ const app = new Application({
   //transparent: true,
   width: window.innerWidth,
   height: window.innerHeight,
-  backgroundColor: 0x121c44
+  backgroundColor: 0x160644
 });
 
 document.body.appendChild(app.view);

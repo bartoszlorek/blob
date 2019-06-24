@@ -2,7 +2,7 @@ import {Graphics} from 'pixi.js';
 import EntityContainer from '@models/EntityContainer';
 
 class Layer {
-  constructor(name, color = 0xe6e6e6) {
+  constructor(name, color = 0x7c7c7c) {
     this.name = name;
     this.color = color;
 
@@ -23,9 +23,9 @@ class Layer {
 
   render(global) {
     this.graphics.clear();
-    this.graphics.beginFill(this.color);
     this.entities.forEach(entity => {
       if (entity.visible) {
+        this.graphics.beginFill(entity.color || this.color);
         this.graphics.drawRect(
           global.rootX + entity.left,
           global.rootY + entity.top,
