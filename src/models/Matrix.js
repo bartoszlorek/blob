@@ -1,29 +1,31 @@
 import {arrayForEach} from '@utils/array';
-import {matrixForEach} from '@utils/matrix';
+import {objectForEach} from '@utils/object';
 
 class Matrix {
-  constructor(rows, cols) {
-    this.rows = rows;
+  constructor(cols = 3, rows = 3) {
     this.cols = cols;
+    this.rows = rows;
     this.entries = [];
-
-    for (let x = 0; x < rows; x++) {
-      this.entries.push(new Array(cols));
-    }
   }
 
-  merge(...matrices) {
-    arrayForEach(matrices, matrix => {
-      matrix.forEach((value, x, y) => {
-        if (value !== undefined) {
-          this.entries[x][y] = value;
-        }
+  _index(col, row) {
+    return row * this.rows + col;
+  }
+
+  set(col, row, value) {
+    this.entries[this._index(col, row)] = value;
+  }
+
+  n(col, row) {
+    return this.entries[this._index(col, row)];
+  }
+
+  merge(...matrix) {
+    arrayForEach(matrix, mat => {
+      objectForEach(mat.entries, (value, index) => {
+        this.entries[index] = value;
       });
     });
-  }
-
-  forEach(iteratee) {
-    matrixForEach(this.entries, iteratee);
   }
 }
 

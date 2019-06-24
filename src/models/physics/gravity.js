@@ -19,10 +19,10 @@ export function calculateGravity({entity, layers, bounds}) {
     return null;
   }
 
-  const closest = getClosestEntities(entity, layers);
+  const closestOthers = getClosestOthers(entity, layers);
 
   // corner case inside bounds
-  if (isCornerCase(closest)) {
+  if (isCornerCase(closestOthers)) {
     return null;
   }
 
@@ -36,7 +36,7 @@ export function calculateGravity({entity, layers, bounds}) {
   const x = sortPair(left, right);
 
   // cave cases
-  if (closest.entries[0][1] && closest.entries[2][1]) {
+  if (closestOthers.n(0, 1) && closestOthers.n(2, 1)) {
     if (y.type === SOLID_SOLID) {
       return new Vector(0, 1);
     }
@@ -45,7 +45,7 @@ export function calculateGravity({entity, layers, bounds}) {
     }
   }
 
-  if (closest.entries[1][0] && closest.entries[1][2]) {
+  if (closestOthers.n(1, 0) && closestOthers.n(1, 2)) {
     return new Vector(0, 1);
   }
 
@@ -147,22 +147,22 @@ function outsideBounds(entity, bounds) {
   }
 }
 
-function getClosestEntities(entity, layers) {
-  const matrix = new Matrix(3, 3);
-
-  arrayForEach(layers, layer => {
-    matrix.merge(layer.entities.closest(entity, 1));
-  });
-  return matrix;
+function isCornerCase(mat) {
+  return (
+    (mat.n(2, 0) && !mat.n(1, 0) && !mat.n(2, 1)) || // top-right
+    (mat.n(2, 2) && !mat.n(2, 1) && !mat.n(1, 2)) || // bottom-right
+    (mat.n(0, 2) && !mat.n(1, 2) && !mat.n(0, 1)) || // bottom-left
+    (mat.n(0, 0) && !mat.n(0, 1) && !mat.n(1, 0)) // top-left
+  );
 }
 
-function isCornerCase({entries: e}) {
-  return (
-    (e[2][0] && !e[1][0] && !e[2][1]) || // top-right
-    (e[2][2] && !e[2][1] && !e[1][2]) || // bottom-right
-    (e[0][2] && !e[1][2] && !e[0][1]) || // bottom-left
-    (e[0][0] && !e[0][1] && !e[1][0]) // top-left
-  );
+function getClosestOthers(entity, layers) {
+  const result = new Matrix(3, 3);
+
+  arrayForEach(layers, layer => {
+    result.merge(layer.entities.closest(entity, 1));
+  });
+  return result;
 }
 
 export function sortPair(a, b) {

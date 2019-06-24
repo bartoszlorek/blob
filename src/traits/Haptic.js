@@ -15,7 +15,7 @@ class Haptic extends Trait {
 
     arrayForEach(this.layers, layer => {
       const closest = layers[layer].entities.closest(entity, 1);
-      const other = closest.entries[down.x + 1][down.y + 1];
+      const other = closest.n(down.x + 1, down.y + 1);
 
       if (other) {
         other.colorful.setColor(this.color);
