@@ -1,3 +1,4 @@
+import {arrayForEach} from '@utils/array';
 import Container from '@models/Container';
 import Bounds from '@models/Bounds';
 import Matrix from '@models/Matrix';
@@ -6,38 +7,61 @@ import Memo from '@models/Memo';
 class EntityContainer extends Container {
   constructor() {
     super();
-    // todo: Bin-Lattice Spatial Subdivision
     this.memo = new Memo();
+    this.resolution = 100;
   }
 
   bounds() {
     return this.memo.use('bounds', () => {
-      return this._bounds();
+      return new Bounds(this.items);
     });
   }
 
   closest(entity, radius = 1) {
     return this.memo.use('closest', () => {
-      return this._closest(entity, radius);
+      const size = radius * 2 + 1;
+      const area = new Matrix(size, size);
+
+      this.forEach(other => {
+        const x = other.gridX - entity.gridX + radius;
+        const y = other.gridY - entity.gridY + radius;
+        if (x >= 0 && x < size && y >= 0 && y < size) {
+          area.set(x, y, other);
+        }
+      });
+      return area;
     });
   }
 
-  _bounds() {
-    return new Bounds(this.items);
+  // Bin-Lattice Spatial Subdivision
+  // method implementation
+
+  forEachIn(entity, callback) {
+    const name = this.subdividedName(entity);
+    const items = this.memo.use('forEachIn', () => {
+      return this.subdivideItems();
+    });
+
+    if (items[name]) {
+      arrayForEach(items[name], callback);
+    }
   }
 
-  _closest(entity, radius = 1) {
-    const size = radius * 2 + 1;
-    const area = new Matrix(size, size);
-
-    this.forEach(other => {
-      const x = other.gridX - entity.gridX + radius;
-      const y = other.gridY - entity.gridY + radius;
-      if (x >= 0 && x < size && y >= 0 && y < size) {
-        area.set(x, y, other);
-      }
+  subdivideItems() {
+    const result = {};
+    this.forEach(entity => {
+      const name = this.subdividedName(entity);
+      result[name] === undefined && (result[name] = []);
+      result[name].push(entity);
     });
-    return area;
+    return result;
+  }
+
+  subdividedName(entity) {
+    const global = entity.ownerGlobal;
+    const x = Math.round(global.localToGlobalX(entity.pos.x) / this.resolution);
+    const y = Math.round(global.localToGlobalY(entity.pos.y) / this.resolution);
+    return `${x}-${y}`;
   }
 }
 

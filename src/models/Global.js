@@ -54,6 +54,14 @@ class Global {
     return Math.round(pos / this.size) || 0;
   }
 
+  localToGlobalX(x) {
+    return x + this.rootX;
+  }
+
+  localToGlobalY(y) {
+    return y + this.rootY;
+  }
+
   globalToLocalX(x) {
     return x - this.rootX;
   }
