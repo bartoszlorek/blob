@@ -8,10 +8,13 @@ import Haptic from '@traits/Haptic';
 import Move from '@traits/Move';
 import Jump from '@traits/Jump';
 
-function createPlayer(global, {}) {
+function createPlayer(global, {player}) {
   const layer = new Layer('player', 0x2de2e6);
-  const entity = new Entity(0, -250, global.size);
-  layer.append(entity);
+  const entity = new Entity(
+    global.gridToLocal(player[0]),
+    global.gridToLocal(player[1]),
+    global.size
+  );
 
   entity.addTrait(new Physics(global, {}));
   entity.addTrait(new Killable(global, {}));
@@ -33,6 +36,7 @@ function createPlayer(global, {}) {
     entity.jump[pressed ? 'start' : 'cancel']();
   });
 
+  layer.append(entity);
   return layer;
 }
 
