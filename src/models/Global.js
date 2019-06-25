@@ -1,7 +1,7 @@
 import Events from '@models/Events';
 
 class Global {
-  constructor(app, size = 24) {
+  constructor({app, size = 24}) {
     this.app = app;
     this.size = size;
     this.level = null;
@@ -35,15 +35,17 @@ class Global {
     if (this.level !== null) {
       this.unload();
     }
-    this.app.stage.addChild(level.elements);
     this.level = level;
     level.onLoad(this);
+    this.app.stage.addChild(level.elements);
+    this.events.publish('load_level', this);
   }
 
   unload() {
-    this.app.stage.removeChild(this.level.elements);
-    this.level.onUnload();
     this.level = null;
+    this.level.onUnload();
+    this.app.stage.removeChild(this.level.elements);
+    this.events.publish('unload_level', this);
   }
 
   gridToLocal(pos) {

@@ -15,6 +15,17 @@ class Helper {
     this.pointSize = 4;
     this.lineWidth = 2;
     this.color = 0xffffff;
+
+    // events
+    global.events.onLoadLevel(() => {
+      this.graphics = new Graphics();
+      this.level = global.level;
+      this.level.helpers.addChild(this.graphics);
+    });
+
+    global.events.onUnloadLevel(() => {
+      this.level = null;
+    });
   }
 
   renderPoint(vector) {
@@ -59,12 +70,9 @@ class Helper {
   }
 
   _render() {
-    if (this.level !== this.global.level) {
-      this.graphics = new Graphics();
-      this.level = this.global.level;
-      this.level.helpers.addChild(this.graphics);
+    if (!this.level) {
+      return;
     }
-
     this.graphics.clear();
     arrayForEach(this.tasks, task => {
       if (task.type === 'point') {

@@ -1,11 +1,11 @@
 import {GlowFilter} from '@pixi/filter-glow';
 import Layer from '@models/Layer';
 
-function createEffects(data, global, level) {
+function createEffects(global, {}) {
   const color = 0xffffff;
   const layer = new Layer('effects', color);
-  layer.graphics.filters = [new GlowFilter(15, 1, 0, color)];
 
+  layer.filters([new GlowFilter(15, 1, 0, color)]);
   return layer;
 }
 

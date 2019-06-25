@@ -5,7 +5,7 @@ import Blink from '@traits/Blink';
 import Animation from '@traits/Animation';
 
 class Explosive extends Trait {
-  constructor(range = 0) {
+  constructor(global, {range = 0}) {
     super('explosive');
     this.range = range;
     this.timer = 0.25;
@@ -23,7 +23,7 @@ class Explosive extends Trait {
       return false;
     }
     if (this.ignition === 0) {
-      entity.addTrait(new Blink(0.1));
+      entity.addTrait(new Blink({freq: 0.1}));
       this.ignition++;
     } else if (this.timer < 0) {
       this.exploded = true;

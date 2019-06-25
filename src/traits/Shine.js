@@ -1,7 +1,7 @@
 import Trait from '@traits/Trait';
 
 class Shine extends Trait {
-  constructor(size) {
+  constructor(global, {size}) {
     super('shine');
     this.size = size;
     this.timer = 0;

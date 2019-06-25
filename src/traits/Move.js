@@ -3,13 +3,9 @@ import Trait from '@traits/Trait';
 import Vector from '@models/Vector';
 
 class Move extends Trait {
-  constructor(physics) {
+  constructor(global, {}) {
     super('move');
-
-    if (!physics) {
-      throw 'Trait `move` requires Physics Engine';
-    }
-    this.physics = physics;
+    this.physics = global.level.physics;
     this.direction = 0;
 
     // parameters

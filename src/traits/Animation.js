@@ -2,7 +2,7 @@ import KeyFrames from '@models/KeyFrames';
 import Trait from '@traits/Trait';
 
 class Animation extends Trait {
-  constructor() {
+  constructor(global, {}) {
     super('animation');
     this.keyframes = [];
   }

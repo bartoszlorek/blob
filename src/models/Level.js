@@ -27,9 +27,9 @@ const factories = [
 
 class Level {
   constructor(data) {
-    this._data = data;
-
+    this.data = data;
     this.name = data.name;
+
     this.global = null;
     this.layers = {};
     this.physics = new PhysicsEngine();
@@ -58,7 +58,7 @@ class Level {
     this.resize();
 
     arrayForEach(factories, factory => {
-      const layer = factory(this._data, global, this);
+      const layer = factory(global, this.data);
       layer.level = this;
 
       this.foreground.addChild(layer.graphics);

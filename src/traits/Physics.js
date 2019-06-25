@@ -2,21 +2,20 @@ import Trait from '@traits/Trait';
 import {EDGE} from '@models/PhysicsEngine';
 
 class Physics extends Trait {
-  constructor() {
+  constructor(global, {}) {
     super('physics');
+    this.physics = global.level.physics;
   }
 
   update(entity, deltaTime) {
-    const {physics} = entity.ownerLevel;
-
-    physics.calculateGravity(entity);
-    physics.applyGravity(entity);
+    this.physics.calculateGravity(entity);
+    this.physics.applyGravity(entity);
 
     entity.pos.x += entity.vel.x * deltaTime;
-    physics.applyCollisionX(entity);
+    this.physics.applyCollisionX(entity);
 
     entity.pos.y += entity.vel.y * deltaTime;
-    physics.applyCollisionY(entity);
+    this.physics.applyCollisionY(entity);
   }
 
   obstruct(entity, edge, other) {

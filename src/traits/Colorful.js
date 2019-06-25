@@ -2,7 +2,7 @@ import Trait from '@traits/Trait';
 import {blend} from '@utils/color';
 
 class Colorful extends Trait {
-  constructor() {
+  constructor(global, {}) {
     super('colorful');
     this.color = null;
     this.base = null;

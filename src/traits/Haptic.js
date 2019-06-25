@@ -3,8 +3,9 @@ import Vector from '@models/Vector';
 import Trait from '@traits/Trait';
 
 class Haptic extends Trait {
-  constructor(...layers) {
+  constructor(global, {layers}) {
     super('haptic');
+    this.global = global;
     this.layers = layers;
 
     // parameters

@@ -8,16 +8,16 @@ import Haptic from '@traits/Haptic';
 import Move from '@traits/Move';
 import Jump from '@traits/Jump';
 
-function createPlayer(data, global, level) {
+function createPlayer(global, {}) {
   const layer = new Layer('player', 0x2de2e6);
   const entity = new Entity(0, -250, global.size);
   layer.append(entity);
 
-  entity.addTrait(new Physics());
-  entity.addTrait(new Killable());
-  entity.addTrait(new Move(level.physics));
-  entity.addTrait(new Jump(level.physics));
-  entity.addTrait(new Haptic('ground'));
+  entity.addTrait(new Physics(global, {}));
+  entity.addTrait(new Killable(global, {}));
+  entity.addTrait(new Move(global, {}));
+  entity.addTrait(new Jump(global, {}));
+  entity.addTrait(new Haptic(global, {layers: ['ground']}));
 
   // todo: remove listeners on level unload
   const input = new Keyboard();

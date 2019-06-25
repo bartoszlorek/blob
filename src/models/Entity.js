@@ -6,10 +6,10 @@ class Entity {
     this.pos = new Vector(x, y);
     this.vel = new Vector(0, 0);
     this.size = size;
+    this.parent = null;
 
     this.visible = true;
     this.color = null;
-    this.parent = null;
     this.traits = [];
   }
 

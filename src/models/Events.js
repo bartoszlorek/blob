@@ -12,6 +12,14 @@ class Events extends PubSub {
   onResize(handler) {
     this.subscribe('resize', handler);
   }
+
+  onLoadLevel(handler) {
+    this.subscribe('load_level', handler);
+  }
+
+  onUnloadLevel(handler) {
+    this.subscribe('unload_level', handler);
+  }
 }
 
 export default Events;

@@ -2,17 +2,17 @@ import Layer from '@models/Layer';
 import Entity from '@models/Entity';
 import Colorful from '@traits/Colorful';
 
-function createGround(data, global, level) {
+function createGround(global, {ground}) {
   const layer = new Layer('ground', 0xff3864);
 
-  data['ground'].forEach(pos => {
+  ground.forEach(pos => {
     const entity = new Entity(
       global.gridToLocal(pos[0]),
       global.gridToLocal(pos[1]),
       global.size
     );
 
-    entity.addTrait(new Colorful());
+    entity.addTrait(new Colorful(global, {}));
     layer.append(entity);
   });
 

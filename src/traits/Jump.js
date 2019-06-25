@@ -5,13 +5,9 @@ import Force from '@models/Force';
 import Vector from '@models/Vector';
 
 class Jump extends Trait {
-  constructor(physics) {
+  constructor(global, {}) {
     super('jump');
-
-    if (!physics) {
-      throw 'Trait `jump` requires Physics Engine';
-    }
-    this.physics = physics;
+    this.physics = global.level.physics;
     this.velocity = new Force(0, -1, {
       strength: 100,
       dexterity: 0.6

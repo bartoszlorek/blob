@@ -1,13 +1,14 @@
 import Trait from '@traits/Trait';
 
 class Collectable extends Trait {
-  constructor() {
+  constructor(global, {}) {
     super('collectable');
+    this.level = global.level;
   }
 
   update(entity, deltaTime) {
-    let player = entity.ownerLevel.layers.player.head;
-    if (player !== undefined && player.intersection(entity)) {
+    const {head: player} = this.level.layers.player;
+    if (player && player.intersection(entity)) {
       console.log('score!');
     }
   }

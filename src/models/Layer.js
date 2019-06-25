@@ -54,6 +54,10 @@ class Layer {
       entity.parent = null;
     }
   }
+
+  filters(array) {
+    this.graphics.filters = array;
+  }
 }
 
 export default Layer;
