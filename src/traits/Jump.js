@@ -51,10 +51,9 @@ class Jump extends Trait {
       if (this.ready === 1) {
         this.jumpSound.play();
       }
-
-      const up = this.physics.rotateVector(new Vector(0, -1));
+      const rotatedTop = this.physics.rotateVector(new Vector(0, -1));
       this.velocity.applyTo(entity.vel);
-      this.velocity.setForce(up.x, up.y);
+      this.velocity.setForce(rotatedTop.x, rotatedTop.y);
       this.engageTime -= deltaTime;
     }
 
@@ -62,29 +61,13 @@ class Jump extends Trait {
   }
 
   obstruct(entity, edge) {
-    const {direction} = this.physics.gravity;
-
-    // todo: rotate top edge
-    // this.physics.rotateEdge(edge);
-
-    const obstructedFromTop =
-      (direction.y > 0 && edge === EDGE.TOP) ||
-      (direction.y < 0 && edge === EDGE.BOTTOM) ||
-      (direction.x > 0 && edge === EDGE.LEFT) ||
-      (direction.x < 0 && edge === EDGE.RIGHT);
-
-    const obstructedFromBottom =
-      (direction.y > 0 && edge === EDGE.BOTTOM) ||
-      (direction.y < 0 && edge === EDGE.TOP) ||
-      (direction.x > 0 && edge === EDGE.RIGHT) ||
-      (direction.x < 0 && edge === EDGE.LEFT);
-
-    if (obstructedFromBottom) {
+    const rotatedEdge = this.physics.rotateEdge(edge);
+    if (rotatedEdge === EDGE.BOTTOM) {
       if (this.ready < 0) {
         this.pluckSound.play();
       }
       this.ready = 1;
-    } else if (obstructedFromTop) {
+    } else if (rotatedEdge === EDGE.TOP) {
       this.cancel();
     }
   }
