@@ -61,15 +61,6 @@ class Entity {
     return (this.ownerLevel && this.ownerLevel.global) || null;
   }
 
-  intersection(entity) {
-    return (
-      this.top < entity.bottom &&
-      this.bottom > entity.top &&
-      this.right > entity.left &&
-      this.left < entity.right
-    );
-  }
-
   addTrait(trait) {
     this.traits.push(trait);
     this[trait.name] = trait;
@@ -85,6 +76,15 @@ class Entity {
     arrayForEach(this.traits, trait => {
       trait.obstruct(this, edge, other);
     });
+  }
+
+  intersection(other) {
+    return (
+      this.top < other.bottom &&
+      this.bottom > other.top &&
+      this.right > other.left &&
+      this.left < other.right
+    );
   }
 }
 

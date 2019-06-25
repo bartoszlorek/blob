@@ -39,6 +39,17 @@ class Bounds {
     this.bottom += value;
     this.left -= value;
   }
+
+  // the border represents bounds in a grid units
+  toBorder(global) {
+    const extend = global.size / 2;
+    return {
+      top: global.localToGrid(this.top - extend),
+      right: global.localToGrid(this.right + extend),
+      bottom: global.localToGrid(this.bottom + extend),
+      left: global.localToGrid(this.left - extend)
+    };
+  }
 }
 
 export default Bounds;

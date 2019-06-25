@@ -14,6 +14,7 @@ class Matrix {
 
   set(col, row, value) {
     this.entries[this._index(col, row)] = value;
+    return this;
   }
 
   n(col, row) {
@@ -26,6 +27,7 @@ class Matrix {
         this.entries[index] = value;
       });
     });
+    return this;
   }
 }
 

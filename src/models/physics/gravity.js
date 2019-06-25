@@ -1,5 +1,5 @@
-import {createRaycast} from '@models/physics/raycast';
-import {arrayForEach} from '@utils/array';
+import {arrayReduce} from '@utils/array';
+import {createRaycast, originFromEntity} from './raycast';
 import Vector from '@models/Vector';
 import Matrix from '@models/Matrix';
 
@@ -7,7 +7,7 @@ export const SOLID_SOLID = Symbol('solid-solid');
 export const SOLID_BORDER = Symbol('solid-border');
 export const BORDER_BORDER = Symbol('border-border');
 
-export function calculateGravity({entity, layers, bounds}) {
+export function calculateGravity({entity, solids, bounds}) {
   const outside = outsideBounds(entity, bounds);
 
   if (outside) {
@@ -19,24 +19,27 @@ export function calculateGravity({entity, layers, bounds}) {
     return null;
   }
 
-  const closestOthers = getClosestOthers(entity, layers);
+  const closestSolids = getClosestSolids(entity, solids);
 
   // corner case inside bounds
-  if (isCornerCase(closestOthers)) {
+  if (isCornerCase(closestSolids)) {
     return null;
   }
 
-  const raycast = createRaycast(layers, bounds);
-  const top = raycast(entity, new Vector(0, -1));
-  const right = raycast(entity, new Vector(1, 0));
-  const bottom = raycast(entity, new Vector(0, 1));
-  const left = raycast(entity, new Vector(-1, 0));
+  const border = bounds.toBorder(entity.ownerGlobal);
+  const origin = originFromEntity(entity);
+
+  const raycast = createRaycast(solids, border);
+  const top = raycast(origin, new Vector(0, -1));
+  const right = raycast(origin, new Vector(1, 0));
+  const bottom = raycast(origin, new Vector(0, 1));
+  const left = raycast(origin, new Vector(-1, 0));
 
   const y = sortPair(top, bottom);
   const x = sortPair(left, right);
 
   // cave cases
-  if (closestOthers.n(0, 1) && closestOthers.n(2, 1)) {
+  if (closestSolids.n(0, 1) && closestSolids.n(2, 1)) {
     if (y.type === SOLID_SOLID) {
       return new Vector(0, 1);
     }
@@ -45,7 +48,7 @@ export function calculateGravity({entity, layers, bounds}) {
     }
   }
 
-  if (closestOthers.n(1, 0) && closestOthers.n(1, 2)) {
+  if (closestSolids.n(1, 0) && closestSolids.n(1, 2)) {
     return new Vector(0, 1);
   }
 
@@ -67,7 +70,7 @@ export function calculateGravity({entity, layers, bounds}) {
   }
 
   if (x.type === SOLID_SOLID && y.type === SOLID_SOLID) {
-    const closestSolid = closestRay(x[0], x[1], y[0], y[1]);
+    const closestSolid = getClosestRay(x[0], x[1], y[0], y[1]);
 
     if (closestSolid) {
       return closestSolid.direction;
@@ -82,12 +85,12 @@ export function calculateGravity({entity, layers, bounds}) {
   }
 
   if (x.type === SOLID_SOLID && y.type === SOLID_BORDER) {
-    const closestSolid = closestRay(x[0], x[1], y[0]);
+    const closestSolid = getClosestRay(x[0], x[1], y[0]);
     return (closestSolid ? closestSolid : y[0]).direction;
   }
 
   if (x.type === SOLID_BORDER && y.type === SOLID_SOLID) {
-    const closestSolid = closestRay(x[0], y[0], y[1]);
+    const closestSolid = getClosestRay(x[0], y[0], y[1]);
     return (closestSolid ? closestSolid : x[0]).direction;
   }
 
@@ -156,29 +159,12 @@ function isCornerCase(mat) {
   );
 }
 
-function getClosestOthers(entity, layers) {
-  const result = new Matrix(3, 3);
-
-  arrayForEach(layers, layer => {
-    result.merge(layer.entities.closest(entity, 1));
-  });
-  return result;
+export function getClosestSolids(entity, solids) {
+  const fn = (mat, solid) => mat.merge(solid.closest(entity, 1));
+  return arrayReduce(solids, fn, new Matrix(3, 3));
 }
 
-export function sortPair(a, b) {
-  const pair = [];
-
-  if (a.type === 'solid') {
-    pair.type = b.type === 'solid' ? SOLID_SOLID : SOLID_BORDER;
-    pair.push(a, b);
-  } else {
-    pair.type = b.type === 'solid' ? SOLID_BORDER : BORDER_BORDER;
-    pair.push(b, a);
-  }
-  return pair;
-}
-
-export function closestRay(...rays) {
+export function getClosestRay(...rays) {
   let last = rays[0] || null;
 
   for (let i = 1; i < rays.length; i++) {
@@ -192,4 +178,17 @@ export function closestRay(...rays) {
     }
   }
   return last;
+}
+
+export function sortPair(a, b) {
+  const pair = [];
+
+  if (a.type === 'solid') {
+    pair.type = b.type === 'solid' ? SOLID_SOLID : SOLID_BORDER;
+    pair.push(a, b);
+  } else {
+    pair.type = b.type === 'solid' ? SOLID_BORDER : BORDER_BORDER;
+    pair.push(b, a);
+  }
+  return pair;
 }

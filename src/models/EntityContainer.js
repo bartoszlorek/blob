@@ -17,16 +17,16 @@ class EntityContainer extends Container {
     });
   }
 
-  closest(entity, radius = 1) {
+  closest(other, radius = 1) {
     return this.memo.use('closest', () => {
       const size = radius * 2 + 1;
       const area = new Matrix(size, size);
 
-      this.forEach(other => {
-        const x = other.gridX - entity.gridX + radius;
-        const y = other.gridY - entity.gridY + radius;
+      this.forEach(entity => {
+        const x = entity.gridX - other.gridX + radius;
+        const y = entity.gridY - other.gridY + radius;
         if (x >= 0 && x < size && y >= 0 && y < size) {
-          area.set(x, y, other);
+          area.set(x, y, entity);
         }
       });
       return area;

@@ -1,5 +1,5 @@
 import {arrayForEach} from '@utils/array';
-import {calculateGravity} from '@models/physics/gravity';
+import {calculateGravity} from '@models/physics';
 import {modIndex} from '@utils/math';
 import Bounds from '@models/Bounds';
 import Force from '@models/Force';
@@ -22,13 +22,13 @@ class PhysicsEngine {
   }
 
   addSolids(layer) {
-    this.solids.push(layer);
+    this.solids.push(layer.entities);
     this.updateBounds();
   }
 
   updateBounds() {
     this.bounds = new Bounds();
-    this.bounds.merge(...this.solids.map(layer => layer.entities.bounds()));
+    this.bounds.merge(...this.solids.map(e => e.bounds()));
   }
 
   applyGravity(entity) {
@@ -41,7 +41,7 @@ class PhysicsEngine {
     }
     const gravity = calculateGravity({
       entity,
-      layers: this.solids,
+      solids: this.solids,
       bounds: this.bounds
     });
 
@@ -51,8 +51,8 @@ class PhysicsEngine {
   }
 
   applyCollisionX(entity) {
-    arrayForEach(this.solids, layer => {
-      layer.entities.forEach(other => {
+    arrayForEach(this.solids, entities => {
+      entities.forEach(other => {
         if (!entity.intersection(other)) {
           return;
         }
@@ -70,8 +70,8 @@ class PhysicsEngine {
   }
 
   applyCollisionY(entity) {
-    arrayForEach(this.solids, layer => {
-      layer.entities.forEach(other => {
+    arrayForEach(this.solids, entities => {
+      entities.forEach(other => {
         if (!entity.intersection(other)) {
           return;
         }
