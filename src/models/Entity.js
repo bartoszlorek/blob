@@ -10,6 +10,7 @@ class Entity {
 
     this.visible = true;
     this.color = null;
+    this.bevel = null;
     this.traits = [];
   }
 

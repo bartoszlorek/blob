@@ -9,7 +9,7 @@ class Haptic extends Trait {
     this.layers = layers;
 
     // parameters
-    this.color = 0xffa3b7;
+    this.color = 0xcc2d62;
   }
 
   update(entity, deltaTime) {

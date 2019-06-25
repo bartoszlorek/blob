@@ -7,7 +7,7 @@ class Killable extends Trait {
 
   obstruct(entity, edge, other) {
     if (other.parent.name === 'bombs') {
-      other.explosive.start(entity);
+      other.explosive.ignite();
     }
   }
 }

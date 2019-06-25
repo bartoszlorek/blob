@@ -25,14 +25,22 @@ class Layer {
   render(global) {
     this.graphics.clear();
     this.entities.forEach(entity => {
-      if (entity.visible) {
-        this.graphics.beginFill(entity.color || this.color);
-        this.graphics.drawRect(
-          global.rootX + entity.left,
-          global.rootY + entity.top,
-          entity.size,
-          entity.size
-        );
+      if (!entity.visible) {
+        return;
+      }
+      const x = global.rootX + entity.left;
+      const y = global.rootY + entity.top;
+      const {size} = entity;
+
+      this.graphics.beginFill(entity.color || this.color);
+      this.graphics.drawRect(x, y, size, size);
+
+      if (entity.bevel) {
+        this.graphics.lineStyle(2, entity.bevel, 1, 0);
+        this.graphics.moveTo(x + size, y);
+        this.graphics.lineTo(x + size, y + size);
+        this.graphics.lineTo(x, y + size);
+        this.graphics.lineStyle(0);
       }
     });
   }
