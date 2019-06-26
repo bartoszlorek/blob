@@ -31,12 +31,11 @@ class Layer {
         return;
       }
       const props = {
-        global,
-        entity,
-        layer: this,
         g: this.graphics,
-        x: global.rootX + entity.left,
-        y: global.rootY + entity.top
+        left: global.rootX + entity.left,
+        top: global.rootY + entity.top,
+        size: entity.size,
+        color: entity.color || this.color
       };
 
       if (this.renderer) {

@@ -8,9 +8,9 @@ class Entity {
     this.parent = null;
     this.traits = [];
 
+    this.size = size;
     this.visible = true;
     this.color = null;
-    this.size = size;
   }
 
   get top() {

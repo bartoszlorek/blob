@@ -1,11 +1,11 @@
-export function renderMine({entity, layer, g, x, y}) {
-  const cutSize = entity.size / 4;
-  const boxSize = entity.size - cutSize * 2;
+export function renderMine({g, left, top, size, color}) {
+  const cutSize = size / 4;
+  const boxSize = size - cutSize * 2;
 
-  g.beginFill(entity.color || layer.color);
-  g.drawRect(x + cutSize, y, boxSize, boxSize);
-  g.drawRect(x, y + cutSize, boxSize, boxSize);
-  g.drawRect(x + cutSize * 2, y + cutSize, boxSize, boxSize);
-  g.drawRect(x + cutSize, y + cutSize * 2, boxSize, boxSize);
+  g.beginFill(color);
+  g.drawRect(left + cutSize, top, boxSize, boxSize);
+  g.drawRect(left, top + cutSize, boxSize, boxSize);
+  g.drawRect(left + cutSize * 2, top + cutSize, boxSize, boxSize);
+  g.drawRect(left + cutSize, top + cutSize * 2, boxSize, boxSize);
   g.endFill();
 }
