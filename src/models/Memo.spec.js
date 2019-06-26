@@ -40,4 +40,25 @@ describe('Memo()', () => {
       {type: 'return', value: 'world'}
     ]);
   });
+
+  it('should use re-run for diff deps', () => {
+    const memo = new Memo();
+    const base = jest
+      .fn()
+      .mockReturnValueOnce('hello')
+      .mockReturnValueOnce('world');
+
+    const call = jest.fn(dep => memo.use('call', base, dep));
+
+    call('a');
+    call('a');
+    call('b');
+
+    expect(base).toHaveBeenCalledTimes(2);
+    expect(call.mock.results).toEqual([
+      {type: 'return', value: 'hello'},
+      {type: 'return', value: 'hello'},
+      {type: 'return', value: 'world'}
+    ]);
+  });
 });
