@@ -18,7 +18,7 @@ class EntityContainer extends Container {
   }
 
   closest(other, radius = 1) {
-    return this.memo.use('closest', () => {
+    const fn = () => {
       const size = radius * 2 + 1;
       const area = new Matrix(size, size);
 
@@ -30,7 +30,9 @@ class EntityContainer extends Container {
         }
       });
       return area;
-    });
+    };
+
+    return this.memo.use('closest', fn, [other, radius]);
   }
 
   // Bin-Lattice Spatial Subdivision

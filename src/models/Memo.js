@@ -1,16 +1,18 @@
+import {isEqual} from '@utils/array';
+
 class Memo {
   constructor() {
     this.entries = {};
   }
 
-  use(name, callback) {
+  use(name, callback, deps = []) {
     const entry = this.entries[name];
 
-    if (entry !== undefined) {
+    if (entry !== undefined && isEqual(deps, entry.deps)) {
       return entry.result;
     }
     const result = callback();
-    this.entries[name] = {result};
+    this.entries[name] = {result, deps};
     return result;
   }
 
