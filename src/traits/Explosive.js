@@ -61,10 +61,10 @@ class Explosive extends Trait {
 
     flash.addTrait(new Animation(this.global, {}));
     flash.animation.play('flash', [
-      [0.01, () => (flash.size += blast)],
-      [0.1, () => (flash.size += blast)],
-      [0.18, () => (flash.size -= blast / 2)],
-      [0.2, () => this.destroy(flash)]
+      [10, () => (flash.size += blast)],
+      [100, () => (flash.size += blast)],
+      [180, () => (flash.size -= blast / 2)],
+      [200, () => this.destroy(flash)]
     ]);
     return flash;
   }

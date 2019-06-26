@@ -1,17 +1,15 @@
-// frame: [frameTime, callback]
+// frame = [ms, fn]
 
 class KeyFrames {
-  constructor(name, frames = [], loop = false) {
-    this.name = name;
+  constructor(frames = [], loop = false) {
     this.frames = frames;
     this.loop = loop;
-    this.stop();
+    this.stop(); // set default
   }
 
-  load() {
-    this.frameIndex = -1;
-    this.frameTime = 0;
-    this.time = 0;
+  reload() {
+    this.nextIndex = 0;
+    this.timer = 0;
   }
 
   play() {
@@ -23,29 +21,25 @@ class KeyFrames {
   }
 
   stop() {
-    this.load();
+    this.reload();
     this.pause();
   }
 
-  nextFrame() {
-    if (++this.frameIndex < this.frames.length) {
-      this.frameTime = this.frames[this.frameIndex][0];
+  update(deltaTime) {
+    const milliseconds = deltaTime * 1000;
+    const nextFrame = this.frames[this.nextIndex];
+
+    if (nextFrame !== undefined) {
+      if (this.timer >= nextFrame[0]) {
+        nextFrame[1](deltaTime);
+        this.nextIndex += 1;
+      }
+      this.timer += milliseconds;
     } else if (this.loop) {
-      this.load();
+      this.reload();
     } else {
       this.stop();
     }
-  }
-
-  update(deltaTime) {
-    if (this.frameIndex < 0) {
-      this.nextFrame();
-    }
-    if (this.time >= this.frameTime) {
-      this.frames[this.frameIndex][1](this.frameIndex, deltaTime);
-      this.nextFrame();
-    }
-    this.time += deltaTime;
   }
 }
 
