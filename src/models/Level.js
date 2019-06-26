@@ -8,18 +8,18 @@ import padBounds from '@utils/padBounds';
 import Background from '@models/Background';
 import PhysicsEngine from '@models/PhysicsEngine';
 
-import createBombs from '@layers/createBombs';
+import createMines from '@layers/createMines';
 import createEffects from '@layers/createEffects';
 import createGround from '@layers/createGround';
 import createPlayer from '@layers/createPlayer';
 import createPrizes from '@layers/createPrizes';
 
 const STAGE_PADDING = 10;
-const solidLayers = ['ground', 'bombs'];
+const solidLayers = ['ground', 'mines'];
 
 const factories = [
   createGround,
-  createBombs,
+  createMines,
   createPrizes,
   createEffects,
   createPlayer

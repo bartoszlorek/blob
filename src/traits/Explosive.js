@@ -40,7 +40,7 @@ class Explosive extends Trait {
       const others = this.inRange(entity, [ground, player]);
       objectForEach(others.entries, this.destroy);
 
-      // destroy bomb itself
+      // destroy mine itself
       this.destroy(entity);
 
       // may we finish the game?

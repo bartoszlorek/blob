@@ -5,13 +5,12 @@ class Entity {
   constructor(x = 0, y = 0, size = 1) {
     this.pos = new Vector(x, y);
     this.vel = new Vector(0, 0);
-    this.size = size;
     this.parent = null;
+    this.traits = [];
 
     this.visible = true;
     this.color = null;
-    this.bevel = null;
-    this.traits = [];
+    this.size = size;
   }
 
   get top() {
