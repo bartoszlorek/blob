@@ -1,6 +1,8 @@
 import {Container, TilingSprite, filters} from 'pixi.js';
 import {RGBSplitFilter} from '@pixi/filter-rgb-split';
 import loader from '../loader';
+
+import {lerp} from '@utils/math';
 import {arrayForEach} from '@utils/array';
 import {objectForEach} from '@utils/object';
 import padBounds from '@utils/padBounds';
@@ -14,8 +16,10 @@ import createGround from '@layers/createGround';
 import createPlayer from '@layers/createPlayer';
 import createPrizes from '@layers/createPrizes';
 
-const STAGE_PADDING = 10;
 const solidLayers = ['ground', 'mines'];
+const foregroundPadding = 10;
+const cameraRadius = 5000;
+const cameraSpeed = 0.01;
 
 const factories = [
   createGround,
@@ -75,6 +79,7 @@ class Level {
   update(deltaTime) {
     objectForEach(this.layers, layer => layer.update(deltaTime));
     this.resizeForeground();
+    this.cameraFollows();
   }
 
   render(global) {
@@ -87,7 +92,7 @@ class Level {
 
   resizeForeground() {
     const bounds = this.foreground.getBounds();
-    this.foreground.filterArea = padBounds(bounds, STAGE_PADDING);
+    this.foreground.filterArea = padBounds(bounds, foregroundPadding);
   }
 
   resizeBackground() {
@@ -97,6 +102,26 @@ class Level {
       sprite.height = screen.height;
       sprite.tileScale.y = screen.height / sprite.texture.height;
     });
+  }
+
+  cameraFollows() {
+    const {head: player} = this.layers.player;
+
+    if (!player) {
+      return;
+    }
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    const playerX = centerX - player.pos.x;
+    const playerY = centerY - player.pos.y;
+
+    const a = this.global.rootX - playerX;
+    const b = this.global.rootY - playerY;
+    const factor = Math.min(a * a + b * b, cameraRadius) / cameraRadius;
+
+    this.global.rootX = lerp(this.global.rootX, playerX, cameraSpeed * factor);
+    this.global.rootY = lerp(this.global.rootY, playerY, cameraSpeed * factor);
   }
 }
 
