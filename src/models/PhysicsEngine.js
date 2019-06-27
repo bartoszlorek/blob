@@ -56,7 +56,7 @@ class PhysicsEngine {
   applyCollisionX(entity) {
     arrayForEach(this.solids, entities => {
       entities.forEach(other => {
-        if (!entity.intersection(other)) {
+        if (!entity.intersection(other, 0.01)) {
           return;
         }
         if (entity.vel.x > 0) {
@@ -75,7 +75,7 @@ class PhysicsEngine {
   applyCollisionY(entity) {
     arrayForEach(this.solids, entities => {
       entities.forEach(other => {
-        if (!entity.intersection(other)) {
+        if (!entity.intersection(other, 0.01)) {
           return;
         }
         if (entity.vel.y > 0) {

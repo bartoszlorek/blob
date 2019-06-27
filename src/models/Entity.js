@@ -78,12 +78,12 @@ class Entity {
     });
   }
 
-  intersection(other) {
+  intersection(other, error = 0) {
     return (
-      this.top < other.bottom &&
-      this.bottom > other.top &&
-      this.right > other.left &&
-      this.left < other.right
+      this.top + error < other.bottom &&
+      this.bottom - error > other.top &&
+      this.right - error > other.left &&
+      this.left + error < other.right
     );
   }
 }
