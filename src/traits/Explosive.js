@@ -31,7 +31,7 @@ class Explosive extends Trait {
     }
     // boom
     if (this.delay < 0) {
-      const {layers, physics} = this.global.level;
+      const {layers, physics, player: playerEntity} = this.global.level;
       const {effects, ground, player} = layers;
 
       effects.append(this.createFlash(entity));
@@ -44,7 +44,7 @@ class Explosive extends Trait {
       this.destroy(entity);
 
       // may we finish the game?
-      if (player.head) {
+      if (playerEntity) {
         physics.updateBounds();
       } else {
         console.log('dead!');

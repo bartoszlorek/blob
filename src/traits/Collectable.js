@@ -7,7 +7,7 @@ class Collectable extends Trait {
   }
 
   update(entity, deltaTime) {
-    const {head: player} = this.level.layers.player;
+    const {player} = this.level;
     if (player && player.intersection(entity)) {
       console.log('score!');
     }

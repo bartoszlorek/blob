@@ -57,6 +57,10 @@ class Level {
     );
   }
 
+  get player() {
+    return this.layers.player.entities.items[0] || null;
+  }
+
   onLoad(global) {
     this.global = global;
     this.resize();
@@ -105,16 +109,14 @@ class Level {
   }
 
   cameraFollows() {
-    const {head: player} = this.layers.player;
-
-    if (!player) {
+    if (!this.player) {
       return;
     }
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
 
-    const playerX = centerX - player.pos.x;
-    const playerY = centerY - player.pos.y;
+    const playerX = centerX - this.player.pos.x;
+    const playerY = centerY - this.player.pos.y;
 
     const a = this.global.rootX - playerX;
     const b = this.global.rootY - playerY;

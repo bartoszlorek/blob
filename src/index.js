@@ -18,14 +18,15 @@ loader.load(() => {
   helper.enabled = false;
 
   global.tick(deltaTime => {
+    const {player} = level;
+
     level.update(deltaTime);
     level.render(global);
 
-    const {head} = level.layers.player;
-    if (head) {
+    if (player) {
       helper.renderBox({
-        x: global.gridToLocal(global.localToGrid(head.pos.x)),
-        y: global.gridToLocal(global.localToGrid(head.pos.y))
+        x: global.gridToLocal(global.localToGrid(player.pos.x)),
+        y: global.gridToLocal(global.localToGrid(player.pos.y))
       });
     }
     helper.renderBounds(level.physics.bounds);

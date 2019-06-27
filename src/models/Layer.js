@@ -13,10 +13,6 @@ class Layer {
     this.renderer = null;
   }
 
-  get head() {
-    return this.entities.items[0];
-  }
-
   update(deltaTime) {
     this.entities.memo.clear();
     this.entities.forEach(entity => {
