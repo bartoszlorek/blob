@@ -28,18 +28,10 @@ export function createRaycast(solids, border) {
 }
 
 function distanceToSolid(solids, origin, direction) {
-  const {horizontal} = direction;
   const hits = [];
 
-  arrayForEach(solids, entities => {
-    entities.forEach(entity => {
-      const distX = entity.gridX - origin.x;
-      const distY = entity.gridY - origin.y;
-
-      if (sign(distX) === direction.x && sign(distY) === direction.y) {
-        hits.push(Math.abs(horizontal ? distX : distY));
-      }
-    });
+  baseRaycast({solids, origin, direction}, (entity, dist) => {
+    hits.push(dist);
   });
 
   if (hits.length) {
@@ -62,4 +54,33 @@ function distanceToBorder(border, origin, direction) {
     return Math.abs(border.left - origin.x);
   }
   return 0;
+}
+
+function baseRaycast({solids, origin, direction}, callback) {
+  const {horizontal} = direction;
+
+  arrayForEach(solids, entities => {
+    entities.forEach(entity => {
+      const distX = entity.gridX - origin.x;
+      const distY = entity.gridY - origin.y;
+
+      if (sign(distX) === direction.x && sign(distY) === direction.y) {
+        callback(entity, Math.abs(horizontal ? distX : distY));
+      }
+    });
+  });
+}
+
+export function closestSolidInDirection({entity, solids, direction}) {
+  const origin = originFromEntity(entity);
+  let lastDist;
+  let result = {entity: null};
+
+  baseRaycast({solids, origin, direction}, (entity, dist) => {
+    if (lastDist === undefined || dist < lastDist) {
+      lastDist = dist;
+      result = {entity, dist};
+    }
+  });
+  return result;
 }

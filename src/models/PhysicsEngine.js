@@ -1,8 +1,11 @@
 import {arrayForEach} from '@utils/array';
-import {calculateGravity} from '@models/physics';
+import {calculateGravity, closestSolidInDirection} from '@models/physics';
 import {modIndex} from '@utils/math';
 import Bounds from '@models/Bounds';
 import Force from '@models/Force';
+
+const shadowColor = 0xcc2d62;
+const maxShadowDistance = 5;
 
 export const EDGE = {
   TOP: Symbol('top'),
@@ -120,6 +123,18 @@ class PhysicsEngine {
     }
     const rotatedIndex = modIndex(index - shift, 4);
     return table[rotatedIndex];
+  }
+
+  dropShadow(entity) {
+    const {entity: other, dist} = closestSolidInDirection({
+      entity,
+      solids: this.solids,
+      direction: this.gravity.direction
+    });
+
+    if (other && other.colorful && dist <= maxShadowDistance) {
+      other.colorful.setColor(shadowColor);
+    }
   }
 }
 

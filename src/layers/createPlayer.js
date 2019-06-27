@@ -4,7 +4,6 @@ import Entity from '@models/Entity';
 
 import Physics from '@traits/Physics';
 import Killable from '@traits/Killable';
-import Haptic from '@traits/Haptic';
 import Move from '@traits/Move';
 import Jump from '@traits/Jump';
 
@@ -20,7 +19,6 @@ function createPlayer(global, {player}) {
   entity.addTrait(new Killable(global, {}));
   entity.addTrait(new Move(global, {}));
   entity.addTrait(new Jump(global, {}));
-  entity.addTrait(new Haptic(global, {layers: ['ground']}));
 
   // todo: remove listeners on level unload
   const input = new Keyboard();

@@ -16,6 +16,9 @@ class Physics extends Trait {
 
     entity.pos.y += entity.vel.y * deltaTime;
     this.physics.applyCollisionY(entity);
+
+    // effects
+    this.physics.dropShadow(entity);
   }
 
   obstruct(entity, edge, other) {
