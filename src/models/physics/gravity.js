@@ -38,17 +38,8 @@ export function calculateGravity({entity, solids, bounds}) {
   const y = sortPair(top, bottom);
   const x = sortPair(left, right);
 
-  // cave cases
-  if (closestSolids.n(0, 1) && closestSolids.n(2, 1)) {
-    if (y.type === SOLID_SOLID) {
-      return new Vector(0, 1);
-    }
-    if (y.type === SOLID_BORDER) {
-      return y[0].direction;
-    }
-  }
-
-  if (closestSolids.n(1, 0) && closestSolids.n(1, 2)) {
+  // artificial gravity in the cave
+  if (x.type === SOLID_SOLID && y.type === SOLID_SOLID) {
     return new Vector(0, 1);
   }
 
@@ -60,38 +51,17 @@ export function calculateGravity({entity, solids, bounds}) {
     if (x[0].distance > y[0].distance) {
       return y[0].direction;
     }
-    if (x[1].distance < y[1].distance) {
-      return x[0].direction;
-    }
-    if (x[1].distance > y[1].distance) {
-      return y[0].direction;
-    }
-    return y[0].direction;
-  }
-
-  if (x.type === SOLID_SOLID && y.type === SOLID_SOLID) {
-    const closestSolid = getClosestRay(x[0], x[1], y[0], y[1]);
-
-    if (closestSolid) {
-      return closestSolid.direction;
-    }
-    if (y[0].distance < y[1].distance) {
-      return y[0].direction;
-    }
-    if (y[1].distance < y[0].distance) {
-      return y[1].direction;
-    }
-    return new Vector(0, 1);
+    return null;
   }
 
   if (x.type === SOLID_SOLID && y.type === SOLID_BORDER) {
     const closestSolid = getClosestRay(x[0], x[1], y[0]);
-    return (closestSolid ? closestSolid : y[0]).direction;
+    return closestSolid ? closestSolid.direction : null;
   }
 
   if (x.type === SOLID_BORDER && y.type === SOLID_SOLID) {
     const closestSolid = getClosestRay(x[0], y[0], y[1]);
-    return (closestSolid ? closestSolid : x[0]).direction;
+    return closestSolid ? closestSolid.direction : null;
   }
 
   // gap cases
