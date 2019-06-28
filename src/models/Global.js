@@ -57,19 +57,23 @@ class Global {
   }
 
   localToGlobalX(x) {
-    return x + this.rootX;
+    const offsetX = this.level ? this.level.offsetX : 0;
+    return x + this.rootX + offsetX;
   }
 
   localToGlobalY(y) {
-    return y + this.rootY;
+    const offsetY = this.level ? this.level.offsetY : 0;
+    return y + this.rootY + offsetY;
   }
 
   globalToLocalX(x) {
-    return x - this.rootX;
+    const offsetX = this.level ? this.level.offsetX : 0;
+    return x - this.rootX - offsetX;
   }
 
   globalToLocalY(y) {
-    return y - this.rootY;
+    const offsetY = this.level ? this.level.offsetY : 0;
+    return y - this.rootY - offsetY;
   }
 
   globalToGridX(x) {

@@ -37,6 +37,8 @@ class Level {
     this.global = null;
     this.layers = {};
     this.physics = new PhysicsEngine();
+    this.offsetX = 0;
+    this.offsetY = 0;
 
     this.background = new Container();
     this.foreground = new Container();
@@ -118,12 +120,18 @@ class Level {
     const playerX = centerX - this.player.pos.x;
     const playerY = centerY - this.player.pos.y;
 
-    const a = this.global.rootX - playerX;
-    const b = this.global.rootY - playerY;
-    const factor = Math.min(a * a + b * b, cameraRadius) / cameraRadius;
+    const x = playerX - this.global.rootX;
+    const y = playerY - this.global.rootY;
+    const factor = Math.min(x * x + y * y, cameraRadius) / cameraRadius;
 
-    this.global.rootX = lerp(this.global.rootX, playerX, cameraSpeed * factor);
-    this.global.rootY = lerp(this.global.rootY, playerY, cameraSpeed * factor);
+    this.offsetX = lerp(this.offsetX, x, cameraSpeed * factor);
+    this.offsetY = lerp(this.offsetY, y, cameraSpeed * factor);
+
+    // apply offset to visible elements
+    this.foreground.x = this.offsetX;
+    this.foreground.y = this.offsetY;
+    this.helpers.x = this.offsetX;
+    this.helpers.y = this.offsetY;
   }
 }
 
