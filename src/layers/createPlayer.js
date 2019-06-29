@@ -27,11 +27,11 @@ function createPlayer(global, {player}) {
   // todo: remove listeners on level unload
   const input = new Keyboard();
   input.on('ArrowRight', pressed => {
-    entity.move[pressed ? 'forward' : 'stop']();
+    entity.move[pressed ? 'forward' : 'backward']();
   });
 
   input.on('ArrowLeft', pressed => {
-    entity.move[pressed ? 'backward' : 'stop']();
+    entity.move[pressed ? 'backward' : 'forward']();
   });
 
   input.on('Space', pressed => {

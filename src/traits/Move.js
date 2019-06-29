@@ -9,22 +9,18 @@ class Move extends Trait {
     this.direction = 0;
 
     // parameters
-    this.acceleration = 500;
+    this.acceleration = 700;
     this.deceleration = 300;
     this.dragFactor = 0.95;
     this.alignThreshold = 0.65;
   }
 
   forward() {
-    this.direction = 1;
+    this.direction += 1;
   }
 
   backward() {
-    this.direction = -1;
-  }
-
-  stop() {
-    this.direction = 0;
+    this.direction -= 1;
   }
 
   update(entity, deltaTime) {
