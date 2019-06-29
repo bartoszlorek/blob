@@ -4,7 +4,12 @@ const loader = new Loader();
 
 loader.add([
   // graphics
+  {name: 'blast', url: 'assets/blast.png'},
   {name: 'gradient', url: 'assets/gradient.png'},
+  {name: 'ground', url: 'assets/ground.png'},
+  {name: 'mines', url: 'assets/mines.png'},
+  {name: 'player', url: 'assets/player.png'},
+  {name: 'prizes', url: 'assets/prizes.png'},
 
   // sounds
   //{ name: 'pluck', url: 'assets/pluck.mp3' },

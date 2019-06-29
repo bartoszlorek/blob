@@ -11,10 +11,10 @@ class Physics extends Trait {
     this.physics.calculateGravity(entity);
     this.physics.applyGravity(entity);
 
-    entity.pos.x += entity.vel.x * deltaTime;
+    entity.sprite.x += entity.vel.x * deltaTime;
     this.physics.applyCollisionX(entity);
 
-    entity.pos.y += entity.vel.y * deltaTime;
+    entity.sprite.y += entity.vel.y * deltaTime;
     this.physics.applyCollisionY(entity);
 
     // effects

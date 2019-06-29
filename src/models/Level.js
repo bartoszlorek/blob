@@ -1,4 +1,4 @@
-import {Container, TilingSprite, filters} from 'pixi.js';
+import {Container, TilingSprite} from 'pixi.js';
 import {RGBSplitFilter} from '@pixi/filter-rgb-split';
 import loader from '../loader';
 
@@ -36,6 +36,7 @@ class Level {
 
     this.global = null;
     this.layers = {};
+
     this.physics = new PhysicsEngine();
     this.offsetX = 0;
     this.offsetY = 0;
@@ -49,10 +50,7 @@ class Level {
     this.elements.addChild(this.foreground);
     this.elements.addChild(this.helpers);
 
-    this.foreground.filters = [
-      new RGBSplitFilter([1, 0], [-1, 0], [0, 2]),
-      new filters.BlurFilter(0.25)
-    ];
+    this.foreground.filters = [new RGBSplitFilter([1, 0], [-1, 0], [0, 2])];
 
     this.background.addChild(
       new TilingSprite(loader.resources.gradient.texture)
@@ -63,10 +61,7 @@ class Level {
     return this.layers.player.entities.items[0] || null;
   }
 
-  onLoad(global) {
-    this.global = global;
-    this.resize();
-
+  onMount(global) {
     arrayForEach(factories, factory => {
       const layer = factory(global, this.data);
       layer.level = this;
@@ -78,31 +73,36 @@ class Level {
         this.physics.addSolids(layer);
       }
     });
+    this.global = global;
+    this.resize();
   }
 
-  onUnload() {}
+  onUnmount() {}
 
   update(deltaTime) {
-    objectForEach(this.layers, layer => layer.update(deltaTime));
+    objectForEach(this.layers, layer => {
+      layer.update(deltaTime);
+    });
     this.resizeForeground();
     this.cameraFollows();
   }
 
-  render(global) {
-    objectForEach(this.layers, layer => layer.render(global));
-  }
-
   resize() {
+    objectForEach(this.layers, layer => {
+      layer.graphics.x = this.global.rootX;
+      layer.graphics.y = this.global.rootY;
+    });
     this.resizeBackground();
   }
 
   resizeForeground() {
+    // todo: store calculate bounds
     const bounds = this.foreground.getBounds();
     this.foreground.filterArea = padBounds(bounds, foregroundPadding);
   }
 
   resizeBackground() {
-    const {screen} = this.global.app;
+    const {screen} = this.global.engine;
     this.background.children.forEach(sprite => {
       sprite.width = screen.width;
       sprite.height = screen.height;
@@ -117,8 +117,9 @@ class Level {
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
 
-    const playerX = centerX - this.player.pos.x;
-    const playerY = centerY - this.player.pos.y;
+    // todo: center player position
+    const playerX = centerX - this.player.sprite.x;
+    const playerY = centerY - this.player.sprite.y;
 
     const x = playerX - this.global.rootX;
     const y = playerY - this.global.rootY;

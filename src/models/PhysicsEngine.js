@@ -4,7 +4,7 @@ import {modIndex} from '@utils/math';
 import Bounds from '@models/Bounds';
 import Force from '@models/Force';
 
-const shadowColor = 0xcc2d62;
+const shadowColor = 0xdf5de6;
 const maxShadowDistance = 5;
 
 export const EDGE = {

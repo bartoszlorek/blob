@@ -9,22 +9,18 @@ class Move extends Trait {
     this.direction = 0;
 
     // parameters
-    this.acceleration = 500;
+    this.acceleration = 700;
     this.deceleration = 300;
     this.dragFactor = 0.95;
     this.alignThreshold = 0.65;
   }
 
   forward() {
-    this.direction = 1;
+    this.direction += 1;
   }
 
   backward() {
-    this.direction = -1;
-  }
-
-  stop() {
-    this.direction = 0;
+    this.direction -= 1;
   }
 
   update(entity, deltaTime) {
@@ -47,19 +43,20 @@ class Move extends Trait {
     if (this.direction !== 0) {
       return;
     }
+    const {position, width} = entity.sprite;
     const axis = this.physics.gravity.vertical ? 'x' : 'y';
-    const base = entity.pos[axis] / entity.size;
+    const base = position[axis] / width;
 
     const n = Math.abs(base) % 1;
     const align = (n < 0.5 ? 1 - n : n) * 2 - 1;
 
     if (align > this.alignThreshold) {
-      const aligned = Math.round(base) * entity.size;
-      entity.pos[axis] = lerp(entity.pos[axis], aligned, 0.2);
+      const aligned = Math.round(base) * width;
+      position[axis] = lerp(position[axis], aligned, 0.2);
 
       // to compensate lerp error
       if (align > 0.99) {
-        entity.pos[axis] = aligned;
+        position[axis] = aligned;
       }
     }
   }

@@ -2,55 +2,62 @@ import {arrayForEach} from '@utils/array';
 import Vector from '@models/Vector';
 
 class Entity {
-  constructor(x = 0, y = 0, size = 1) {
-    this.pos = new Vector(x, y);
+  constructor(sprite, x = 0, y = 0) {
+    if (!sprite) {
+      throw 'sprite parameter is required to create an Entity';
+    }
     this.vel = new Vector(0, 0);
+    this.sprite = sprite;
     this.parent = null;
     this.traits = [];
 
-    this.size = size;
-    this.visible = true;
-    this.color = null;
+    // local position
+    this.sprite.position.set(x, y);
+    this.sprite.anchor.set(0.5);
   }
 
-  get top() {
-    return this.pos.y - this.size / 2;
+  set scale(value) {
+    this.sprite.scale.set(value, value);
   }
 
   set top(y) {
-    this.pos.y = y + this.size / 2;
-  }
-
-  get bottom() {
-    return this.pos.y + this.size / 2;
-  }
-
-  set bottom(y) {
-    this.pos.y = y - this.size / 2;
-  }
-
-  get left() {
-    return this.pos.x - this.size / 2;
-  }
-
-  set left(x) {
-    this.pos.x = x + this.size / 2;
-  }
-
-  get right() {
-    return this.pos.x + this.size / 2;
+    this.sprite.position.y = y + this.sprite.height / 2;
   }
 
   set right(x) {
-    this.pos.x = x - this.size / 2;
+    this.sprite.position.x = x - this.sprite.width / 2;
+  }
+
+  set bottom(y) {
+    this.sprite.position.y = y - this.sprite.height / 2;
+  }
+
+  set left(x) {
+    this.sprite.position.x = x + this.sprite.width / 2;
+  }
+
+  get top() {
+    return this.sprite.position.y - this.sprite.height / 2;
+  }
+
+  get right() {
+    return this.sprite.position.x + this.sprite.width / 2;
+  }
+
+  get bottom() {
+    return this.sprite.position.y + this.sprite.height / 2;
+  }
+
+  get left() {
+    return this.sprite.position.x - this.sprite.width / 2;
   }
 
   get gridX() {
-    return this.ownerGlobal.localToGrid(this.pos.x);
+    return this.ownerGlobal.localToGrid(this.sprite.position.x);
   }
 
   get gridY() {
-    return this.ownerGlobal.localToGrid(this.pos.y);
+    return this.ownerGlobal.localToGrid(this.sprite.position.y);
   }
 
   get ownerLevel() {

@@ -1,8 +1,10 @@
+import {Texture} from 'pixi.js';
 import Events from '@models/Events';
 
 class Global {
-  constructor({app, size = 24}) {
-    this.app = app;
+  constructor({engine, assets, size = 24}) {
+    this.engine = engine;
+    this.assets = assets;
     this.size = size;
     this.level = null;
 
@@ -15,37 +17,37 @@ class Global {
   }
 
   tick(callback) {
-    this.app.ticker.add(deltaFrame => {
+    this.engine.ticker.add(deltaFrame => {
       const deltaTime = deltaFrame * this.time;
       callback(deltaTime);
     });
   }
 
   resize() {
-    this.app.renderer.resize(window.innerWidth, window.innerHeight);
-    this.rootX = this.app.screen.width / 2;
-    this.rootY = this.app.screen.height / 2;
+    this.engine.renderer.resize(window.innerWidth, window.innerHeight);
+    this.rootX = this.engine.screen.width / 2;
+    this.rootY = this.engine.screen.height / 2;
 
     if (this.level) {
       this.level.resize();
     }
   }
 
-  load(level) {
+  mount(level) {
     if (this.level !== null) {
-      this.unload();
+      this.unmount();
     }
     this.level = level;
-    level.onLoad(this);
-    this.app.stage.addChild(level.elements);
-    this.events.publish('load_level', this);
+    level.onMount(this);
+    this.engine.stage.addChild(level.elements);
+    this.events.publish('mount_level', this);
   }
 
-  unload() {
+  unmount() {
     this.level = null;
-    this.level.onUnload();
-    this.app.stage.removeChild(this.level.elements);
-    this.events.publish('unload_level', this);
+    this.level.onUnmount();
+    this.engine.stage.removeChild(this.level.elements);
+    this.events.publish('unmount_level', this);
   }
 
   gridToLocal(pos) {

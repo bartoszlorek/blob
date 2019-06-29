@@ -1,9 +1,9 @@
 import Trait from '@traits/Trait';
 
 class Shine extends Trait {
-  constructor(global, {size}) {
+  constructor(global, {}) {
     super('shine');
-    this.size = size;
+    this.scale = 1;
     this.timer = 0;
 
     // parameters
@@ -12,7 +12,7 @@ class Shine extends Trait {
 
   update(entity, deltaTime) {
     const factor = (Math.sin(this.timer) + 1) / 2;
-    entity.size = factor < 0.25 ? this.size * 0.8 : this.size;
+    entity.scale = factor < 0.25 ? this.scale * 0.8 : this.scale;
     this.timer += deltaTime * this.speed;
   }
 }

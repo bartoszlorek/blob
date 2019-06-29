@@ -1,3 +1,5 @@
+import {Sprite} from 'pixi.js';
+
 import Keyboard from '@models/Keyboard';
 import Layer from '@models/Layer';
 import Entity from '@models/Entity';
@@ -8,11 +10,13 @@ import Move from '@traits/Move';
 import Jump from '@traits/Jump';
 
 function createPlayer(global, {player}) {
-  const layer = new Layer('player', 0x2de2e6);
+  const layer = new Layer('player');
+  const {texture} = global.assets['player'];
+
   const entity = new Entity(
+    new Sprite(texture),
     global.gridToLocal(player[0]),
-    global.gridToLocal(player[1]),
-    global.size
+    global.gridToLocal(player[1])
   );
 
   entity.addTrait(new Physics(global, {}));
@@ -23,11 +27,11 @@ function createPlayer(global, {player}) {
   // todo: remove listeners on level unload
   const input = new Keyboard();
   input.on('ArrowRight', pressed => {
-    entity.move[pressed ? 'forward' : 'stop']();
+    entity.move[pressed ? 'forward' : 'backward']();
   });
 
   input.on('ArrowLeft', pressed => {
-    entity.move[pressed ? 'backward' : 'stop']();
+    entity.move[pressed ? 'backward' : 'forward']();
   });
 
   input.on('Space', pressed => {

@@ -1,3 +1,4 @@
+import {Sprite} from 'pixi.js';
 import {arrayReduce} from '@utils/array';
 import {objectForEach} from '@utils/object';
 import Entity from '@models/Entity';
@@ -34,7 +35,7 @@ class Explosive extends Trait {
       const {layers, physics, player: playerEntity} = this.global.level;
       const {effects, ground, player} = layers;
 
-      effects.append(this.createFlash(entity));
+      effects.append(this.createBlastFrom(entity));
 
       // destroy others entities
       const others = this.inRange(entity, [ground, player]);
@@ -55,18 +56,23 @@ class Explosive extends Trait {
     this.ignite();
   }
 
-  createFlash({pos, size}) {
-    const flash = new Entity(pos.x, pos.y, size);
-    const blast = size * this.range;
+  createBlastFrom(entity) {
+    const {texture} = this.global.assets['blast'];
+    const blast = new Entity(
+      new Sprite(texture),
+      entity.sprite.x,
+      entity.sprite.y
+    );
+    let scale = 1;
 
-    flash.addTrait(new Animation(this.global, {}));
-    flash.animation.play('flash', [
-      [10, () => (flash.size += blast)],
-      [100, () => (flash.size += blast)],
-      [180, () => (flash.size -= blast / 2)],
-      [200, () => this.destroy(flash)]
+    blast.addTrait(new Animation(this.global, {}));
+    blast.animation.play('explode', [
+      [10, () => (blast.scale = scale += this.range)],
+      [100, () => (blast.scale = scale += this.range)],
+      [200, () => (blast.scale = scale -= this.range / 2)],
+      [250, () => this.destroy(blast)]
     ]);
-    return flash;
+    return blast;
   }
 
   inRange(entity, layers) {

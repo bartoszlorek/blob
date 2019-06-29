@@ -7,7 +7,6 @@ class Helper {
     this.graphics = null;
     this.level = null;
 
-    this.enabled = true;
     this.pending = false;
     this.tasks = [];
 
@@ -17,13 +16,13 @@ class Helper {
     this.color = 0xffffff;
 
     // events
-    global.events.onLoadLevel(() => {
+    global.events.onMountLevel(() => {
       this.graphics = new Graphics();
       this.level = global.level;
       this.level.helpers.addChild(this.graphics);
     });
 
-    global.events.onUnloadLevel(() => {
+    global.events.onUnmountLevel(() => {
       this.level = null;
     });
   }
@@ -63,7 +62,7 @@ class Helper {
   }
 
   _requestRender() {
-    if (!this.pending && this.enabled) {
+    if (!this.pending) {
       setImmediate(() => this._render());
       this.pending = true;
     }
