@@ -2,9 +2,9 @@ import Trait from '@traits/Trait';
 import {EDGE} from '@models/PhysicsEngine';
 
 class Physics extends Trait {
-  constructor(global, {}) {
+  constructor({physics}) {
     super('physics');
-    this.physics = global.level.physics;
+    this.physics = physics;
   }
 
   update(entity, deltaTime) {

@@ -1,11 +1,10 @@
-import {Texture} from 'pixi.js';
+import {baseSize, localToGrid} from '@app/consts';
 import Events from '@models/Events';
 
 class Global {
-  constructor({engine, assets, size = 24}) {
+  constructor({engine, assets}) {
     this.engine = engine;
     this.assets = assets;
-    this.size = size;
     this.level = null;
 
     // parameters
@@ -24,9 +23,10 @@ class Global {
   }
 
   resize() {
-    this.engine.renderer.resize(window.innerWidth, window.innerHeight);
-    this.rootX = this.engine.screen.width / 2;
-    this.rootY = this.engine.screen.height / 2;
+    const {innerWidth, innerHeight} = window;
+    this.engine.renderer.resize(innerWidth, innerHeight);
+    this.rootX = Math.round(innerWidth / 2);
+    this.rootY = Math.round(innerHeight / 2);
 
     if (this.level) {
       this.level.resize();
@@ -39,6 +39,7 @@ class Global {
     }
     this.level = level;
     level.onMount(this);
+
     this.engine.stage.addChild(level.elements);
     this.events.publish('mount_level', this);
   }
@@ -46,44 +47,33 @@ class Global {
   unmount() {
     this.level = null;
     this.level.onUnmount();
+
     this.engine.stage.removeChild(this.level.elements);
     this.events.publish('unmount_level', this);
   }
 
-  gridToLocal(pos) {
-    return pos * this.size;
-  }
-
-  localToGrid(pos) {
-    return Math.round(pos / this.size) || 0;
-  }
-
   localToGlobalX(x) {
-    const offsetX = this.level ? this.level.offsetX : 0;
-    return x + this.rootX + offsetX;
+    return x + this.rootX + this.level.offsetX;
   }
 
   localToGlobalY(y) {
-    const offsetY = this.level ? this.level.offsetY : 0;
-    return y + this.rootY + offsetY;
+    return y + this.rootY + this.level.offsetY;
   }
 
   globalToLocalX(x) {
-    const offsetX = this.level ? this.level.offsetX : 0;
-    return x - this.rootX - offsetX;
+    return x - this.rootX - this.level.offsetX;
   }
 
   globalToLocalY(y) {
-    const offsetY = this.level ? this.level.offsetY : 0;
-    return y - this.rootY - offsetY;
+    return y - this.rootY - this.level.offsetY;
   }
 
   globalToGridX(x) {
-    return this.localToGrid(this.globalToLocalX(x));
+    return localToGrid(this.globalToLocalX(x));
   }
 
   globalToGridY(y) {
-    return this.localToGrid(this.globalToLocalY(y));
+    return localToGrid(this.globalToLocalY(y));
   }
 }
 

@@ -1,3 +1,4 @@
+import {baseSize} from '@app/consts';
 import {Graphics} from 'pixi.js';
 import {arrayForEach} from '@utils/array';
 
@@ -39,7 +40,7 @@ class Helper {
   }
 
   renderBox(vector, size) {
-    const boxSize = size || this.global.size;
+    const boxSize = size || baseSize;
     this._requestRender();
     this.tasks.push({
       type: 'box',

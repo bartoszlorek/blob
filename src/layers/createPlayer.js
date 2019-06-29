@@ -1,4 +1,5 @@
 import {Sprite} from 'pixi.js';
+import {gridToLocal} from '@app/consts';
 
 import Keyboard from '@models/Keyboard';
 import Layer from '@models/Layer';
@@ -12,17 +13,18 @@ import Jump from '@traits/Jump';
 function createPlayer(global, {player}) {
   const layer = new Layer('player');
   const {texture} = global.assets['player'];
+  const {physics} = global.level;
 
   const entity = new Entity(
     new Sprite(texture),
-    global.gridToLocal(player[0]),
-    global.gridToLocal(player[1])
+    gridToLocal(player[0]),
+    gridToLocal(player[1])
   );
 
-  entity.addTrait(new Physics(global, {}));
-  entity.addTrait(new Killable(global, {}));
-  entity.addTrait(new Move(global, {}));
-  entity.addTrait(new Jump(global, {}));
+  entity.addTrait(new Physics({physics}));
+  entity.addTrait(new Move({physics}));
+  entity.addTrait(new Jump({physics}));
+  entity.addTrait(new Killable());
 
   // todo: remove listeners on level unload
   const input = new Keyboard();

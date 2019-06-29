@@ -26,7 +26,7 @@ export function calculateGravity({entity, solids, bounds}) {
     return null;
   }
 
-  const border = bounds.toBorder(entity.ownerGlobal);
+  const border = bounds.toBorder();
   const origin = originFromEntity(entity);
 
   const raycast = createRaycast(solids, border);

@@ -3,7 +3,7 @@ import KeyFrames from '@models/KeyFrames';
 import Trait from '@traits/Trait';
 
 class Animation extends Trait {
-  constructor(global, {}) {
+  constructor() {
     super('animation');
     this.keyframes = {};
   }

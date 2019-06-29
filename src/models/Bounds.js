@@ -1,3 +1,4 @@
+import {baseSize, localToGrid} from '@app/consts';
 import {arrayForEach} from '@utils/array';
 
 class Bounds {
@@ -40,14 +41,13 @@ class Bounds {
     this.left -= value;
   }
 
-  // the border represents bounds in a grid units
-  toBorder(global) {
-    const extend = global.size / 2;
+  toBorder() {
     return {
-      top: global.localToGrid(this.top - extend),
-      right: global.localToGrid(this.right + extend),
-      bottom: global.localToGrid(this.bottom + extend),
-      left: global.localToGrid(this.left - extend)
+      // the border represents bounds in a grid units
+      top: localToGrid(this.top - baseSize / 2),
+      right: localToGrid(this.right + baseSize / 2),
+      bottom: localToGrid(this.bottom + baseSize / 2),
+      left: localToGrid(this.left - baseSize / 2)
     };
   }
 }

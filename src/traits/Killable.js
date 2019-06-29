@@ -1,7 +1,7 @@
 import Trait from '@traits/Trait';
 
 class Killable extends Trait {
-  constructor(global, {}) {
+  constructor() {
     super('killable');
   }
 

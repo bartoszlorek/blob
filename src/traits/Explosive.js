@@ -8,7 +8,7 @@ import Blink from '@traits/Blink';
 import Animation from '@traits/Animation';
 
 class Explosive extends Trait {
-  constructor(global, {range = 0}) {
+  constructor({global, range = 0}) {
     super('explosive');
     this.global = global;
     this.range = range;
@@ -28,7 +28,7 @@ class Explosive extends Trait {
     }
     // bang
     if (this.ignition === 1) {
-      entity.addTrait(new Blink(this.global, {freq: 0.1}));
+      entity.addTrait(new Blink({freq: 0.1}));
     }
     // boom
     if (this.delay < 0) {
@@ -65,7 +65,7 @@ class Explosive extends Trait {
     );
     let scale = 1;
 
-    blast.addTrait(new Animation(this.global, {}));
+    blast.addTrait(new Animation());
     blast.animation.play('explode', [
       [10, () => (blast.scale = scale += this.range)],
       [100, () => (blast.scale = scale += this.range)],

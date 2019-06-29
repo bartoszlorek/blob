@@ -1,11 +1,12 @@
+import {baseSize} from '@app/consts';
 import {lerp} from '@utils/math';
 import Trait from '@traits/Trait';
 import Vector from '@models/Vector';
 
 class Move extends Trait {
-  constructor(global, {}) {
+  constructor({physics}) {
     super('move');
-    this.physics = global.level.physics;
+    this.physics = physics;
     this.direction = 0;
 
     // parameters
@@ -43,15 +44,15 @@ class Move extends Trait {
     if (this.direction !== 0) {
       return;
     }
-    const {position, width} = entity.sprite;
+    const {position} = entity.sprite;
     const axis = this.physics.gravity.vertical ? 'x' : 'y';
-    const base = position[axis] / width;
+    const base = position[axis] / baseSize;
 
     const n = Math.abs(base) % 1;
     const align = (n < 0.5 ? 1 - n : n) * 2 - 1;
 
     if (align > this.alignThreshold) {
-      const aligned = Math.round(base) * width;
+      const aligned = Math.round(base) * baseSize;
       position[axis] = lerp(position[axis], aligned, 0.2);
 
       // to compensate lerp error

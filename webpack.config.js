@@ -10,11 +10,11 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
+      '@app': path.resolve(__dirname, 'src/'),
       '@gui': path.resolve(__dirname, 'src/gui/'),
       '@layers': path.resolve(__dirname, 'src/layers/'),
       '@levels': path.resolve(__dirname, 'src/levels/'),
       '@models': path.resolve(__dirname, 'src/models/'),
-      '@renders': path.resolve(__dirname, 'src/renders/'),
       '@state': path.resolve(__dirname, 'src/state/'),
       '@traits': path.resolve(__dirname, 'src/traits/'),
       '@utils': path.resolve(__dirname, 'src/utils/')

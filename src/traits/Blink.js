@@ -1,7 +1,7 @@
 import Trait from '@traits/Trait';
 
 class Blink extends Trait {
-  constructor(global, {freq = 0.15}) {
+  constructor({freq = 0.15}) {
     super('blink');
     this.freq = freq;
     this.time = 0;

@@ -4,11 +4,11 @@
     "allowSyntheticDefaultImports": false,
     "baseUrl": "./",
     "paths": {
+      "@app": ["src/*"],
       "@gui": ["src/gui/*"],
       "@layers": ["src/layers/*"],
       "@levels": ["src/levels/*"],
       "@models": ["src/models/*"],
-      "@renders": ["src/renders/*"],
       "@state": ["src/state/*"],
       "@traits": ["src/traits/*"],
       "@utils": ["src/utils/*"]

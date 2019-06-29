@@ -1,3 +1,4 @@
+import {localToGrid, gridToLocal} from '@app/consts';
 import engine from './engine';
 import loader from './loader';
 
@@ -24,19 +25,16 @@ loader.load(() => {
     level.update(deltaTime);
 
     // if (level.player) {
-    //   const x = global.localToGrid(level.player.sprite.x);
-    //   const y = global.localToGrid(level.player.sprite.y);
-
     //   helper.renderBox({
-    //     x: global.gridToLocal(x),
-    //     y: global.gridToLocal(y)
+    //     x: gridToLocal(localToGrid(level.player.sprite.x)),
+    //     y: gridToLocal(localToGrid(level.player.sprite.y))
     //   });
     // }
     // helper.renderBounds(level.physics.bounds);
     // pointer.forEach(point => {
     //   helper.renderBox({
-    //     x: global.gridToLocal(point.x),
-    //     y: global.gridToLocal(point.y)
+    //     x: gridToLocal(point.x),
+    //     y: gridToLocal(point.y)
     //   });
     // });
 

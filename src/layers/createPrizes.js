@@ -1,5 +1,7 @@
 import {Sprite} from 'pixi.js';
 import {GlowFilter} from '@pixi/filter-glow';
+import {gridToLocal} from '@app/consts';
+
 import Layer from '@models/Layer';
 import Entity from '@models/Entity';
 
@@ -13,12 +15,12 @@ function createPrizes(global, {prizes}) {
   prizes.forEach(pos => {
     const entity = new Entity(
       new Sprite(texture),
-      global.gridToLocal(pos[0]),
-      global.gridToLocal(pos[1])
+      gridToLocal(pos[0]),
+      gridToLocal(pos[1])
     );
 
-    entity.addTrait(new Shine(global, {}));
-    entity.addTrait(new Collectable(global, {}));
+    entity.addTrait(new Shine());
+    entity.addTrait(new Collectable({level: global.level}));
     layer.append(entity);
   });
 

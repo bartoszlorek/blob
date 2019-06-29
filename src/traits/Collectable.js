@@ -1,9 +1,9 @@
 import Trait from '@traits/Trait';
 
 class Collectable extends Trait {
-  constructor(global, {}) {
+  constructor({level}) {
     super('collectable');
-    this.level = global.level;
+    this.level = level;
   }
 
   update(entity, deltaTime) {
