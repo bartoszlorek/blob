@@ -13,12 +13,12 @@ class Events extends PubSub {
     this.subscribe('resize', handler);
   }
 
-  onLoadLevel(handler) {
-    this.subscribe('load_level', handler);
+  onMountLevel(handler) {
+    this.subscribe('mount_level', handler);
   }
 
-  onUnloadLevel(handler) {
-    this.subscribe('unload_level', handler);
+  onUnmountLevel(handler) {
+    this.subscribe('unmount_level', handler);
   }
 }
 

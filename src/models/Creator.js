@@ -3,10 +3,10 @@ import {arrayForEach} from '@utils/array';
 class Creator {
   constructor(global) {
     this.global = global;
-    this.interaction = global.app.renderer.plugins.interaction;
+    this.interaction = global.engine.renderer.plugins.interaction;
     this.points = [];
 
-    global.app.renderer.view.addEventListener('click', e => {
+    global.engine.renderer.view.addEventListener('click', e => {
       const x = global.globalToGridX(e.offsetX);
       const y = global.globalToGridY(e.offsetY);
       this.points.push({x, y});

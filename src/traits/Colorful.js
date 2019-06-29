@@ -5,7 +5,6 @@ class Colorful extends Trait {
   constructor(global, {}) {
     super('colorful');
     this.color = null;
-    this.base = null;
     this.bias = 0;
 
     // parameters
@@ -21,15 +20,11 @@ class Colorful extends Trait {
     if (this.bias === 0) {
       return;
     }
-    if (this.base === null) {
-      this.base = entity.color || entity.parent.color;
-    }
-    entity.color = blend(this.base, this.color, this.bias);
+    entity.sprite.tint = blend(0xffffff, this.color, this.bias);
     this.bias -= this.fade * deltaTime;
 
     if (this.bias < 0) {
-      entity.color = null;
-      this.base = null;
+      entity.sprite.tint = 0xffffff;
       this.bias = 0;
     }
   }

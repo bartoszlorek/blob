@@ -9,7 +9,7 @@ class Blink extends Trait {
 
   update(entity, deltaTime) {
     if (this.time > this.freq) {
-      entity.visible = !entity.visible;
+      entity.sprite.visible = !entity.sprite.visible;
       this.time = 0;
     }
     this.time += deltaTime;

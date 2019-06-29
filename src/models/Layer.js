@@ -1,45 +1,15 @@
-import {Graphics} from 'pixi.js';
+import {Container} from 'pixi.js';
 import EntityContainer from '@models/EntityContainer';
-import {renderDefaultBox} from '@renders/box';
 
 class Layer {
-  constructor(name, color = 0x7c7c7c) {
+  constructor(name = '') {
     this.name = name;
-    this.color = color;
-
     this.level = null;
-    this.graphics = new Graphics();
+
+    // content
     this.entities = new EntityContainer();
-    this.renderer = null;
-  }
-
-  update(deltaTime) {
-    this.entities.memo.clear();
-    this.entities.forEach(entity => {
-      entity.update(deltaTime);
-    });
-  }
-
-  render(global) {
-    this.graphics.clear();
-    this.entities.forEach(entity => {
-      if (!entity.visible) {
-        return;
-      }
-      const props = {
-        g: this.graphics,
-        left: global.rootX + entity.left,
-        top: global.rootY + entity.top,
-        size: entity.size,
-        color: entity.color || this.color
-      };
-
-      if (this.renderer) {
-        this.renderer(props);
-      } else {
-        renderDefaultBox(props);
-      }
-    });
+    this.graphics = new Container();
+    this.graphics.interactiveChildren = false;
   }
 
   append(entity) {
@@ -50,14 +20,23 @@ class Layer {
       entity.parent.remove(entity);
     }
     this.entities.add(entity);
+    this.graphics.addChild(entity.sprite);
     entity.parent = this;
   }
 
   remove(entity) {
     if (entity.parent === this) {
       this.entities.remove(entity);
+      this.graphics.removeChild(entity.sprite);
       entity.parent = null;
     }
+  }
+
+  update(deltaTime) {
+    this.entities.memo.clear();
+    this.entities.forEach(entity => {
+      entity.update(deltaTime);
+    });
   }
 
   filters(array) {
