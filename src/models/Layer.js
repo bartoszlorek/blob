@@ -1,5 +1,5 @@
 import {Container} from 'pixi.js';
-import padBounds from '@utils/padBounds';
+import {extendBounds} from '@utils/pixijs';
 import EntityContainer from '@models/EntityContainer';
 
 class Layer {
@@ -51,7 +51,7 @@ class Layer {
       return;
     }
     // todo: cache bounds for static layers
-    this.graphics.filterArea = padBounds(
+    this.graphics.filterArea = extendBounds(
       this.graphics.getBounds(),
       this.filterMargin
     );

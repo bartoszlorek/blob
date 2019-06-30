@@ -9,7 +9,6 @@ loader.add([
   {name: 'prizes', url: 'assets/prizes.png'},
   {name: 'mines', url: 'assets/mines.png'},
   {name: 'blast', url: 'assets/blast.png'},
-  {name: 'ground', url: 'assets/ground_01.png'},
   {name: 'ground_01', url: 'assets/ground_01.png'},
   {name: 'ground_02', url: 'assets/ground_02.png'},
   {name: 'ground_03', url: 'assets/ground_03.png'},
