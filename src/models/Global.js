@@ -1,4 +1,4 @@
-import {baseSize, localToGrid} from '@app/consts';
+import {localToGrid} from '@app/consts';
 import Events from '@models/Events';
 
 class Global {
@@ -27,10 +27,6 @@ class Global {
     this.engine.renderer.resize(innerWidth, innerHeight);
     this.rootX = Math.round(innerWidth / 2);
     this.rootY = Math.round(innerHeight / 2);
-
-    if (this.level) {
-      this.level.resize();
-    }
   }
 
   mount(level) {
@@ -38,18 +34,16 @@ class Global {
       this.unmount();
     }
     this.level = level;
-    level.onMount(this);
-
+    this.level.onMount(this);
     this.engine.stage.addChild(level.elements);
     this.events.publish('mount_level', this);
   }
 
   unmount() {
-    this.level = null;
-    this.level.onUnmount();
-
-    this.engine.stage.removeChild(this.level.elements);
     this.events.publish('unmount_level', this);
+    this.engine.stage.removeChild(this.level.elements);
+    this.level.onUnmount();
+    this.level = null;
   }
 
   localToGlobalX(x) {

@@ -1,6 +1,6 @@
 import {localToGrid, gridToLocal} from '@app/consts';
-import engine from './engine';
-import loader from './loader';
+import engine from '@app/engine';
+import loader from '@app/loader';
 
 import Creator from '@models/Creator';
 import Helper from '@models/Helper';
@@ -12,8 +12,7 @@ import data from '@levels/1-4.json';
 loader.load(() => {
   const global = new Global({
     assets: loader.resources,
-    engine,
-    size: 24
+    engine
   });
 
   const helper = new Helper(global);

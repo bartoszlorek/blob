@@ -1,17 +1,25 @@
-import {TilingSprite} from 'pixi.js';
+import {Container, TilingSprite} from 'pixi.js';
 
 class Background {
-  constructor(texture) {
-    this.sprite = new TilingSprite(texture);
+  constructor() {
+    this.sprite = new Container();
   }
 
-  resize(global) {
-    console.log(this);
+  set(texture) {
+    if (this.sprite.children.length) {
+      this.sprite.removeChildAt(0);
+    }
+    // todo: handle multiple layers of background
+    this.sprite.addChild(new TilingSprite(texture));
+  }
 
-    // const bg = this.background.children[0]
-    // bg.width = this.app.screen.width
-    // bg.height = this.app.screen.height
-    // bg.tileScale.y = this.app.screen.height / bg.texture.height
+  resize() {
+    const {innerWidth, innerHeight} = window;
+    const child = this.sprite.getChildAt(0);
+
+    child.width = innerWidth;
+    child.height = innerHeight;
+    child.tileScale.y = innerHeight / child.texture.height;
   }
 }
 

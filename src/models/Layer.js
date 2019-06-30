@@ -1,4 +1,5 @@
 import {Container} from 'pixi.js';
+import padBounds from '@utils/padBounds';
 import EntityContainer from '@models/EntityContainer';
 
 class Layer {
@@ -6,10 +7,12 @@ class Layer {
     this.name = name;
     this.level = null;
 
-    // content
     this.entities = new EntityContainer();
     this.graphics = new Container();
     this.graphics.interactiveChildren = false;
+
+    this.interactive = true;
+    this.filterMargin = 10;
   }
 
   append(entity) {
@@ -34,9 +37,24 @@ class Layer {
 
   update(deltaTime) {
     this.entities.memo.clear();
-    this.entities.forEach(entity => {
-      entity.update(deltaTime);
-    });
+
+    if (this.interactive) {
+      this.entities.forEach(entity => {
+        entity.update(deltaTime);
+      });
+      this.updateFilters();
+    }
+  }
+
+  updateFilters() {
+    if (!this.graphics.filters) {
+      return;
+    }
+    // todo: cache bounds for static layers
+    this.graphics.filterArea = padBounds(
+      this.graphics.getBounds(),
+      this.filterMargin
+    );
   }
 
   filters(array) {
