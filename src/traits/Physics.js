@@ -17,6 +17,8 @@ class Physics extends Trait {
     entity.sprite.y += entity.velocity.y * deltaTime;
     this.physics.applyCollisionY(entity);
 
+    entity.sprite.rotation = this.physics.rotation;
+
     // effects
     this.physics.dropShadow(entity);
   }

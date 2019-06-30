@@ -24,6 +24,21 @@ class PhysicsEngine {
     this.bounds = null;
   }
 
+  get rotation() {
+    const {direction} = this.gravity;
+
+    if (direction.y < 0) {
+      return Math.PI;
+    }
+    if (direction.x > 0) {
+      return (3 * Math.PI) / 2;
+    }
+    if (direction.x < 0) {
+      return Math.PI / 2;
+    }
+    return 0;
+  }
+
   addSolids(layer) {
     this.solids.push(layer.entities);
     this.updateBounds();
