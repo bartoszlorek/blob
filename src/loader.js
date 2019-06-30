@@ -21,6 +21,8 @@ loader.add([
   {name: 'ground_09', url: 'assets/ground_09.png'},
   {name: 'ground_10', url: 'assets/ground_10.png'},
   {name: 'ground_11', url: 'assets/ground_11.png'},
+  {name: 'ground_12', url: 'assets/ground_12.png'},
+  {name: 'ground_13', url: 'assets/ground_13.png'},
 
   // sounds
   {name: 'pluck', url: 'assets/synth_pluck.mp3'},
