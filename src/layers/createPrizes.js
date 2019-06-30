@@ -24,7 +24,7 @@ function createPrizes(global, {prizes}) {
     layer.append(entity);
   });
 
-  layer.filters([new GlowFilter(10, 1, 0, 0xf2dc30)]);
+  layer.graphics.filters = [new GlowFilter(10, 1, 0, 0xf2dc30)];
   return layer;
 }
 

@@ -35,7 +35,7 @@ class PhysicsEngine {
   }
 
   applyGravity(entity) {
-    this.gravity.applyTo(entity.vel);
+    this.gravity.applyTo(entity.velocity);
   }
 
   calculateGravity(entity) {
@@ -49,7 +49,7 @@ class PhysicsEngine {
     });
 
     if (gravity) {
-      this.gravity.setForce(gravity.x, gravity.y);
+      this.gravity.apply(gravity.x, gravity.y);
     }
   }
 
@@ -59,11 +59,11 @@ class PhysicsEngine {
         if (!entity.intersection(other)) {
           return;
         }
-        if (entity.vel.x > 0) {
+        if (entity.velocity.x > 0) {
           if (entity.right > other.left) {
             entity.obstruct(EDGE.RIGHT, other);
           }
-        } else if (entity.vel.x < 0) {
+        } else if (entity.velocity.x < 0) {
           if (entity.left < other.right) {
             entity.obstruct(EDGE.LEFT, other);
           }
@@ -78,11 +78,11 @@ class PhysicsEngine {
         if (!entity.intersection(other)) {
           return;
         }
-        if (entity.vel.y > 0) {
+        if (entity.velocity.y > 0) {
           if (entity.bottom > other.top) {
             entity.obstruct(EDGE.BOTTOM, other);
           }
-        } else if (entity.vel.y < 0) {
+        } else if (entity.velocity.y < 0) {
           if (entity.top < other.bottom) {
             entity.obstruct(EDGE.TOP, other);
           }

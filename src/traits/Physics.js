@@ -11,10 +11,10 @@ class Physics extends Trait {
     this.physics.calculateGravity(entity);
     this.physics.applyGravity(entity);
 
-    entity.sprite.x += entity.vel.x * deltaTime;
+    entity.sprite.x += entity.velocity.x * deltaTime;
     this.physics.applyCollisionX(entity);
 
-    entity.sprite.y += entity.vel.y * deltaTime;
+    entity.sprite.y += entity.velocity.y * deltaTime;
     this.physics.applyCollisionY(entity);
 
     // effects
@@ -25,22 +25,22 @@ class Physics extends Trait {
     switch (edge) {
       case EDGE.BOTTOM:
         entity.bottom = other.top;
-        entity.vel.y = 0;
+        entity.velocity.y = 0;
         break;
 
       case EDGE.TOP:
         entity.top = other.bottom;
-        entity.vel.y = 0;
+        entity.velocity.y = 0;
         break;
 
       case EDGE.LEFT:
         entity.left = other.right;
-        entity.vel.x = 0;
+        entity.velocity.x = 0;
         break;
 
       case EDGE.RIGHT:
         entity.right = other.left;
-        entity.vel.x = 0;
+        entity.velocity.x = 0;
         break;
     }
   }

@@ -27,17 +27,17 @@ class Move extends Trait {
   update(entity, deltaTime) {
     const vector = this.physics.rotateVector(new Vector(this.direction, 0));
     const axis = this.physics.gravity.vertical ? 'x' : 'y';
-    const velocity = entity.vel[axis];
+    const velocity = entity.velocity[axis];
     const absolute = Math.abs(velocity);
 
     if (this.direction !== 0) {
-      entity.vel[axis] += this.acceleration * deltaTime * vector[axis];
+      entity.velocity[axis] += this.acceleration * deltaTime * vector[axis];
     } else if (velocity !== 0) {
       const deceleration = Math.min(absolute, this.deceleration * deltaTime);
-      entity.vel[axis] += velocity > 0 ? -deceleration : deceleration;
+      entity.velocity[axis] += velocity > 0 ? -deceleration : deceleration;
     }
 
-    entity.vel[axis] *= this.dragFactor;
+    entity.velocity[axis] *= this.dragFactor;
   }
 
   obstruct(entity) {

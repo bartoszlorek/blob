@@ -56,10 +56,6 @@ class Layer {
       this.filterMargin
     );
   }
-
-  filters(array) {
-    this.graphics.filters = array;
-  }
 }
 
 export default Layer;

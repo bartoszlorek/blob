@@ -8,7 +8,7 @@ class Jump extends Trait {
   constructor({physics}) {
     super('jump');
     this.physics = physics;
-    this.velocity = new Force(0, -1, {
+    this.force = new Force(0, -1, {
       strength: 100,
       dexterity: 0.6
     });
@@ -17,16 +17,21 @@ class Jump extends Trait {
     this.requestTime = 0;
     this.engageTime = 0;
 
-    this.pluckSound = new Sound('pluck');
-    this.jumpSound = new Sound('jump');
-
     // parameters
     this.duration = 0.1;
     this.gracePeriod = 0.1; // able to jump again before landing
+
+    // sounds
+    this.pluckSound = new Sound('pluck');
+    this.jumpSound = new Sound('jump');
   }
 
   get falling() {
     return this.ready < 0;
+  }
+
+  get direction() {
+    return this.physics.rotateVector(new Vector(0, -1));
   }
 
   start() {
@@ -51,9 +56,9 @@ class Jump extends Trait {
       if (this.ready === 1) {
         this.jumpSound.play();
       }
-      const rotatedTop = this.physics.rotateVector(new Vector(0, -1));
-      this.velocity.applyTo(entity.vel);
-      this.velocity.setForce(rotatedTop.x, rotatedTop.y);
+      const {x, y} = this.direction;
+      this.force.apply(x, y);
+      this.force.applyTo(entity.velocity);
       this.engageTime -= deltaTime;
     }
 
@@ -66,6 +71,9 @@ class Jump extends Trait {
       if (this.ready < 0) {
         this.pluckSound.play();
       }
+      // reset jumping force
+      const {x, y} = this.direction;
+      this.force.set(x, y);
       this.ready = 1;
     } else if (rotatedEdge === EDGE.TOP) {
       this.cancel();

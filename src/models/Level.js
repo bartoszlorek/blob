@@ -1,5 +1,4 @@
 import {Container} from 'pixi.js';
-import {RGBSplitFilter} from '@pixi/filter-rgb-split';
 import {baseSize} from '@app/consts';
 
 import {lerp} from '@utils/math';
@@ -45,8 +44,6 @@ class Level {
     this.elements.addChild(this.background.sprite);
     this.elements.addChild(this.foreground);
     this.elements.addChild(this.helpers);
-
-    // this.foreground.filters = [new RGBSplitFilter([1, 0], [-1, 0], [0, -2])];
   }
 
   get player() {
@@ -92,6 +89,7 @@ class Level {
     if (!this.player) {
       return;
     }
+    return;
     const {x, y} = this.player.sprite;
     const a = x + this.offsetX;
     const b = y + this.offsetY;

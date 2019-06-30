@@ -8,7 +8,12 @@ class Force extends Vector {
     this.dexterity = dexterity;
   }
 
-  setForce(x, y) {
+  set(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  apply(x, y) {
     this.x = lerp(this.x, x, this.dexterity);
     this.y = lerp(this.y, y, this.dexterity);
   }

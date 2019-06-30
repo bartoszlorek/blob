@@ -1,6 +1,8 @@
 // bias 0-1
-export function lerp(from, to, bias) {
-  return (1 - bias) * from + bias * to;
+export function lerp(from, to, bias, error = 0.01) {
+  const value = (1 - bias) * from + bias * to;
+  const match = bias < 0.5 ? from : to;
+  return Math.abs(value - match) < error ? match : value;
 }
 
 export function sign(value) {

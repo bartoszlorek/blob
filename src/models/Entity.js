@@ -7,7 +7,7 @@ class Entity {
     if (!sprite) {
       throw 'sprite parameter is required to create an Entity';
     }
-    this.vel = new Vector(0, 0);
+    this.velocity = new Vector(0, 0);
     this.sprite = sprite;
     this.parent = null;
     this.traits = [];
