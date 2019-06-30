@@ -89,7 +89,6 @@ class Level {
     if (!this.player) {
       return;
     }
-    return;
     const {x, y} = this.player.sprite;
     const a = x + this.offsetX;
     const b = y + this.offsetY;

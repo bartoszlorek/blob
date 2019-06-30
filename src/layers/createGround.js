@@ -7,7 +7,7 @@ import Colorful from '@traits/Colorful';
 
 function createGround(global, {ground}) {
   const layer = new Layer('ground');
-  const {texture} = global.assets['ground'];
+  const {texture} = global.assets['ground_01'];
 
   ground.forEach(pos => {
     const entity = new Entity(
