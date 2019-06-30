@@ -10,7 +10,7 @@ class Move extends Trait {
     this.direction = 0;
 
     // parameters
-    this.acceleration = 700;
+    this.acceleration = 650;
     this.deceleration = 300;
     this.dragFactor = 0.95;
     this.alignThreshold = 0.65;
