@@ -9,6 +9,7 @@ import Background from '@models/Background';
 import PhysicsEngine from '@models/PhysicsEngine';
 
 import createMines from '@layers/createMines';
+import createCave from '@layers/createCave';
 import createEffects from '@layers/createEffects';
 import createGround from '@layers/createGround';
 import createPlayer from '@layers/createPlayer';
@@ -20,6 +21,7 @@ const cameraSpeed = 0.01;
 
 const factories = [
   createGround,
+  createCave,
   createMines,
   createPrizes,
   createEffects,

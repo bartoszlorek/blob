@@ -6,6 +6,9 @@ import {arrayForEach} from '@utils/array';
 // assetIndex  index of alternative name
 
 export function resolveBlocks(name, entries, iteratee) {
+  if (!entries) {
+    return;
+  }
   arrayForEach(entries, entry => {
     const [x, y, length = 1, assetIndex = 0] = entry;
 
