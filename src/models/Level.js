@@ -1,32 +1,14 @@
 import {Container} from 'pixi.js';
 import {baseSize} from '@app/consts';
-
+import layerCreators from '@layers';
 import {lerp} from '@utils/math';
 import {arrayForEach} from '@utils/array';
 import {objectForEach} from '@utils/object';
-
 import Background from '@models/Background';
 import PhysicsEngine from '@models/PhysicsEngine';
 
-import createMines from '@layers/createMines';
-import createCave from '@layers/createCave';
-import createEffects from '@layers/createEffects';
-import createGround from '@layers/createGround';
-import createPlayer from '@layers/createPlayer';
-import createPrizes from '@layers/createPrizes';
-
-const solidLayers = ['ground', 'mines'];
 const cameraRadius = 100;
 const cameraSpeed = 0.01;
-
-const factories = [
-  createGround,
-  createCave,
-  createMines,
-  createPrizes,
-  createEffects,
-  createPlayer
-];
 
 class Level {
   constructor(data) {
@@ -53,14 +35,14 @@ class Level {
   }
 
   onMount(global) {
-    arrayForEach(factories, factory => {
-      const layer = factory(global, this.data);
+    arrayForEach(layerCreators, create => {
+      const layer = create(global, this.data);
       layer.level = this;
 
       this.foreground.addChild(layer.graphics);
       this.layers[layer.name] = layer;
 
-      if (solidLayers.includes(layer.name)) {
+      if (layer.solid) {
         this.physics.addSolids(layer);
       }
     });

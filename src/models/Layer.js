@@ -6,6 +6,7 @@ class Layer {
   constructor(name = '') {
     this.name = name;
     this.level = null;
+    this.solid = false;
 
     this.entities = new EntityContainer();
     this.graphics = new Container();

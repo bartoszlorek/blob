@@ -1,6 +1,7 @@
 import {Sprite} from 'pixi.js';
 import {GlowFilter} from '@pixi/filter-glow';
 import {gridToLocal} from '@app/consts';
+import {resolveBlocks} from '@utils/blocks';
 
 import Layer from '@models/Layer';
 import Entity from '@models/Entity';
@@ -10,13 +11,13 @@ import Collectable from '@traits/Collectable';
 
 function createPrizes(global, {prizes}) {
   const layer = new Layer('prizes');
-  const {texture} = global.assets['prizes'];
 
-  prizes.forEach(pos => {
+  resolveBlocks('prizes', prizes, block => {
+    const {texture} = global.assets[block.asset];
     const entity = new Entity(
       new Sprite(texture),
-      gridToLocal(pos[0]),
-      gridToLocal(pos[1])
+      gridToLocal(block.x),
+      gridToLocal(block.y)
     );
 
     entity.addTrait(new Shine());
