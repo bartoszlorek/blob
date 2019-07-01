@@ -85,6 +85,10 @@ class Entity {
       this.left < other.right
     );
   }
+
+  destroy() {
+    this.parent.remove(this);
+  }
 }
 
 export default Entity;

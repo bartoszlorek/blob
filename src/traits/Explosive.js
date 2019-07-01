@@ -39,10 +39,10 @@ class Explosive extends Trait {
 
       // destroy others entities
       const others = this.inRange(entity, [ground, player]);
-      objectForEach(others.entries, this.destroy);
+      objectForEach(others.entries, entity => entity.destroy());
 
       // destroy mine itself
-      this.destroy(entity);
+      entity.destroy();
 
       // may we finish the game?
       if (playerEntity) {
@@ -70,7 +70,7 @@ class Explosive extends Trait {
       [10, () => (blast.scale = scale += this.range)],
       [100, () => (blast.scale = scale += this.range)],
       [200, () => (blast.scale = scale -= this.range / 2)],
-      [250, () => this.destroy(blast)]
+      [250, () => blast.destroy()]
     ]);
     return blast;
   }
@@ -80,10 +80,6 @@ class Explosive extends Trait {
     const fn = (mat, layer) =>
       mat.merge(layer.entities.closest(entity, this.range));
     return arrayReduce(layers, fn, new Matrix(size, size));
-  }
-
-  destroy(entity) {
-    entity.parent.remove(entity);
   }
 }
 
