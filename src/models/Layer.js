@@ -1,8 +1,9 @@
-import {utils, Container} from 'pixi.js';
+import {baseSize} from '@app/consts';
+import {utils, Container, Rectangle} from 'pixi.js';
 import {extendBounds} from '@utils/pixijs';
 
 class Layer {
-  constructor(name = '') {
+  constructor(name = '', width = 10) {
     this.name = name;
     this.children = [];
     this.position = {};
@@ -11,12 +12,32 @@ class Layer {
     this.graphics = new Container();
     this.graphics.interactiveChildren = false;
 
-    // parameters
-    this.resolution = 100;
-    this.filterMargin = 10;
-
     // object pools
     this._closestArray = [];
+    this._boundsRect = new Rectangle();
+    this._boundsGrid = {};
+    this._bounds = {};
+
+    this._boundsID = 0;
+    this._lastBoundsID = -1;
+
+    // parameters
+    this.resolution = width + 3;
+    this.filterMargin = 10;
+  }
+
+  get bounds() {
+    if (this._boundsID !== this._lastBoundsID) {
+      this._calculateBounds();
+    }
+    return this._bounds;
+  }
+
+  get boundsGrid() {
+    if (this._boundsID !== this._lastBoundsID) {
+      this._calculateBounds();
+    }
+    return this._boundsGrid;
   }
 
   addChild(child) {
@@ -47,6 +68,11 @@ class Layer {
     this._removePosition(child);
   }
 
+  requestChange(child) {
+    // todo: optimization
+    this._updatePosition(child);
+  }
+
   update(deltaTime) {
     for (let i = 0, j = this.children.length; i < j; ++i) {
       this.children[i].update(deltaTime);
@@ -55,12 +81,16 @@ class Layer {
     this._updateFilters();
   }
 
-  requestChange(child) {
-    // todo: optimization
-    this._updatePosition(child);
-  }
-
   closest(x, y) {
+    // check if is outside bounds
+    if (
+      x < this.boundsGrid.left - 1 ||
+      x > this.boundsGrid.right + 1 ||
+      y < this.boundsGrid.top - 1 ||
+      y > this.boundsGrid.bottom + 1
+    ) {
+      return null;
+    }
     const row1 = this._index(x - 1, y - 1);
     const row2 = this._index(x - 1, y);
     const row3 = this._index(x - 1, y + 1);
@@ -87,6 +117,16 @@ class Layer {
     let b = y;
 
     while (limit--) {
+      // check if is outside bounds
+      if (
+        a < this.boundsGrid.left - 1 ||
+        a > this.boundsGrid.right + 1 ||
+        b < this.boundsGrid.top - 1 ||
+        b > this.boundsGrid.bottom + 1
+      ) {
+        return null;
+      }
+
       const child = this.position[this._index(a, b)];
 
       if (child) {
@@ -105,10 +145,12 @@ class Layer {
 
   _updatePosition(child) {
     this.position[this._index(child.gridX, child.gridY)] = child;
+    this._boundsID++;
   }
 
   _removePosition(child) {
     this.position[this._index(child.gridX, child.gridY)] = undefined;
+    this._boundsID++;
   }
 
   _updateFilters() {
@@ -120,6 +162,24 @@ class Layer {
       this.graphics.getBounds(),
       this.filterMargin
     );
+  }
+
+  _calculateBounds() {
+    this.graphics.getLocalBounds(this._boundsRect);
+
+    // transform into extreme form
+    this._bounds.top = this._boundsRect.y;
+    this._bounds.left = this._boundsRect.x;
+    this._bounds.right = this._boundsRect.x + this._boundsRect.width;
+    this._bounds.bottom = this._boundsRect.y + this._boundsRect.height;
+
+    // transform into grid form
+    this._boundsGrid.top = Math.ceil(this._bounds.top / baseSize);
+    this._boundsGrid.left = Math.ceil(this._bounds.left / baseSize);
+    this._boundsGrid.right = Math.floor(this._bounds.right / baseSize);
+    this._boundsGrid.bottom = Math.floor(this._bounds.bottom / baseSize);
+
+    this._lastBoundsID = this._boundsID;
   }
 }
 
