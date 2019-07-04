@@ -111,29 +111,36 @@ class Layer {
   }
 
   closestInDirection(x, y, dX, dY) {
-    // todo: limit to bounds
     let limit = 100;
-    let a = x;
-    let b = y;
 
-    while (limit--) {
-      // check if is outside bounds
-      if (
-        a < this.boundsGrid.left - 1 ||
-        a > this.boundsGrid.right + 1 ||
-        b < this.boundsGrid.top - 1 ||
-        b > this.boundsGrid.bottom + 1
-      ) {
-        return null;
+    if (dX === 0) {
+      let pos = y; // search vertically
+
+      while (limit--) {
+        if (pos < this.boundsGrid.top - 1 || pos > this.boundsGrid.bottom + 1) {
+          return null;
+        }
+        const child = this.position[this._index(x, pos)];
+
+        if (child) {
+          return child;
+        }
+        pos += dY;
       }
+    } else {
+      let pos = x; // search horizontally
 
-      const child = this.position[this._index(a, b)];
+      while (limit--) {
+        if (pos < this.boundsGrid.left - 1 || pos > this.boundsGrid.right + 1) {
+          return null;
+        }
+        const child = this.position[this._index(pos, y)];
 
-      if (child) {
-        return child;
+        if (child) {
+          return child;
+        }
+        pos += dX;
       }
-      a += dX;
-      b += dY;
     }
 
     return null;

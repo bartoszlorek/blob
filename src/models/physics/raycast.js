@@ -11,9 +11,7 @@ export function raycast(objects, entity, dX, dY) {
   if (match) {
     return {
       type: 'solid',
-      distance: Math.abs(
-        entity.gridX - match.gridX + entity.gridY - match.gridY
-      ),
+      distance: entity.distance(match),
       direction: {x: dX, y: dY}
     };
   }
