@@ -8,10 +8,10 @@ import createPrizes from './createPrizes';
 
 export default [
   createGround,
-  createCave,
-  createMines,
-  createEnemies,
-  createPrizes,
-  createEffects,
+  // createCave,
+  // createMines,
+  // createEnemies,
+  // createPrizes,
+  // createEffects,
   createPlayer
 ];

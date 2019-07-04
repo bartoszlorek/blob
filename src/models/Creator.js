@@ -21,6 +21,16 @@ class Creator {
       y: this.global.globalToGridY(y)
     };
 
+    // const {ground} = this.global.level.layers;
+
+    // const closest = ground.closest(current.x, current.y);
+    // if (closest) {
+    //   closest.forEach(child => child && (child.sprite.tint = 0x0000ff));
+    // }
+
+    // const shadow = ground.closestInDirection(current.x, current.y, 0, 1);
+    // if (shadow) shadow.sprite.tint = 0x0000ff;
+
     arrayForEach([...this.points, current], callback);
   }
 

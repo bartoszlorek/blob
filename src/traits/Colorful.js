@@ -17,6 +17,8 @@ class Colorful extends Trait {
   }
 
   update(entity, deltaTime) {
+    entity.sprite.tint = 0xffffff;
+
     if (this.bias === 0) {
       return;
     }

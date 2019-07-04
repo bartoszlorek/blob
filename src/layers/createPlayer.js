@@ -1,10 +1,8 @@
 import {Sprite} from 'pixi.js';
 import {gridToLocal} from '@app/consts';
-
 import Keyboard from '@models/Keyboard';
 import Layer from '@models/Layer';
 import Entity from '@models/Entity';
-
 import Physics from '@traits/Physics';
 import Killable from '@traits/Killable';
 import Move from '@traits/Move';
@@ -40,7 +38,7 @@ function createPlayer(global, {player}) {
     entity.jump[pressed ? 'start' : 'cancel']();
   });
 
-  layer.append(entity);
+  layer.addChild(entity);
   return layer;
 }
 

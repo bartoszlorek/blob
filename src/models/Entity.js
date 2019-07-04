@@ -1,5 +1,4 @@
 import {baseSize, localToGrid} from '@app/consts';
-import {arrayForEach} from '@utils/array';
 import Vector from '@models/Vector';
 
 class Entity {
@@ -8,10 +7,11 @@ class Entity {
       throw 'sprite parameter is required to create an Entity';
     }
     this.velocity = new Vector(0, 0);
-    this.sprite = sprite;
     this.parent = null;
     this.traits = [];
 
+    // graphics
+    this.sprite = sprite;
     this.sprite.position.set(localX, localY);
     this.sprite.anchor.set(0.5);
   }
@@ -66,15 +66,15 @@ class Entity {
   }
 
   update(deltaTime) {
-    arrayForEach(this.traits, trait => {
-      trait.update(this, deltaTime);
-    });
+    for (let i = 0, j = this.traits.length; i < j; ++i) {
+      this.traits[i].update(this, deltaTime);
+    }
   }
 
   obstruct(edge, other) {
-    arrayForEach(this.traits, trait => {
-      trait.obstruct(this, edge, other);
-    });
+    for (let i = 0, j = this.traits.length; i < j; ++i) {
+      this.traits[i].obstruct(this, edge, other);
+    }
   }
 
   intersection(other) {
@@ -84,6 +84,10 @@ class Entity {
       this.right > other.left &&
       this.left < other.right
     );
+  }
+
+  distance(other) {
+    return Math.abs(this.gridX - other.gridX + this.gridY - other.gridY);
   }
 
   destroy() {

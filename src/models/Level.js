@@ -31,21 +31,23 @@ class Level {
   }
 
   get player() {
-    return (this.layers.player && this.layers.player.entities.items[0]) || null;
+    return (this.layers.player && this.layers.player.children[0]) || null;
   }
 
   onMount(global) {
     arrayForEach(layerCreators, create => {
       const layer = create(global, this.data);
-      layer.level = this;
-
       this.foreground.addChild(layer.graphics);
       this.layers[layer.name] = layer;
+      this.physics.addCollision(layer);
 
-      if (layer.solid) {
-        this.physics.addSolids(layer);
+      if (layer.name === 'ground') {
+        this.physics.addGravitation(layer);
       }
     });
+
+    console.log(this.layers);
+
     this.global = global;
     this.global.events.onResize(() => this.resize());
     this.background.set(global.assets.gradient.texture);

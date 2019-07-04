@@ -1,8 +1,5 @@
 import {arrayForEach} from '@utils/array';
-import {calculateGravity, closestSolidInDirection} from '@models/physics';
-import {modIndex} from '@utils/math';
-import Bounds from '@models/Bounds';
-import Force from '@models/Force';
+import {calculateGravity} from '@models/physics';
 
 const shadowColor = 0xdaeaf2;
 const maxShadowDistance = 5;
@@ -16,139 +13,108 @@ export const EDGE = {
 
 class PhysicsEngine {
   constructor() {
-    this.gravity = new Force(0, 1, {
-      strength: 25,
-      dexterity: 0.6
-    });
-    this.solids = [];
-    this.bounds = null;
+    this.gravitation = [];
+    this.collision = [];
   }
 
-  get rotation() {
-    const {direction} = this.gravity;
-
-    if (direction.y < 0) {
-      return Math.PI;
-    }
-    if (direction.x > 0) {
-      return (3 * Math.PI) / 2;
-    }
-    if (direction.x < 0) {
-      return Math.PI / 2;
-    }
-    return 0;
+  addGravitation(layer) {
+    this.gravitation.push(layer);
   }
 
-  addSolids(layer) {
-    this.solids.push(layer.entities);
-    this.updateBounds();
+  addCollision(layer, selfCollision = false) {
+    layer.selfCollision = selfCollision;
+    this.collision.push(layer);
   }
 
-  updateBounds() {
-    this.bounds = new Bounds();
-    this.bounds.merge(...this.solids.map(e => e.bounds()));
-  }
-
-  applyGravity(entity) {
-    this.gravity.applyTo(entity.velocity);
-  }
-
-  calculateGravity(entity) {
-    if (this.solids.length === 0) {
+  calculateGravity(gravity, entity) {
+    if (this.gravitation.length === 0) {
       return;
     }
-    const gravity = calculateGravity({
-      entity,
-      solids: this.solids,
-      bounds: this.bounds
-    });
+    const result = calculateGravity(entity, this.gravitation);
 
-    if (gravity) {
-      this.gravity.apply(gravity.x, gravity.y);
+    if (result) {
+      gravity.apply(result.x, result.y);
     }
+  }
+
+  applyGravity(gravity, entity) {
+    gravity.applyTo(entity.velocity);
   }
 
   applyCollisionX(entity) {
-    arrayForEach(this.solids, entities => {
-      entities.forEach(other => {
-        if (!entity.intersection(other)) {
-          return;
+    const {selfCollision} = entity.parent;
+
+    arrayForEach(this.collision, layer => {
+      if (!selfCollision && layer === entity.parent) {
+        return;
+      }
+      const closest = layer.closest(entity.gridX, entity.gridY);
+      const length = closest ? closest.length : 0;
+
+      for (let index = 0; index < length; index++) {
+        const match = closest[index];
+
+        if (!match || entity === match || !entity.intersection(match)) {
+          continue;
         }
         if (entity.velocity.x > 0) {
-          if (entity.right > other.left) {
-            entity.obstruct(EDGE.RIGHT, other);
+          if (entity.right > match.left) {
+            entity.obstruct(EDGE.RIGHT, match);
           }
         } else if (entity.velocity.x < 0) {
-          if (entity.left < other.right) {
-            entity.obstruct(EDGE.LEFT, other);
+          if (entity.left < match.right) {
+            entity.obstruct(EDGE.LEFT, match);
           }
         }
-      });
+      }
     });
   }
 
   applyCollisionY(entity) {
-    arrayForEach(this.solids, entities => {
-      entities.forEach(other => {
-        if (!entity.intersection(other)) {
-          return;
+    const {selfCollision} = entity.parent;
+
+    arrayForEach(this.collision, layer => {
+      if (!selfCollision && layer === entity.parent) {
+        return;
+      }
+      const closest = layer.closest(entity.gridX, entity.gridY);
+      const length = closest ? closest.length : 0;
+
+      for (let index = 0; index < length; index++) {
+        const match = closest[index];
+
+        if (!match || entity === match || !entity.intersection(match)) {
+          continue;
         }
         if (entity.velocity.y > 0) {
-          if (entity.bottom > other.top) {
-            entity.obstruct(EDGE.BOTTOM, other);
+          if (entity.bottom > match.top) {
+            entity.obstruct(EDGE.BOTTOM, match);
           }
         } else if (entity.velocity.y < 0) {
-          if (entity.top < other.bottom) {
-            entity.obstruct(EDGE.TOP, other);
+          if (entity.top < match.bottom) {
+            entity.obstruct(EDGE.TOP, match);
           }
         }
-      });
+      }
     });
-  }
-
-  rotateVector(vector) {
-    const {direction} = this.gravity;
-    const {x, y} = vector;
-
-    if (direction.y < 0) {
-      vector.x = -x;
-      vector.y = -y;
-    } else if (direction.x > 0) {
-      vector.x = y;
-      vector.y = -x;
-    } else if (direction.x < 0) {
-      vector.x = -y;
-      vector.y = x;
-    }
-    return vector;
-  }
-
-  rotateEdge(edge) {
-    const table = Object.values(EDGE);
-    const index = table.indexOf(edge);
-    const {direction} = this.gravity;
-
-    let shift = 0;
-    if (direction.x < 0) {
-      shift = 1;
-    } else if (direction.y < 0) {
-      shift = 2;
-    } else if (direction.x > 0) {
-      shift = 3;
-    }
-    const rotatedIndex = modIndex(index - shift, 4);
-    return table[rotatedIndex];
   }
 
   dropShadow(entity) {
-    const {entity: other, dist} = closestSolidInDirection({
-      entity,
-      solids: this.solids,
-      direction: this.gravity.direction
-    });
+    // todo: multiple objects
+    const {x, y} = entity.physics.gravity.direction;
+    const match = this.gravitation[0].closestInDirection(
+      entity.gridX,
+      entity.gridY,
+      x,
+      y
+    );
 
-    if (other && other.colorful && dist <= maxShadowDistance) {
-      other.colorful.setColor(shadowColor);
+    if (
+      match &&
+      match.colorful &&
+      entity.distance(match) <= maxShadowDistance
+    ) {
+      match.colorful.setColor(shadowColor);
     }
   }
 }

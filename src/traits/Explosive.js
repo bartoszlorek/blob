@@ -2,7 +2,7 @@ import {Sprite} from 'pixi.js';
 import {arrayReduce} from '@utils/array';
 import {objectForEach} from '@utils/object';
 import Entity from '@models/Entity';
-import Matrix from '@models/Matrix';
+// import Matrix from '@models/Matrix';
 import Trait from '@traits/Trait';
 import Blink from '@traits/Blink';
 import Animation from '@traits/Animation';
