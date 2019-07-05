@@ -13,6 +13,7 @@ class Layer {
     this.graphics.interactiveChildren = false;
 
     // object pools
+    this._stack = [];
     this._closestArray = [];
     this._boundsRect = new Rectangle();
     this._boundsGrid = {};
@@ -20,6 +21,7 @@ class Layer {
 
     this._boundsID = 0;
     this._lastBoundsID = -1;
+    this._stackIndex = 0;
 
     // parameters
     this.resolution = width + 3;
@@ -54,30 +56,36 @@ class Layer {
     this._updatePosition(child);
   }
 
-  removeChild(child) {
-    if (child.parent !== this) {
-      return false;
+  willChange(child, remove) {
+    if (!child.processing) {
+      this._stack[this._stackIndex++] = this._index(child.gridX, child.gridY);
+      this._stack[this._stackIndex++] = remove ? null : child;
     }
-    child.parent = null;
-    const index = this.children.indexOf(child);
-
-    if (index !== -1) {
-      utils.removeItems(this.children, index, 1);
-    }
-    this.graphics.removeChild(child.sprite);
-    this._removePosition(child);
-  }
-
-  requestChange(child) {
-    // todo: optimization
-    this._updatePosition(child);
   }
 
   update(deltaTime) {
     for (let i = 0, j = this.children.length; i < j; ++i) {
       this.children[i].update(deltaTime);
     }
-    // it invokes after all changes
+
+    // reposition phase
+    while (this._stackIndex > 0) {
+      const child = this._stack[--this._stackIndex];
+      const index = this._stack[--this._stackIndex];
+
+      // console.log(this.name);
+
+      if (child) {
+        this._removePosition(index);
+        this._updatePosition(child);
+        child.processing = false;
+      } else {
+        this._removeChild(this.position[index]);
+        this._removePosition(index);
+      }
+    }
+
+    // filters phase
     this._updateFilters();
   }
 
@@ -146,6 +154,8 @@ class Layer {
     return null;
   }
 
+  closestInRange(x, y, radius) {}
+
   _index(x, y) {
     return y * this.resolution + x;
   }
@@ -155,9 +165,19 @@ class Layer {
     this._boundsID++;
   }
 
-  _removePosition(child) {
-    this.position[this._index(child.gridX, child.gridY)] = undefined;
+  _removePosition(index) {
+    this.position[index] = undefined;
     this._boundsID++;
+  }
+
+  _removeChild(child) {
+    const index = this.children.indexOf(child);
+
+    if (index !== -1) {
+      utils.removeItems(this.children, index, 1);
+    }
+    this.graphics.removeChild(child.sprite);
+    child.parent = null;
   }
 
   _updateFilters() {

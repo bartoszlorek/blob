@@ -14,6 +14,8 @@ class Entity {
     this.sprite = sprite;
     this.sprite.position.set(localX, localY);
     this.sprite.anchor.set(0.5);
+
+    this.processing = false;
   }
 
   set scale(value) {
@@ -88,10 +90,6 @@ class Entity {
 
   distance(other) {
     return Math.abs(this.gridX - other.gridX + this.gridY - other.gridY);
-  }
-
-  destroy() {
-    this.parent.remove(this);
   }
 }
 

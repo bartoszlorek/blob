@@ -17,7 +17,7 @@ function createGround(global, {ground}) {
     );
 
     child.addTrait(new Colorful());
-    layer.addChild(child, block.x, block.y);
+    layer.addChild(child);
   });
 
   return layer;

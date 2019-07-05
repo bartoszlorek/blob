@@ -10,13 +10,13 @@ function createCave(global, {cave}) {
 
   resolveBlocks('cave', cave, block => {
     const {texture} = global.assets[block.asset];
-    const entity = new Entity(
+    const child = new Entity(
       new Sprite(texture),
       gridToLocal(block.x),
       gridToLocal(block.y)
     );
 
-    layer.append(entity);
+    layer.addChild(child);
   });
 
   return layer;
