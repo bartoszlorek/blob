@@ -1,6 +1,5 @@
 import {baseSize} from '@app/consts';
 import {utils, Container, Rectangle} from 'pixi.js';
-import {extendBounds} from '@utils/pixijs';
 
 class Layer {
   constructor(name = '', width = 10) {
@@ -25,7 +24,6 @@ class Layer {
 
     // parameters
     this.resolution = width + 3;
-    this.filterMargin = 10;
   }
 
   get bounds() {
@@ -77,7 +75,7 @@ class Layer {
     while (this._stackIndex > 0) {
       const child = this._stack[--this._stackIndex];
       const index = this._stack[--this._stackIndex];
-      console.log('change:', this.name);
+      // console.log('change:', this.name);
 
       if (child) {
         this._removePosition(index);
@@ -88,9 +86,6 @@ class Layer {
         this._removePosition(index);
       }
     }
-
-    // filters phase
-    this._updateFilters();
   }
 
   closest(x, y) {
@@ -122,6 +117,8 @@ class Layer {
     return this._closestArray;
   }
 
+  closestInRange(x, y, radius) {}
+
   closestInDirection(x, y, dX, dY, forceLimit = 0) {
     const {left, right, top, bottom} = this.boundsGrid;
     const xLimit = dX < 0 ? x - left : dX > 0 ? right - x : 0;
@@ -148,8 +145,6 @@ class Layer {
     return null;
   }
 
-  closestInRange(x, y, radius) {}
-
   _index(x, y) {
     return y * this.resolution + x;
   }
@@ -172,17 +167,6 @@ class Layer {
     }
     this.graphics.removeChild(child.sprite);
     child.parent = null;
-  }
-
-  _updateFilters() {
-    if (!this.graphics.filters) {
-      return;
-    }
-    // todo: cache bounds for static layers
-    this.graphics.filterArea = extendBounds(
-      this.graphics.getBounds(),
-      this.filterMargin
-    );
   }
 
   _calculateBounds() {
