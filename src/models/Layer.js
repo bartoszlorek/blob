@@ -58,8 +58,13 @@ class Layer {
 
   willChange(child, remove) {
     if (!child.processing) {
-      this._stack[this._stackIndex++] = this._index(child.gridX, child.gridY);
-      this._stack[this._stackIndex++] = remove ? null : child;
+      const index = this._index(child.gridX, child.gridY);
+
+      if (remove || this.position[index] !== child) {
+        this._stack[this._stackIndex++] = index;
+        this._stack[this._stackIndex++] = remove ? null : child;
+        child.processing = true;
+      }
     }
   }
 
@@ -68,12 +73,11 @@ class Layer {
       this.children[i].update(deltaTime);
     }
 
-    // reposition phase
+    // position changes phase
     while (this._stackIndex > 0) {
       const child = this._stack[--this._stackIndex];
       const index = this._stack[--this._stackIndex];
-
-      // console.log(this.name);
+      console.log('change:', this.name);
 
       if (child) {
         this._removePosition(index);
@@ -184,13 +188,13 @@ class Layer {
   _calculateBounds() {
     this.graphics.getLocalBounds(this._boundsRect);
 
-    // transform into extreme form
+    // transform into local units
     this._bounds.top = this._boundsRect.y;
     this._bounds.left = this._boundsRect.x;
     this._bounds.right = this._boundsRect.x + this._boundsRect.width;
     this._bounds.bottom = this._boundsRect.y + this._boundsRect.height;
 
-    // transform into grid form
+    // transform into grid units
     this._boundsGrid.top = Math.ceil(this._bounds.top / baseSize);
     this._boundsGrid.left = Math.ceil(this._bounds.left / baseSize);
     this._boundsGrid.right = Math.floor(this._bounds.right / baseSize);
