@@ -118,7 +118,7 @@ class Layer {
     return this._closestArray;
   }
 
-  closestInDirection(x, y, dX, dY) {
+  closestInDirection(x, y, dX, dY, forceLimit = 0) {
     const xLimit =
       dX < 0 ? x - this.boundsGrid.left :
       dX > 0 ? this.boundsGrid.right - x : 0;
@@ -129,6 +129,10 @@ class Layer {
     let limit = xLimit + yLimit;
     let a = x;
     let b = y;
+
+    if (forceLimit && forceLimit < limit) {
+      limit = forceLimit;
+    }
 
     while (0 < limit—-) {
       const child = this.position[this._index(a, b)];
