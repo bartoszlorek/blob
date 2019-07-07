@@ -106,14 +106,11 @@ class PhysicsEngine {
       entity.gridX,
       entity.gridY,
       x,
-      y
+      y,
+      maxShadowDistance
     );
 
-    if (
-      match &&
-      match.colorful &&
-      entity.distance(match) <= maxShadowDistance
-    ) {
+    if (match && match.colorful) {
       match.colorful.setColor(shadowColor);
     }
   }

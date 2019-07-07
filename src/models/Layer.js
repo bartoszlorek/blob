@@ -119,13 +119,10 @@ class Layer {
   }
 
   closestInDirection(x, y, dX, dY, forceLimit = 0) {
-    const xLimit =
-      dX < 0 ? x - this.boundsGrid.left :
-      dX > 0 ? this.boundsGrid.right - x : 0;
-    const yLimit =
-      dY < 0 ? y - this.boundsGrid.top :
-      dY > 0 ? this.boundsGrid.bottom - y : 0;
-    
+    const {left, right, top, bottom} = this.boundsGrid;
+    const xLimit = dX < 0 ? x - left : dX > 0 ? right - x : 0;
+    const yLimit = dY < 0 ? y - top : dY > 0 ? bottom - y : 0;
+
     // for abs(x) !== abs(y)
     let limit = xLimit + yLimit;
     let a = x;
@@ -135,7 +132,7 @@ class Layer {
       limit = forceLimit;
     }
 
-    while (0 < limit—-) {
+    while (0 <= limit--) {
       const child = this.position[this._index(a, b)];
 
       if (child) {
