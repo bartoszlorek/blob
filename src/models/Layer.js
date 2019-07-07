@@ -130,7 +130,7 @@ class Layer {
     let a = x;
     let b = y;
 
-    while (limit > 0) {
+    while (0 < limit—-) {
       const child = this.position[this._index(a, b)];
 
       if (child) {
