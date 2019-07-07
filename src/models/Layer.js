@@ -126,6 +126,7 @@ class Layer {
       dY < 0 ? y - this.boundsGrid.top :
       dY > 0 ? this.boundsGrid.bottom - y : 0;
     
+    // for abs(x) !== abs(y)
     let limit = xLimit + yLimit;
     let a = x;
     let b = y;
