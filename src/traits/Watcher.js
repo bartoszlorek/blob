@@ -1,45 +1,57 @@
 import Trait from '@traits/Trait';
-import Memo from '@models/Memo';
+import {EDGE} from '@models/PhysicsEngine';
 
 class Watcher extends Trait {
-  constructor({speed, ground}) {
+  constructor({physics, speed}) {
     super('watcher');
+    this.physics = physics;
     this.speed = speed;
-    this.ground = ground;
-    this.direction = 1;
-    this.memo = new Memo();
   }
 
   update(entity, deltaTime) {
-    const mat = this.closestGround(entity);
-    const groundUnderFeet = mat.n(1, 2);
+    // todo: multiple layers and axis
+    const closest = this.physics.collision[0].closest(
+      entity.gridX,
+      entity.gridY
+    );
+    const bottom = closest && closest[7];
 
-    if (!groundUnderFeet) {
-      entity.destroy();
+    if (!bottom) {
+      entity.parent.willChange(entity, true);
+      return;
     }
-    const beforeWall = mat.n(1 + this.direction, 1);
-    const beforeHole = !mat.n(1 + this.direction, 2);
+    const beforeEdge = !closest[7 + entity.velocity.x];
 
-    if (beforeWall || beforeHole) {
-      const touchedEdge =
-        this.direction > 0
-          ? entity.right > groundUnderFeet.right
-          : entity.left < groundUnderFeet.left;
-
-      if (touchedEdge) {
-        this.direction = -this.direction;
-        entity.sprite.scale.x = this.direction;
+    if (beforeEdge) {
+      if (entity.velocity.x > 0) {
+        if (entity.right > bottom.right) {
+          this.turnBack(entity);
+        }
+      } else if (entity.velocity.x < 0) {
+        if (entity.left < bottom.left) {
+          this.turnBack(entity);
+        }
       }
     }
 
     // finally, apply movement
-    entity.sprite.x += this.speed * this.direction * deltaTime;
+    entity.parent.willChange(entity);
+    entity.sprite.x += entity.velocity.x * this.speed * deltaTime;
+    this.physics.applyCollisionX(entity);
   }
 
-  closestGround(entity) {
-    const {gridX, gridY} = entity;
-    const fn = () => this.ground.entities.closest(entity, 1);
-    return this.memo.use('closest', fn, [gridX, gridY]);
+  obstruct(entity, edge) {
+    switch (edge) {
+      case EDGE.LEFT:
+      case EDGE.RIGHT:
+        this.turnBack(entity);
+        break;
+    }
+  }
+
+  turnBack(entity) {
+    entity.velocity.x = -entity.velocity.x;
+    entity.sprite.scale.x = entity.velocity.x;
   }
 }
 

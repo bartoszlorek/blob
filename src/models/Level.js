@@ -40,8 +40,7 @@ class Level {
       this.foreground.addChild(layer.graphics);
       this.layers[layer.name] = layer;
 
-      // todo: better logic here
-      if (layer.name === 'ground' || layer.name === 'mines') {
+      if (['ground', 'mines', 'enemies', 'player'].includes(layer.name)) {
         this.physics.addCollision(layer);
       }
       if (layer.name === 'ground') {

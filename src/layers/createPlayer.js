@@ -13,32 +13,32 @@ function createPlayer(global, {player}) {
   const {texture} = global.assets['player'];
   const {physics} = global.level;
 
-  const entity = new Entity(
+  const child = new Entity(
     new Sprite(texture),
     gridToLocal(player[0]),
     gridToLocal(player[1])
   );
 
-  entity.addTrait(new Physics({physics}));
-  entity.addTrait(new Move({physics}));
-  entity.addTrait(new Jump({physics}));
-  entity.addTrait(new Killable());
+  child.addTrait(new Physics({physics}));
+  child.addTrait(new Move({physics}));
+  child.addTrait(new Jump({physics}));
+  child.addTrait(new Killable());
 
   // todo: remove listeners on level unload
   const input = new Keyboard();
   input.on('ArrowRight', pressed => {
-    entity.move[pressed ? 'forward' : 'backward']();
+    child.move[pressed ? 'forward' : 'backward']();
   });
 
   input.on('ArrowLeft', pressed => {
-    entity.move[pressed ? 'backward' : 'forward']();
+    child.move[pressed ? 'backward' : 'forward']();
   });
 
   input.on('Space', pressed => {
-    entity.jump[pressed ? 'start' : 'cancel']();
+    child.jump[pressed ? 'start' : 'cancel']();
   });
 
-  layer.addChild(entity);
+  layer.addChild(child);
   return layer;
 }
 

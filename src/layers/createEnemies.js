@@ -8,18 +8,19 @@ import Watcher from '@traits/Watcher';
 
 function createEnemies(global, {enemies}) {
   const layer = new Layer('enemies');
-  const {ground} = global.level.layers;
+  const {physics} = global.level;
 
   resolveBlocks('enemies', enemies, block => {
     const {texture} = global.assets[block.asset];
-    const entity = new Entity(
+    const child = new Entity(
       new Sprite(texture),
       gridToLocal(block.x),
       gridToLocal(block.y)
     );
 
-    entity.addTrait(new Watcher({speed: 60, ground}));
-    layer.append(entity);
+    child.addTrait(new Watcher({physics, speed: 60}));
+    child.velocity.x = 1;
+    layer.addChild(child);
   });
 
   return layer;
