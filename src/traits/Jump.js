@@ -1,6 +1,7 @@
+import {rotateEdge, rotateVector} from '@utils/physics';
 import Trait from '@traits/Trait';
-import Sound from '@models/Sound';
 import {EDGE} from '@models/PhysicsEngine';
+import Sound from '@models/Sound';
 import Force from '@models/Force';
 import Vector from '@models/Vector';
 
@@ -30,10 +31,6 @@ class Jump extends Trait {
     return this.ready < 0;
   }
 
-  get direction() {
-    return this.physics.rotateVector(new Vector(0, -1));
-  }
-
   start() {
     this.requestTime = this.gracePeriod;
   }
@@ -56,7 +53,7 @@ class Jump extends Trait {
       if (this.ready === 1) {
         this.jumpSound.play();
       }
-      const {x, y} = this.direction;
+      const {x, y} = this._direction(entity);
       this.force.apply(x, y);
       this.force.applyTo(entity.velocity);
       this.engageTime -= deltaTime;
@@ -66,18 +63,22 @@ class Jump extends Trait {
   }
 
   obstruct(entity, edge) {
-    const rotatedEdge = this.physics.rotateEdge(edge);
+    const rotatedEdge = rotateEdge(entity.physics.gravity, edge);
     if (rotatedEdge === EDGE.BOTTOM) {
       if (this.ready < 0) {
         this.pluckSound.play();
       }
       // reset jumping force
-      const {x, y} = this.direction;
+      const {x, y} = this._direction(entity);
       this.force.set(x, y);
       this.ready = 1;
     } else if (rotatedEdge === EDGE.TOP) {
       this.cancel();
     }
+  }
+
+  _direction(entity) {
+    return rotateVector(entity.physics.gravity, new Vector(0, -1));
   }
 }
 

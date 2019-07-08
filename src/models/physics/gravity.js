@@ -1,14 +1,12 @@
-import {arrayReduce} from '@utils/array';
-import {createRaycast, originFromEntity} from './raycast';
+import {raycast} from './raycast';
 import Vector from '@models/Vector';
-import Matrix from '@models/Matrix';
 
 export const SOLID_SOLID = Symbol('solid-solid');
 export const SOLID_BORDER = Symbol('solid-border');
 export const BORDER_BORDER = Symbol('border-border');
 
-export function calculateGravity({entity, solids, bounds}) {
-  const outside = outsideBounds(entity, bounds);
+export function calculateGravity(entity, objects) {
+  const outside = outsideBounds(entity, objects);
 
   if (outside) {
     return outside;
@@ -19,21 +17,17 @@ export function calculateGravity({entity, solids, bounds}) {
     return null;
   }
 
-  const closestSolids = getClosestSolids(entity, solids);
+  const closestSolids = getClosestSolids(entity, objects);
 
   // corner case inside bounds
   if (isCornerCase(closestSolids)) {
     return null;
   }
 
-  const border = bounds.toBorder();
-  const origin = originFromEntity(entity);
-
-  const raycast = createRaycast(solids, border);
-  const top = raycast(origin, new Vector(0, -1));
-  const right = raycast(origin, new Vector(1, 0));
-  const bottom = raycast(origin, new Vector(0, 1));
-  const left = raycast(origin, new Vector(-1, 0));
+  const top = raycast(objects, entity, 0, -1);
+  const right = raycast(objects, entity, 1, 0);
+  const bottom = raycast(objects, entity, 0, 1);
+  const left = raycast(objects, entity, -1, 0);
 
   const y = sortPair(top, bottom);
   const x = sortPair(left, right);
@@ -94,44 +88,47 @@ export function calculateGravity({entity, solids, bounds}) {
   }
 }
 
-function outsideBounds(entity, bounds) {
+function outsideBounds(entity, objects) {
+  // todo: handle multiple objects
+  const object = objects[0];
+
   // corners
   if (
-    (entity.bottom < bounds.top && entity.right < bounds.left) ||
-    (entity.bottom < bounds.top && entity.left > bounds.right) ||
-    (entity.top > bounds.bottom && entity.right < bounds.left) ||
-    (entity.top > bounds.bottom && entity.left > bounds.right)
+    (entity.bottom < object.bounds.top && entity.right < object.bounds.left) ||
+    (entity.bottom < object.bounds.top && entity.left > object.bounds.right) ||
+    (entity.top > object.bounds.bottom && entity.right < object.bounds.left) ||
+    (entity.top > object.bounds.bottom && entity.left > object.bounds.right)
   ) {
     return null;
   }
 
   // straight
-  if (entity.bottom <= bounds.top) {
+  if (entity.bottom <= object.bounds.top) {
     return new Vector(0, 1);
   }
-  if (entity.top >= bounds.bottom) {
+  if (entity.top >= object.bounds.bottom) {
     return new Vector(0, -1);
   }
-  if (entity.right <= bounds.left) {
+  if (entity.right <= object.bounds.left) {
     return new Vector(1, 0);
   }
-  if (entity.left >= bounds.right) {
+  if (entity.left >= object.bounds.right) {
     return new Vector(-1, 0);
   }
 }
 
-function isCornerCase(mat) {
+function isCornerCase(matrix) {
   return (
-    (mat.n(2, 0) && !mat.n(1, 0) && !mat.n(2, 1)) || // top-right
-    (mat.n(2, 2) && !mat.n(2, 1) && !mat.n(1, 2)) || // bottom-right
-    (mat.n(0, 2) && !mat.n(1, 2) && !mat.n(0, 1)) || // bottom-left
-    (mat.n(0, 0) && !mat.n(0, 1) && !mat.n(1, 0)) // top-left
+    (matrix[6] && !matrix[3] && !matrix[7]) || // bottom-left
+    (matrix[8] && !matrix[5] && !matrix[7]) || // bottom-right
+    (matrix[0] && !matrix[3] && !matrix[1]) || // top-left
+    (matrix[2] && !matrix[5] && !matrix[1]) //    top-right
   );
 }
 
-export function getClosestSolids(entity, solids) {
-  const fn = (mat, solid) => mat.merge(solid.closest(entity, 1));
-  return arrayReduce(solids, fn, new Matrix(3, 3));
+export function getClosestSolids(entity, objects) {
+  // todo: handle multiple objects
+  return objects[0].closest(entity.gridX, entity.gridY);
 }
 
 export function getClosestRay(...rays) {

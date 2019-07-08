@@ -10,7 +10,7 @@ export default [
   createGround,
   createCave,
   createMines,
-  createEnemies,
+  // createEnemies,
   createPrizes,
   createEffects,
   createPlayer

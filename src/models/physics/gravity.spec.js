@@ -1,23 +1,23 @@
 import {
-  closestRay,
+  getClosestRay,
   sortPair,
   SOLID_SOLID,
   SOLID_BORDER,
   BORDER_BORDER
 } from './gravity';
 
-describe('closestRay()', () => {
+describe('getClosestRay()', () => {
   const ray1 = {type: 'solid', distance: 3};
   const ray2 = {type: 'solid', distance: 1};
   const ray3 = {type: 'border', distance: 2};
   const ray4 = {type: 'border', distance: 1};
 
   it('should return closest ray', () => {
-    expect(closestRay(ray1, ray2, ray3)).toBe(ray2);
+    expect(getClosestRay(ray1, ray2, ray3)).toBe(ray2);
   });
 
   it('should return null for equal rays', () => {
-    expect(closestRay(ray1, ray2, ray4)).toBe(null);
+    expect(getClosestRay(ray1, ray2, ray4)).toBe(null);
   });
 });
 

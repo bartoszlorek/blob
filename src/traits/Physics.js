@@ -1,15 +1,26 @@
-import Trait from '@traits/Trait';
+import {vectorRotation} from '@utils/physics';
 import {EDGE} from '@models/PhysicsEngine';
+import Force from '@models/Force';
+import Trait from '@traits/Trait';
 
 class Physics extends Trait {
   constructor({physics}) {
     super('physics');
     this.physics = physics;
+
+    this.gravity = new Force(0, 1, {
+      strength: 25,
+      dexterity: 0.6
+    });
   }
 
   update(entity, deltaTime) {
-    this.physics.calculateGravity(entity);
-    this.physics.applyGravity(entity);
+    if (entity.velocity.x || entity.velocity.y) {
+      entity.parent.willChange(entity);
+    }
+
+    this.physics.calculateGravity(this.gravity, entity);
+    this.physics.applyGravity(this.gravity, entity);
 
     entity.sprite.x += entity.velocity.x * deltaTime;
     this.physics.applyCollisionX(entity);
@@ -17,7 +28,7 @@ class Physics extends Trait {
     entity.sprite.y += entity.velocity.y * deltaTime;
     this.physics.applyCollisionY(entity);
 
-    entity.sprite.rotation = this.physics.rotation;
+    entity.sprite.rotation = vectorRotation(this.gravity);
 
     // effects
     this.physics.dropShadow(entity);

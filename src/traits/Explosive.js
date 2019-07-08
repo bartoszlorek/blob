@@ -1,14 +1,15 @@
 import {Sprite} from 'pixi.js';
-import {arrayReduce} from '@utils/array';
+import {arrayForEach} from '@utils/array';
 import {objectForEach} from '@utils/object';
 import Entity from '@models/Entity';
-import Matrix from '@models/Matrix';
 import Trait from '@traits/Trait';
 import Blink from '@traits/Blink';
 import Animation from '@traits/Animation';
 
+const destroy = child => child.parent.willChange(child, true);
+
 class Explosive extends Trait {
-  constructor({global, range = 0}) {
+  constructor({global, range}) {
     super('explosive');
     this.global = global;
     this.range = range;
@@ -35,19 +36,17 @@ class Explosive extends Trait {
       const {layers, physics, player: playerEntity} = this.global.level;
       const {effects, ground, player} = layers;
 
-      effects.append(this.createBlastFrom(entity));
+      effects.addChild(this.createBlastFrom(entity));
 
       // destroy others entities
       const others = this.inRange(entity, [ground, player]);
-      objectForEach(others.entries, entity => entity.destroy());
+      objectForEach(others, destroy);
 
       // destroy mine itself
-      entity.destroy();
+      destroy(entity);
 
       // may we finish the game?
-      if (playerEntity) {
-        physics.updateBounds();
-      } else {
+      if (!playerEntity) {
         console.log('dead!');
       }
     }
@@ -70,16 +69,24 @@ class Explosive extends Trait {
       [10, () => (blast.scale = scale += this.range)],
       [100, () => (blast.scale = scale += this.range)],
       [200, () => (blast.scale = scale -= this.range / 2)],
-      [250, () => blast.destroy()]
+      [250, () => destroy(blast)]
     ]);
     return blast;
   }
 
   inRange(entity, layers) {
-    const size = this.range * 2 + 1;
-    const fn = (mat, layer) =>
-      mat.merge(layer.entities.closest(entity, this.range));
-    return arrayReduce(layers, fn, new Matrix(size, size));
+    const result = [];
+
+    // todo: better array merging
+    arrayForEach(layers, layer => {
+      const closest = layer.closest(entity.gridX, entity.gridY);
+      const length = closest ? closest.length : 0;
+
+      for (let i = 0; i < length; i++) {
+        if (closest[i]) result.push(closest[i]);
+      }
+    });
+    return result;
   }
 }
 

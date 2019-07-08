@@ -1,4 +1,5 @@
 import {baseSize} from '@app/consts';
+import {rotateVector} from '@utils/physics';
 import {lerp} from '@utils/math';
 import Trait from '@traits/Trait';
 import Vector from '@models/Vector';
@@ -25,8 +26,12 @@ class Move extends Trait {
   }
 
   update(entity, deltaTime) {
-    const vector = this.physics.rotateVector(new Vector(this.direction, 0));
-    const axis = this.physics.gravity.vertical ? 'x' : 'y';
+    const vector = rotateVector(
+      entity.physics.gravity,
+      new Vector(this.direction, 0)
+    );
+
+    const axis = entity.physics.gravity.vertical ? 'x' : 'y';
     const velocity = entity.velocity[axis];
     const absolute = Math.abs(velocity);
 
@@ -45,7 +50,7 @@ class Move extends Trait {
       return;
     }
     const {position} = entity.sprite;
-    const axis = this.physics.gravity.vertical ? 'x' : 'y';
+    const axis = entity.physics.gravity.vertical ? 'x' : 'y';
     const base = position[axis] / baseSize;
 
     const n = Math.abs(base) % 1;
