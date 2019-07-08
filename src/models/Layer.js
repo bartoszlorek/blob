@@ -56,13 +56,9 @@ class Layer {
 
   willChange(child, remove) {
     if (!child.processing) {
-      const index = this._index(child.gridX, child.gridY);
-
-      if (remove || this.position[index] !== child) {
-        this._stack[this._stackIndex++] = index;
-        this._stack[this._stackIndex++] = remove ? null : child;
-        child.processing = true;
-      }
+      this._stack[this._stackIndex++] = this._index(child.gridX, child.gridY);
+      this._stack[this._stackIndex++] = remove ? null : child;
+      child.processing = true;
     }
   }
 
