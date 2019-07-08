@@ -15,7 +15,9 @@ class Physics extends Trait {
   }
 
   update(entity, deltaTime) {
-    entity.parent.willChange(entity);
+    if (entity.velocity.x || entity.velocity.y) {
+      entity.parent.willChange(entity);
+    }
 
     this.physics.calculateGravity(this.gravity, entity);
     this.physics.applyGravity(this.gravity, entity);
