@@ -40,7 +40,9 @@ class Level {
       this.foreground.addChild(layer.graphics);
       this.layers[layer.name] = layer;
 
-      if (['ground', 'mines', 'enemies', 'player'].includes(layer.name)) {
+      if (
+        ['ground', 'mines', 'enemies', 'player', 'prizes'].includes(layer.name)
+      ) {
         this.physics.addCollision(layer);
       }
       if (layer.name === 'ground') {
@@ -59,10 +61,11 @@ class Level {
   onUnmount() {}
 
   update(deltaTime) {
-    this.cameraFollows();
     objectForEach(this.layers, layer => {
       layer.update(deltaTime);
     });
+    this.physics.update(deltaTime);
+    this.cameraFollows();
   }
 
   resize() {

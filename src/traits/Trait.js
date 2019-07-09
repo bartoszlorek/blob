@@ -6,6 +6,8 @@ class Trait {
   update() {}
 
   obstruct() {}
+
+  collide() {}
 }
 
 export default Trait;

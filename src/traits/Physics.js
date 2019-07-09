@@ -15,23 +15,11 @@ class Physics extends Trait {
   }
 
   update(entity, deltaTime) {
-    if (entity.velocity.x || entity.velocity.y) {
-      entity.parent.willChange(entity);
-    }
-
     this.physics.calculateGravity(this.gravity, entity);
-    this.physics.applyGravity(this.gravity, entity);
-
-    entity.sprite.x += entity.velocity.x * deltaTime;
-    this.physics.applyCollisionX(entity);
-
-    entity.sprite.y += entity.velocity.y * deltaTime;
-    this.physics.applyCollisionY(entity);
+    this.physics.dropShadow(entity);
+    this.gravity.applyTo(entity.velocity);
 
     entity.sprite.rotation = vectorRotation(this.gravity);
-
-    // effects
-    this.physics.dropShadow(entity);
   }
 
   obstruct(entity, edge, other) {

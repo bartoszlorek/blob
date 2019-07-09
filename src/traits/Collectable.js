@@ -1,14 +1,12 @@
 import Trait from '@traits/Trait';
 
 class Collectable extends Trait {
-  constructor({level}) {
+  constructor() {
     super('collectable');
-    this.level = level;
   }
 
-  update(entity, deltaTime) {
-    const {player} = this.level;
-    if (player && player.intersection(entity)) {
+  collide(entity, other) {
+    if (other.parent.name === 'player') {
       console.log('score!');
     }
   }
