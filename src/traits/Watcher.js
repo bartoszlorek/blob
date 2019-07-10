@@ -2,15 +2,16 @@ import Trait from '@traits/Trait';
 import {EDGE} from '@models/PhysicsEngine';
 
 class Watcher extends Trait {
-  constructor({physics, speed}) {
+  constructor({physics, direction = 1, speed}) {
     super('watcher');
     this.physics = physics;
+    this.direction = direction;
     this.speed = speed;
   }
 
-  update(entity, deltaTime) {
+  update(entity) {
     // todo: multiple layers and axis
-    const closest = this.physics.collision[0].closest(
+    const closest = this.physics.passiveColliders[0].closest(
       entity.gridX,
       entity.gridY
     );
@@ -20,7 +21,7 @@ class Watcher extends Trait {
       entity.parent.willChange(entity, true);
       return;
     }
-    const beforeEdge = !closest[7 + entity.velocity.x];
+    const beforeEdge = !closest[7 + this.direction];
 
     if (beforeEdge) {
       if (entity.velocity.x > 0) {
@@ -35,9 +36,7 @@ class Watcher extends Trait {
     }
 
     // finally, apply movement
-    entity.parent.willChange(entity);
-    entity.sprite.x += entity.velocity.x * this.speed * deltaTime;
-    this.physics.applyCollisionX(entity);
+    entity.velocity.x = this.direction * this.speed;
   }
 
   obstruct(entity, edge) {
@@ -50,8 +49,8 @@ class Watcher extends Trait {
   }
 
   turnBack(entity) {
-    entity.velocity.x = -entity.velocity.x;
-    entity.sprite.scale.x = entity.velocity.x;
+    this.direction = -this.direction;
+    entity.sprite.scale.x = this.direction;
   }
 }
 

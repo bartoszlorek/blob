@@ -4,8 +4,15 @@ import {utils, Container, Rectangle} from 'pixi.js';
 class Layer {
   constructor(name = '', width = 10) {
     this.name = name;
+    this.width = width + 3;
     this.children = [];
-    this.position = {};
+
+    this._position = {};
+    this._stackIndex = 0;
+
+    // physics
+    this.selfCollision = false;
+    this.passive = false;
 
     // pixijs
     this.graphics = new Container();
@@ -18,23 +25,19 @@ class Layer {
     this._boundsGrid = {};
     this._bounds = {};
 
-    this._boundsID = 0;
-    this._lastBoundsID = -1;
-    this._stackIndex = 0;
-
-    // parameters
-    this.resolution = width + 3;
+    // dirty flags
+    this._shouldUpdateBounds = false;
   }
 
   get bounds() {
-    if (this._boundsID !== this._lastBoundsID) {
+    if (this._shouldUpdateBounds) {
       this._calculateBounds();
     }
     return this._bounds;
   }
 
   get boundsGrid() {
-    if (this._boundsID !== this._lastBoundsID) {
+    if (this._shouldUpdateBounds) {
       this._calculateBounds();
     }
     return this._boundsGrid;
@@ -45,18 +48,19 @@ class Layer {
       return false;
     }
     if (child.parent !== null) {
-      child.parent.remove(child);
+      child.parent.willChange(child, true);
     }
-    child.parent = this;
-
     this.children.push(child);
     this.graphics.addChild(child.sprite);
+
     this._updatePosition(child);
+    child.parent = this;
   }
 
   willChange(child, remove) {
     if (!child.processing) {
-      this._stack[this._stackIndex++] = this._index(child.gridX, child.gridY);
+      const index = this._index(child.gridX, child.gridY);
+      this._stack[this._stackIndex++] = index;
       this._stack[this._stackIndex++] = remove ? null : child;
       child.processing = true;
     }
@@ -78,14 +82,13 @@ class Layer {
         this._updatePosition(child);
         child.processing = false;
       } else {
-        this._removeChild(this.position[index]);
+        this._removeChild(this._position[index]);
         this._removePosition(index);
       }
     }
   }
 
   closest(x, y) {
-    // check if is outside bounds
     if (
       x < this.boundsGrid.left - 1 ||
       x > this.boundsGrid.right + 1 ||
@@ -98,17 +101,17 @@ class Layer {
     const row2 = this._index(x - 1, y);
     const row3 = this._index(x - 1, y + 1);
 
-    this._closestArray[0] = this.position[row1];
-    this._closestArray[1] = this.position[row1 + 1];
-    this._closestArray[2] = this.position[row1 + 2];
+    this._closestArray[0] = this._position[row1];
+    this._closestArray[1] = this._position[row1 + 1];
+    this._closestArray[2] = this._position[row1 + 2];
 
-    this._closestArray[3] = this.position[row2];
-    this._closestArray[4] = this.position[row2 + 1];
-    this._closestArray[5] = this.position[row2 + 2];
+    this._closestArray[3] = this._position[row2];
+    this._closestArray[4] = this._position[row2 + 1];
+    this._closestArray[5] = this._position[row2 + 2];
 
-    this._closestArray[6] = this.position[row3];
-    this._closestArray[7] = this.position[row3 + 1];
-    this._closestArray[8] = this.position[row3 + 2];
+    this._closestArray[6] = this._position[row3];
+    this._closestArray[7] = this._position[row3 + 1];
+    this._closestArray[8] = this._position[row3 + 2];
 
     return this._closestArray;
   }
@@ -130,7 +133,7 @@ class Layer {
     }
 
     while (0 <= limit--) {
-      const child = this.position[this._index(a, b)];
+      const child = this._position[this._index(a, b)];
 
       if (child) {
         return child;
@@ -142,17 +145,17 @@ class Layer {
   }
 
   _index(x, y) {
-    return y * this.resolution + x;
+    return y * this.width + x;
   }
 
   _updatePosition(child) {
-    this.position[this._index(child.gridX, child.gridY)] = child;
-    this._boundsID++;
+    this._position[this._index(child.gridX, child.gridY)] = child;
+    this._shouldUpdateBounds = true;
   }
 
   _removePosition(index) {
-    this.position[index] = undefined;
-    this._boundsID++;
+    this._position[index] = undefined;
+    this._shouldUpdateBounds = true;
   }
 
   _removeChild(child) {
@@ -180,7 +183,7 @@ class Layer {
     this._boundsGrid.right = Math.floor(this._bounds.right / baseSize);
     this._boundsGrid.bottom = Math.floor(this._bounds.bottom / baseSize);
 
-    this._lastBoundsID = this._boundsID;
+    this._shouldUpdateBounds = false;
   }
 }
 

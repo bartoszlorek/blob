@@ -7,8 +7,9 @@ import Entity from '@models/Entity';
 import Watcher from '@traits/Watcher';
 
 function createEnemies(global, {enemies}) {
-  const layer = new Layer('enemies');
   const {physics} = global.level;
+  const layer = new Layer('enemies');
+  layer.selfCollision = true;
 
   resolveBlocks('enemies', enemies, block => {
     const {texture} = global.assets[block.asset];
@@ -19,7 +20,6 @@ function createEnemies(global, {enemies}) {
     );
 
     child.addTrait(new Watcher({physics, speed: 60}));
-    child.velocity.x = 1;
     layer.addChild(child);
   });
 

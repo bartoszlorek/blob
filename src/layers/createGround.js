@@ -7,6 +7,7 @@ import Colorful from '@traits/Colorful';
 
 function createGround(global, {ground}) {
   const layer = new Layer('ground');
+  layer.passive = true;
 
   resolveBlocks('ground', ground, block => {
     const {texture} = global.assets[block.asset];

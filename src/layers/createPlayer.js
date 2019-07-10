@@ -9,9 +9,9 @@ import Move from '@traits/Move';
 import Jump from '@traits/Jump';
 
 function createPlayer(global, {player}) {
-  const layer = new Layer('player');
   const {texture} = global.assets['player'];
   const {physics} = global.level;
+  const layer = new Layer('player');
 
   const child = new Entity(
     new Sprite(texture),

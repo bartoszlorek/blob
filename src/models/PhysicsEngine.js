@@ -1,4 +1,3 @@
-import {arrayForEach} from '@utils/array';
 import {calculateGravity} from '@models/physics';
 
 const shadowColor = 0xdaeaf2;
@@ -13,17 +12,55 @@ export const EDGE = {
 
 class PhysicsEngine {
   constructor() {
+    this.activeColliders = [];
+    this.passiveColliders = [];
     this.gravitation = [];
-    this.collision = [];
+  }
+
+  addCollision(layer) {
+    if (layer.passive) {
+      this.passiveColliders.push(layer);
+    } else {
+      this.activeColliders.push(layer);
+    }
   }
 
   addGravitation(layer) {
     this.gravitation.push(layer);
   }
 
-  addCollision(layer, selfCollision = false) {
-    layer.selfCollision = selfCollision;
-    this.collision.push(layer);
+  update(deltaTime) {
+    const {length} = this.activeColliders;
+
+    for (let a = 0; a < length; a++) {
+      const layer = this.activeColliders[a];
+      const {children} = layer;
+      let index = children.length;
+
+      while (0 < index--) {
+        const entity = children[index];
+
+        // passive collision: compares each active
+        // entity with all passive entities
+        if (entity.velocity.x !== 0) {
+          entity.sprite.x += entity.velocity.x * deltaTime;
+          this._applyPassiveCollisionX(entity);
+        }
+        if (entity.velocity.y !== 0) {
+          entity.sprite.y += entity.velocity.y * deltaTime;
+          this._applyPassiveCollisionY(entity);
+        }
+
+        // active collisions: compares each active
+        // entity with others active but ONLY ONCE
+        for (let b = a + 1; b < length; b++) {
+          const others = this.activeColliders[b].children;
+          this._applyActiveCollision(entity, others);
+        }
+
+        // todo: self-collision
+      }
+    }
   }
 
   calculateGravity(gravity, entity) {
@@ -35,68 +72,6 @@ class PhysicsEngine {
     if (result) {
       gravity.apply(result.x, result.y);
     }
-  }
-
-  applyGravity(gravity, entity) {
-    gravity.applyTo(entity.velocity);
-  }
-
-  applyCollisionX(entity) {
-    const {selfCollision} = entity.parent;
-
-    arrayForEach(this.collision, layer => {
-      if (!selfCollision && layer === entity.parent) {
-        return;
-      }
-      const closest = layer.closest(entity.gridX, entity.gridY);
-      const length = closest ? closest.length : 0;
-
-      for (let index = 0; index < length; index++) {
-        const match = closest[index];
-
-        if (!match || entity === match || !entity.intersection(match)) {
-          continue;
-        }
-        if (entity.velocity.x > 0) {
-          if (entity.right > match.left) {
-            entity.obstruct(EDGE.RIGHT, match);
-          }
-        } else if (entity.velocity.x < 0) {
-          if (entity.left < match.right) {
-            entity.obstruct(EDGE.LEFT, match);
-          }
-        }
-      }
-    });
-  }
-
-  applyCollisionY(entity) {
-    const {selfCollision} = entity.parent;
-
-    arrayForEach(this.collision, layer => {
-      if (!selfCollision && layer === entity.parent) {
-        return;
-      }
-      const closest = layer.closest(entity.gridX, entity.gridY);
-      const length = closest ? closest.length : 0;
-
-      for (let index = 0; index < length; index++) {
-        const match = closest[index];
-
-        if (!match || entity === match || !entity.intersection(match)) {
-          continue;
-        }
-        if (entity.velocity.y > 0) {
-          if (entity.bottom > match.top) {
-            entity.obstruct(EDGE.BOTTOM, match);
-          }
-        } else if (entity.velocity.y < 0) {
-          if (entity.top < match.bottom) {
-            entity.obstruct(EDGE.TOP, match);
-          }
-        }
-      }
-    });
   }
 
   dropShadow(entity) {
@@ -112,6 +87,82 @@ class PhysicsEngine {
 
     if (match && match.colorful) {
       match.colorful.setColor(shadowColor);
+    }
+  }
+
+  _applyActiveCollision(entity, others) {
+    let index = others.length;
+
+    while (0 < index--) {
+      const other = others[index];
+      if (entity.intersection(other)) {
+        entity.collide(other);
+        other.collide(entity);
+      }
+    }
+  }
+
+  _applyPassiveCollisionX(entity) {
+    let layer = this.passiveColliders.length;
+    let index = 0;
+
+    while (0 < layer--) {
+      const closest = this.passiveColliders[layer].closest(
+        entity.gridX,
+        entity.gridY
+      );
+
+      index = closest ? closest.length : 0;
+
+      while (0 < index--) {
+        const match = closest[index];
+
+        if (!match || !entity.intersection(match)) {
+          continue;
+        }
+
+        if (entity.velocity.x > 0) {
+          if (entity.right > match.left) {
+            entity.obstruct(EDGE.RIGHT, match);
+          }
+        } else if (entity.velocity.x < 0) {
+          if (entity.left < match.right) {
+            entity.obstruct(EDGE.LEFT, match);
+          }
+        }
+      }
+    }
+  }
+
+  _applyPassiveCollisionY(entity) {
+    let layer = this.passiveColliders.length;
+    let index = 0;
+
+    while (0 < layer--) {
+      const closest = this.passiveColliders[layer].closest(
+        entity.gridX,
+        entity.gridY
+      );
+
+      index = closest ? closest.length : 0;
+
+      while (0 < index--) {
+        const match = closest[index];
+
+        if (!match || !entity.intersection(match)) {
+          continue;
+        }
+
+        if (entity.velocity.y > 0) {
+          if (entity.bottom > match.top) {
+            entity.obstruct(EDGE.BOTTOM, match);
+          }
+        } else if (entity.velocity.y < 0) {
+          if (entity.top < match.bottom) {
+            entity.obstruct(EDGE.TOP, match);
+          }
+        }
+      }
     }
   }
 }

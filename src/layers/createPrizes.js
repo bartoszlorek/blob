@@ -11,7 +11,6 @@ import Collectable from '@traits/Collectable';
 function createPrizes(global, {prizes}) {
   const layer = new Layer('prizes');
   const glow = new GlowFilter(10, 1, 0, 0xf2dc30);
-
   layer.graphics.filters = [glow];
   glow.padding = 10;
 
@@ -24,7 +23,7 @@ function createPrizes(global, {prizes}) {
     );
 
     child.addTrait(new Shine());
-    child.addTrait(new Collectable({level: global.level}));
+    child.addTrait(new Collectable());
     layer.addChild(child);
   });
 

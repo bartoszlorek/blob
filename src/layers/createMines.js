@@ -8,6 +8,7 @@ import Explosive from '@traits/Explosive';
 
 function createMines(global, {mines}) {
   const layer = new Layer('mines');
+  layer.passive = true;
 
   resolveBlocks('mines', mines, block => {
     const {texture} = global.assets[block.asset];
