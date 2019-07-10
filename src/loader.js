@@ -33,10 +33,10 @@ loader.add([
 ]);
 
 loader.on('complete', (loader, assets) => {
-  assets['jump_01'].data.volume = 0.2;
-  assets['jump_02'].data.volume = 0.2;
-  assets['jump_03'].data.volume = 0.2;
-  assets['jump_04'].data.volume = 0.2;
+  assets['jump_01'].data.volume = 0.1;
+  assets['jump_02'].data.volume = 0.1;
+  assets['jump_03'].data.volume = 0.1;
+  assets['jump_04'].data.volume = 0.1;
 });
 
 export default loader;
