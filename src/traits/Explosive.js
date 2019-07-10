@@ -6,7 +6,9 @@ import Trait from '@traits/Trait';
 import Blink from '@traits/Blink';
 import Animation from '@traits/Animation';
 
-const destroy = child => child.parent.willChange(child, true);
+const destroy = child => {
+  child.parent.willChange(child, true);
+};
 
 class Explosive extends Trait {
   constructor({global, range}) {
@@ -33,9 +35,7 @@ class Explosive extends Trait {
     }
     // boom
     if (this.delay < 0) {
-      const {layers, physics, player: playerEntity} = this.global.level;
-      const {effects, ground, player} = layers;
-
+      const {effects, ground, player} = this.global.level.layers;
       effects.addChild(this.createBlastFrom(entity));
 
       // destroy others entities
@@ -46,7 +46,7 @@ class Explosive extends Trait {
       destroy(entity);
 
       // may we finish the game?
-      if (!playerEntity) {
+      if (!player.children.length) {
         console.log('dead!');
       }
     }

@@ -24,6 +24,7 @@ class PhysicsEngine {
       this.activeColliders.push(layer);
     }
   }
+
   addGravitation(layer) {
     this.gravitation.push(layer);
   }
@@ -32,7 +33,8 @@ class PhysicsEngine {
     const {length} = this.activeColliders;
 
     for (let a = 0; a < length; a++) {
-      const {children} = this.activeColliders[a];
+      const layer = this.activeColliders[a];
+      const {children} = layer;
       let index = children.length;
 
       while (0 < index--) {
@@ -42,18 +44,18 @@ class PhysicsEngine {
         // entity with all passive entities
         if (entity.velocity.x !== 0) {
           entity.sprite.x += entity.velocity.x * deltaTime;
-          this.applyPassiveCollisionX(entity);
+          this._applyPassiveCollisionX(entity);
         }
         if (entity.velocity.y !== 0) {
           entity.sprite.y += entity.velocity.y * deltaTime;
-          this.applyPassiveCollisionY(entity);
+          this._applyPassiveCollisionY(entity);
         }
 
         // active collisions: compares each active
         // entity with others active but ONLY ONCE
         for (let b = a + 1; b < length; b++) {
           const others = this.activeColliders[b].children;
-          this.applyActiveCollision(entity, others);
+          this._applyActiveCollision(entity, others);
         }
 
         // todo: self-collision
@@ -61,7 +63,34 @@ class PhysicsEngine {
     }
   }
 
-  applyActiveCollision(entity, others) {
+  calculateGravity(gravity, entity) {
+    if (this.gravitation.length === 0) {
+      return;
+    }
+    const result = calculateGravity(entity, this.gravitation);
+
+    if (result) {
+      gravity.apply(result.x, result.y);
+    }
+  }
+
+  dropShadow(entity) {
+    // todo: multiple objects
+    const {x, y} = entity.physics.gravity.direction;
+    const match = this.gravitation[0].closestInDirection(
+      entity.gridX,
+      entity.gridY,
+      x,
+      y,
+      maxShadowDistance
+    );
+
+    if (match && match.colorful) {
+      match.colorful.setColor(shadowColor);
+    }
+  }
+
+  _applyActiveCollision(entity, others) {
     let index = others.length;
 
     while (0 < index--) {
@@ -73,7 +102,7 @@ class PhysicsEngine {
     }
   }
 
-  applyPassiveCollisionX(entity) {
+  _applyPassiveCollisionX(entity) {
     let layer = this.passiveColliders.length;
     let index = 0;
 
@@ -105,7 +134,7 @@ class PhysicsEngine {
     }
   }
 
-  applyPassiveCollisionY(entity) {
+  _applyPassiveCollisionY(entity) {
     let layer = this.passiveColliders.length;
     let index = 0;
 
@@ -134,33 +163,6 @@ class PhysicsEngine {
           }
         }
       }
-    }
-  }
-
-  calculateGravity(gravity, entity) {
-    if (this.gravitation.length === 0) {
-      return;
-    }
-    const result = calculateGravity(entity, this.gravitation);
-
-    if (result) {
-      gravity.apply(result.x, result.y);
-    }
-  }
-
-  dropShadow(entity) {
-    // todo: multiple objects
-    const {x, y} = entity.physics.gravity.direction;
-    const match = this.gravitation[0].closestInDirection(
-      entity.gridX,
-      entity.gridY,
-      x,
-      y,
-      maxShadowDistance
-    );
-
-    if (match && match.colorful) {
-      match.colorful.setColor(shadowColor);
     }
   }
 }
