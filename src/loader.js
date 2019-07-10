@@ -26,13 +26,17 @@ loader.add([
   {name: 'cave', url: 'assets/cave.png'},
 
   // sounds
-  {name: 'pluck', url: 'assets/synth_pluck.mp3'},
-  {name: 'jump', url: 'assets/synth_jump.mp3'}
+  {name: 'jump_01', url: 'assets/jump_01.mp3'},
+  {name: 'jump_02', url: 'assets/jump_02.mp3'},
+  {name: 'jump_03', url: 'assets/jump_03.mp3'},
+  {name: 'jump_04', url: 'assets/jump_04.mp3'}
 ]);
 
 loader.on('complete', (loader, assets) => {
-  assets.pluck.data.volume = 0.04;
-  assets.jump.data.volume = 0.15;
+  assets['jump_01'].data.volume = 0.2;
+  assets['jump_02'].data.volume = 0.2;
+  assets['jump_03'].data.volume = 0.2;
+  assets['jump_04'].data.volume = 0.2;
 });
 
 export default loader;

@@ -23,8 +23,7 @@ class Jump extends Trait {
     this.gracePeriod = 0.1; // able to jump again before landing
 
     // sounds
-    this.pluckSound = new Sound('pluck');
-    this.jumpSound = new Sound('jump');
+    this.jumpSound = new Sound('jump_01', 'jump_02', 'jump_03', 'jump_04');
   }
 
   get falling() {
@@ -51,7 +50,7 @@ class Jump extends Trait {
 
     if (this.engageTime > 0) {
       if (this.ready === 1) {
-        this.jumpSound.play();
+        this.jumpSound.playSequence();
       }
       const {x, y} = this._direction(entity);
       this.force.apply(x, y);
@@ -67,7 +66,7 @@ class Jump extends Trait {
     const rotatedEdge = rotateEdge(entity.physics.gravity, edge);
     if (rotatedEdge === EDGE.BOTTOM) {
       if (this.ready < 0) {
-        this.pluckSound.play();
+        // landing sounds
       }
       // reset jumping force
       const {x, y} = this._direction(entity);
