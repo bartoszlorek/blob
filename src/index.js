@@ -15,8 +15,8 @@ loader.load(() => {
     engine
   });
 
-  const helper = new Helper(global);
-  const pointer = new Creator(global);
+  // const helper = new Helper(global);
+  // const pointer = new Creator(global);
   const level = new Level(data);
 
   global.mount(level);
