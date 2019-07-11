@@ -1,4 +1,6 @@
-export function raycast(objects, entity, dX, dY) {
+import Vector from '@models/Vector';
+
+export function raycast(out, objects, entity, dX, dY) {
   // todo: handle multiple objects
   const match = objects[0].closestInDirection(
     entity.gridX,
@@ -7,22 +9,16 @@ export function raycast(objects, entity, dX, dY) {
     dY
   );
 
-  // todo: object pools
   if (match) {
-    return {
-      type: 'solid',
-      distance: entity.distance(match),
-      direction: {x: dX, y: dY}
-    };
+    out.type = 'solid';
+    out.distance = entity.distance(match);
+  } else {
+    out.type = 'border';
+    out.distance = distanceToBorder(objects[0], entity, dX, dY);
   }
 
-  // todo: handle multiple objects
-  // todo: object pools
-  return {
-    type: 'border',
-    distance: distanceToBorder(objects[0], entity, dX, dY),
-    direction: {x: dX, y: dY}
-  };
+  out.direction = new Vector(dX, dY);
+  return out;
 }
 
 function distanceToBorder(object, entity, dX, dY) {

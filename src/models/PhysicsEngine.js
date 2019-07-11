@@ -42,7 +42,6 @@ class PhysicsEngine {
 
         // passive collision: compares each active
         // entity with all passive entities
-
         if (entity.velocity.x !== 0) {
           entity.sprite.x += entity.velocity.x * deltaTime;
           this._applyPassiveCollisionX(entity);
@@ -54,7 +53,6 @@ class PhysicsEngine {
 
         // active collisions: compares each active
         // entity with others active but ONLY ONCE
-
         for (let b = a + 1; b < length; b++) {
           const others = this.activeColliders[b].children;
           this._applyActiveCollision(entity, others);

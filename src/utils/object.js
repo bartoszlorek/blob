@@ -9,3 +9,14 @@ export function objectForEach(object, iteratee) {
     }
   }
 }
+
+export function createPool(initial) {
+  const pool = [];
+
+  return function(index) {
+    if (!pool[index]) {
+      pool[index] = {...initial};
+    }
+    return pool[index];
+  };
+}

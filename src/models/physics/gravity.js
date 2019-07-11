@@ -1,9 +1,16 @@
 import {raycast} from './raycast';
+import {createPool} from '@utils/object';
 import Vector from '@models/Vector';
 
 export const SOLID_SOLID = Symbol('solid-solid');
 export const SOLID_BORDER = Symbol('solid-border');
 export const BORDER_BORDER = Symbol('border-border');
+
+const ray = createPool({
+  type: '',
+  distance: 0,
+  direction: new Vector()
+});
 
 export function calculateGravity(entity, objects) {
   const outside = outsideBounds(entity, objects);
@@ -24,10 +31,10 @@ export function calculateGravity(entity, objects) {
     return null;
   }
 
-  const top = raycast(objects, entity, 0, -1);
-  const right = raycast(objects, entity, 1, 0);
-  const bottom = raycast(objects, entity, 0, 1);
-  const left = raycast(objects, entity, -1, 0);
+  const top = raycast(ray(0), objects, entity, 0, -1);
+  const right = raycast(ray(1), objects, entity, 1, 0);
+  const bottom = raycast(ray(2), objects, entity, 0, 1);
+  const left = raycast(ray(3), objects, entity, -1, 0);
 
   const y = sortPair(top, bottom);
   const x = sortPair(left, right);

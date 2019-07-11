@@ -69,7 +69,7 @@ class Layer {
   }
 
   willChange(child) {
-    if (!child.processing && child.parent === this) {
+    if (!child.processing) {
       const index = this._index(child.gridX, child.gridY);
       this._stack[this._stackIndex++] = index;
       this._stack[this._stackIndex++] = child;

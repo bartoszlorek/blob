@@ -15,6 +15,7 @@ class Level {
     this.data = data;
     this.name = data.name;
     this.global = null;
+
     this.layers = {};
     this.offsetX = 0;
     this.offsetY = 0;
@@ -67,25 +68,21 @@ class Level {
 
     // update phase: velocity and visible traits
     // like animations or colors apply here
-
     while (i > 0) {
       this.layers[names[--i]].update(deltaTime);
     }
 
     // physics phase: velocity changes the position
     // of entities based on collision and gravity
-
     this.physics.update(deltaTime);
 
-    // memoize phase: remember layer state
-    // for update in next cycle
-
+    // memoize phase: remember layers state
+    // to optimize searching in the next cycle
     while (j > 0) {
       this.layers[names[--j]].memoize();
     }
 
     // post-processes
-
     this.cameraFollows();
   }
 
