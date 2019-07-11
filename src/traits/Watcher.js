@@ -18,7 +18,7 @@ class Watcher extends Trait {
     const bottom = closest && closest[7];
 
     if (!bottom) {
-      entity.parent.willChange(entity, true);
+      entity.parent.removeChild(entity);
       return;
     }
     const beforeEdge = !closest[7 + this.direction];

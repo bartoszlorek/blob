@@ -7,7 +7,7 @@ import Blink from '@traits/Blink';
 import Animation from '@traits/Animation';
 
 const destroy = child => {
-  child.parent.willChange(child, true);
+  child.parent.removeChild(child);
 };
 
 class Explosive extends Trait {

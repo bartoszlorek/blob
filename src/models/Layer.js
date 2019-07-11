@@ -48,30 +48,44 @@ class Layer {
       return false;
     }
     if (child.parent !== null) {
-      child.parent.willChange(child, true);
+      child.parent.removeChild(child);
     }
     this.children.push(child);
     this.graphics.addChild(child.sprite);
-
     this._updatePosition(child);
     child.parent = this;
   }
 
-  willChange(child, remove) {
-    if (!child.processing) {
+  removeChild(child) {
+    const childIndex = this.children.indexOf(child);
+    const index = this._index(child.gridX, child.gridY);
+
+    if (childIndex !== -1) {
+      utils.removeItems(this.children, childIndex, 1);
+    }
+    this.graphics.removeChild(child.sprite);
+    this._removePosition(index);
+    child.parent = null;
+  }
+
+  willChange(child) {
+    if (!child.processing && child.parent === this) {
       const index = this._index(child.gridX, child.gridY);
       this._stack[this._stackIndex++] = index;
-      this._stack[this._stackIndex++] = remove ? null : child;
+      this._stack[this._stackIndex++] = child;
       child.processing = true;
     }
   }
 
   update(deltaTime) {
-    for (let i = 0, j = this.children.length; i < j; ++i) {
-      this.children[i].update(deltaTime);
-    }
+    let index = this.children.length;
 
-    // position changes phase
+    while (index > 0) {
+      this.children[--index].update(deltaTime);
+    }
+  }
+
+  memoize() {
     while (this._stackIndex > 0) {
       const child = this._stack[--this._stackIndex];
       const index = this._stack[--this._stackIndex];
@@ -81,9 +95,6 @@ class Layer {
         this._removePosition(index);
         this._updatePosition(child);
         child.processing = false;
-      } else {
-        this._removeChild(this._position[index]);
-        this._removePosition(index);
       }
     }
   }
@@ -156,16 +167,6 @@ class Layer {
   _removePosition(index) {
     this._position[index] = undefined;
     this._shouldUpdateBounds = true;
-  }
-
-  _removeChild(child) {
-    const index = this.children.indexOf(child);
-
-    if (index !== -1) {
-      utils.removeItems(this.children, index, 1);
-    }
-    this.graphics.removeChild(child.sprite);
-    child.parent = null;
   }
 
   _calculateBounds() {

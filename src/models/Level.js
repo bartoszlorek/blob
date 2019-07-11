@@ -61,10 +61,31 @@ class Level {
   onUnmount() {}
 
   update(deltaTime) {
-    objectForEach(this.layers, layer => {
-      layer.update(deltaTime);
-    });
+    const names = Object.keys(this.layers);
+    let i = names.length;
+    let j = names.length;
+
+    // update phase: velocity and visible traits
+    // like animations or colors apply here
+
+    while (i > 0) {
+      this.layers[names[--i]].update(deltaTime);
+    }
+
+    // physics phase: velocity changes the position
+    // of entities based on collision and gravity
+
     this.physics.update(deltaTime);
+
+    // memoize phase: remember layer state
+    // for update in next cycle
+
+    while (j > 0) {
+      this.layers[names[--j]].memoize();
+    }
+
+    // post-processes
+
     this.cameraFollows();
   }
 
