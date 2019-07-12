@@ -2,13 +2,12 @@ import {Sprite} from 'pixi.js';
 import {gridToLocal} from '@app/consts';
 import {resolveBlocks} from '@utils/blocks';
 
-import Layer from '@models/Layer';
+import PassiveLayer from '@models/PassiveLayer';
 import Entity from '@models/Entity';
 import Explosive from '@traits/Explosive';
 
 function createMines(global, {mines}) {
-  const layer = new Layer('mines');
-  layer.passive = true;
+  const layer = new PassiveLayer('mines');
 
   resolveBlocks('mines', mines, block => {
     const {texture} = global.assets[block.asset];

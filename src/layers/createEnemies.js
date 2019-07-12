@@ -2,14 +2,13 @@ import {Sprite} from 'pixi.js';
 import {gridToLocal} from '@app/consts';
 import {resolveBlocks} from '@utils/blocks';
 
-import Layer from '@models/Layer';
+import ActiveLayer from '@models/ActiveLayer';
 import Entity from '@models/Entity';
 import Watcher from '@traits/Watcher';
 
 function createEnemies(global, {enemies}) {
   const {physics} = global.level;
-  const layer = new Layer('enemies');
-  layer.selfCollision = true;
+  const layer = new ActiveLayer('enemies');
 
   resolveBlocks('enemies', enemies, block => {
     const {texture} = global.assets[block.asset];

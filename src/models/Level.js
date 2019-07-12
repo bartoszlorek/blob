@@ -76,10 +76,10 @@ class Level {
     // of entities based on collision and gravity
     this.physics.update(deltaTime);
 
-    // memoize phase: remember layers state
+    // post-update phase: remember layers state
     // to optimize searching in the next cycle
     while (j > 0) {
-      this.layers[names[--j]].memoize();
+      this.layers[names[--j]].postUpdate();
     }
 
     // post-processes
