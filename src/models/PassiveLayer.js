@@ -5,7 +5,7 @@ import Layer from '@models/Layer';
 class PassiveLayer extends Layer {
   constructor(name, filters, width = 10) {
     super(name, filters, 'passive');
-    this.resolution = width + 3;
+    this.width = width + 3;
 
     this._position = {};
     this._stackIndex = 0;
@@ -127,7 +127,7 @@ class PassiveLayer extends Layer {
   }
 
   _index(x, y) {
-    return y * this.resolution + x;
+    return y * this.width + x;
   }
 
   _updatePosition(child) {
