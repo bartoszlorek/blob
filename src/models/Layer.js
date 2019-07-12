@@ -10,9 +10,6 @@ class Layer {
     this.graphics = new Container();
     this.graphics.interactiveChildren = false;
     this.graphics.filters = filters;
-
-    // physics
-    this.selfCollision = false;
   }
 
   get bounds() {

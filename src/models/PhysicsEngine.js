@@ -1,5 +1,12 @@
 import {calculateGravity} from '@models/physics';
 
+export const EDGE = {
+  TOP: Symbol('top'),
+  RIGHT: Symbol('right'),
+  BOTTOM: Symbol('bottom'),
+  LEFT: Symbol('left')
+};
+
 const shadowColor = 0xdaeaf2;
 const maxShadowDistance = 5;
 
@@ -7,13 +14,6 @@ const wrongCollision = type =>
   `The "${type}" layer type is not supported by collision.`;
 const wrongGravitation = type =>
   `The "${type}" layer type is not supported by gravitation.`;
-
-export const EDGE = {
-  TOP: Symbol('top'),
-  RIGHT: Symbol('right'),
-  BOTTOM: Symbol('bottom'),
-  LEFT: Symbol('left')
-};
 
 class PhysicsEngine {
   constructor() {
