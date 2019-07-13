@@ -6,7 +6,9 @@ class Keyboard {
   }
 
   on(code, callback) {
-    this.events.set(code, callback);
+    code.split(' ').forEach(e => {
+      this.events.set(e, callback);
+    });
   }
 
   handleEvent(event) {
