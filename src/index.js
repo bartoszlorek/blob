@@ -1,6 +1,7 @@
 import {localToGrid, gridToLocal} from '@app/consts';
 import engine from '@app/engine';
 import loader from '@app/loader';
+import renderGui from '@gui';
 
 import Creator from '@models/Creator';
 import Helper from '@models/Helper';
@@ -10,6 +11,8 @@ import Level from '@models/Level';
 import data from '@levels/1-4.json';
 
 loader.load(() => {
+  renderGui();
+
   const global = new Global({
     assets: loader.resources,
     engine

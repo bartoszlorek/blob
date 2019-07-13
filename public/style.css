@@ -1,5 +1,49 @@
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
   background-color: #160644;
+}
+
+.gui__footer {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  display: flex;
+  padding: 0 8px 8px;
+}
+
+@media (min-width: 768px) {
+  .gui__footer {
+    padding: 0 32px 32px;
+  }
+}
+
+.button {
+  width: 64px;
+  height: 64px;
+  opacity: 0.4;
+}
+
+.button--active {
+  transform: scale(0.9);
+  transform-origin: 50% 50%;
+  opacity: 0.6;
+}
+
+.button-ArrowLeft {
+  background-image: url('./assets/arrow-left.png');
+}
+
+.button-ArrowRight {
+  background-image: url('./assets/arrow-right.png');
+}
+
+.button-Space {
+  background-image: url('./assets/arrow-up.png');
+  margin-left: auto;
 }
