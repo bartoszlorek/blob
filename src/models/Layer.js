@@ -2,7 +2,7 @@ import {baseSize} from '@app/consts';
 import {utils, Container} from 'pixi.js';
 
 class Layer {
-  constructor(name, filters = null, type = 'unknown') {
+  constructor(name, filters = null, type = 'generic') {
     this.name = name;
     this.type = type;
 

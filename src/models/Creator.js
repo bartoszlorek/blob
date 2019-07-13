@@ -21,7 +21,7 @@ class Creator {
       y: this.global.globalToGridY(y)
     };
 
-    // const {ground} = this.global.level.layers;
+    const {ground, player} = this.global.level.layers;
 
     // const closest = ground.closest(current.x, current.y);
     // if (closest) {
@@ -30,6 +30,8 @@ class Creator {
 
     // const shadow = ground.closestInDirection(current.x, current.y, 0, 1);
     // if (shadow) shadow.sprite.tint = 0x0000ff;
+
+    player.closest(current.x, current.y);
 
     arrayForEach([...this.points, current], callback);
   }
