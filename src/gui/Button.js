@@ -1,43 +1,19 @@
-const initialDelay = 500;
-const repeatsDelay = 80;
+import VirtualButton from '@models/VirtualButton';
 
-class Button {
+class Button extends VirtualButton {
   constructor(code) {
-    this.code = code;
-    this.elem = document.createElement('div');
-    this.elem.className = `button button-${code}`;
+    super(code, document.createElement('div'));
 
-    let timer;
-
-    this.elem.addEventListener('touchstart', e => {
-      e.preventDefault();
-
-      timer = setTimeout(() => {
-        timer = setInterval(() => {
-          this.handleEvent('keydown');
-        }, repeatsDelay);
-
-        this.handleEvent('keydown');
-      }, initialDelay);
-
-      this.handleEvent('keydown');
-    });
-
-    this.elem.addEventListener('touchend', e => {
-      clearInterval(timer);
-      setTimeout(timer);
-
-      this.handleEvent('keyup');
-    });
+    // style steering buttons
+    this.node.className = `button button-${code}`;
   }
 
-  handleEvent(type) {
-    const event = new KeyboardEvent(type, {
-      key: this.code,
-      code: this.code
-    });
+  onKeyup() {
+    this.node.classList.remove('button--active');
+  }
 
-    window.dispatchEvent(event);
+  onKeydown() {
+    this.node.classList.add('button--active');
   }
 }
 

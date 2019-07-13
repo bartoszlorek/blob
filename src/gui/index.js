@@ -11,7 +11,7 @@ export default function render() {
   const moveRight = new Button('ArrowRight');
   const jump = new Button('Space');
 
-  footer.appendChild(moveLeft.elem);
-  footer.appendChild(moveRight.elem);
-  footer.appendChild(jump.elem);
+  footer.appendChild(moveLeft.node);
+  footer.appendChild(moveRight.node);
+  footer.appendChild(jump.node);
 }

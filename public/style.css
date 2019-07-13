@@ -26,7 +26,13 @@ body {
 .button {
   width: 64px;
   height: 64px;
-  opacity: 0.5;
+  opacity: 0.4;
+}
+
+.button--active {
+  transform: scale(0.9);
+  transform-origin: 50% 50%;
+  opacity: 0.6;
 }
 
 .button-ArrowLeft {
