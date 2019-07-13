@@ -1,14 +1,19 @@
 import {calculateGravity} from '@models/physics';
 
-const shadowColor = 0xdaeaf2;
-const maxShadowDistance = 5;
-
 export const EDGE = {
   TOP: Symbol('top'),
   RIGHT: Symbol('right'),
   BOTTOM: Symbol('bottom'),
   LEFT: Symbol('left')
 };
+
+const shadowColor = 0xdaeaf2;
+const maxShadowDistance = 5;
+
+const wrongCollision = type =>
+  `The "${type}" layer type is not supported by collision.`;
+const wrongGravitation = type =>
+  `The "${type}" layer type is not supported by gravitation.`;
 
 class PhysicsEngine {
   constructor() {
@@ -18,15 +23,23 @@ class PhysicsEngine {
   }
 
   addCollision(layer) {
-    if (layer.passive) {
-      this.passiveColliders.push(layer);
-    } else {
-      this.activeColliders.push(layer);
+    switch (layer.type) {
+      case 'passive':
+        return this.passiveColliders.push(layer);
+      case 'active':
+        return this.activeColliders.push(layer);
+      default:
+        console.warn(wrongCollision(layer.type));
     }
   }
 
   addGravitation(layer) {
-    this.gravitation.push(layer);
+    switch (layer.type) {
+      case 'passive':
+        return this.gravitation.push(layer);
+      default:
+        console.warn(wrongGravitation(layer.type));
+    }
   }
 
   update(deltaTime) {
@@ -37,12 +50,11 @@ class PhysicsEngine {
       const {children} = layer;
       let index = children.length;
 
-      while (0 < index--) {
-        const entity = children[index];
+      while (index > 0) {
+        const entity = children[--index];
 
         // passive collision: compares each active
         // entity with all passive entities
-
         if (entity.velocity.x !== 0) {
           entity.sprite.x += entity.velocity.x * deltaTime;
           this._applyPassiveCollisionX(entity);
@@ -54,7 +66,6 @@ class PhysicsEngine {
 
         // active collisions: compares each active
         // entity with others active but ONLY ONCE
-
         for (let b = a + 1; b < length; b++) {
           const others = this.activeColliders[b].children;
           this._applyActiveCollision(entity, others);
@@ -95,8 +106,8 @@ class PhysicsEngine {
   _applyActiveCollision(entity, others) {
     let index = others.length;
 
-    while (0 < index--) {
-      const other = others[index];
+    while (index > 0) {
+      const other = others[--index];
       if (entity.intersection(other)) {
         entity.collide(other);
         other.collide(entity);
@@ -105,19 +116,19 @@ class PhysicsEngine {
   }
 
   _applyPassiveCollisionX(entity) {
-    let layer = this.passiveColliders.length;
+    let indexLayer = this.passiveColliders.length;
     let index = 0;
 
-    while (0 < layer--) {
-      const closest = this.passiveColliders[layer].closest(
+    while (indexLayer > 0) {
+      const closest = this.passiveColliders[--indexLayer].closest(
         entity.gridX,
         entity.gridY
       );
 
       index = closest ? closest.length : 0;
 
-      while (0 < index--) {
-        const match = closest[index];
+      while (index > 0) {
+        const match = closest[--index];
 
         if (!match || !entity.intersection(match)) {
           continue;
@@ -137,19 +148,19 @@ class PhysicsEngine {
   }
 
   _applyPassiveCollisionY(entity) {
-    let layer = this.passiveColliders.length;
+    let indexLayer = this.passiveColliders.length;
     let index = 0;
 
-    while (0 < layer--) {
-      const closest = this.passiveColliders[layer].closest(
+    while (indexLayer > 0) {
+      const closest = this.passiveColliders[--indexLayer].closest(
         entity.gridX,
         entity.gridY
       );
 
       index = closest ? closest.length : 0;
 
-      while (0 < index--) {
-        const match = closest[index];
+      while (index > 0) {
+        const match = closest[--index];
 
         if (!match || !entity.intersection(match)) {
           continue;

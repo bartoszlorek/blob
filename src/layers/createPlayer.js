@@ -1,8 +1,10 @@
 import {Sprite} from 'pixi.js';
 import {gridToLocal} from '@app/consts';
+
 import Keyboard from '@models/Keyboard';
-import Layer from '@models/Layer';
+import ActiveLayer from '@models/ActiveLayer';
 import Entity from '@models/Entity';
+
 import Physics from '@traits/Physics';
 import Killable from '@traits/Killable';
 import Move from '@traits/Move';
@@ -11,7 +13,7 @@ import Jump from '@traits/Jump';
 function createPlayer(global, {player}) {
   const {texture} = global.assets['player'];
   const {physics} = global.level;
-  const layer = new Layer('player');
+  const layer = new ActiveLayer('player');
 
   const child = new Entity(
     new Sprite(texture),

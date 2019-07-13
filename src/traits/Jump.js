@@ -56,7 +56,7 @@ class Jump extends Trait {
       this.force.apply(x, y);
       this.force.applyTo(entity.velocity);
       this.engageTime -= deltaTime;
-      entity.parent.willChange(entity);
+      // entity.parent.willChange(entity);
     }
 
     this.ready -= 1;

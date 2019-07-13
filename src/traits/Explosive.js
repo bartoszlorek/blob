@@ -1,11 +1,14 @@
 import {Sprite} from 'pixi.js';
 import {arrayForEach} from '@utils/array';
 import {objectForEach} from '@utils/object';
+import {matrix3Merge} from '@utils/matrix';
+
 import Entity from '@models/Entity';
 import Trait from '@traits/Trait';
 import Blink from '@traits/Blink';
 import Animation from '@traits/Animation';
 
+const identity = a => a;
 const destroy = child => {
   child.parent.removeChild(child);
 };
@@ -39,7 +42,7 @@ class Explosive extends Trait {
       effects.addChild(this.createBlastFrom(entity));
 
       // destroy others entities
-      const others = this.inRange(entity, [ground, player]);
+      const others = this.getInRange(entity, [ground, player]);
       objectForEach(others, destroy);
 
       // destroy mine itself
@@ -74,19 +77,18 @@ class Explosive extends Trait {
     return blast;
   }
 
-  inRange(entity, layers) {
-    const result = [];
+  getInRange(entity, layers) {
+    const out = [];
+    let index = layers.length;
 
-    // todo: better array merging
-    arrayForEach(layers, layer => {
-      const closest = layer.closest(entity.gridX, entity.gridY);
-      const length = closest ? closest.length : 0;
+    while (index > 0) {
+      const closest = layers[--index].closest(entity.gridX, entity.gridY);
 
-      for (let i = 0; i < length; i++) {
-        if (closest[i]) result.push(closest[i]);
+      if (closest) {
+        matrix3Merge(out, closest);
       }
-    });
-    return result;
+    }
+    return out.filter(identity);
   }
 }
 
