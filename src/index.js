@@ -21,10 +21,12 @@ loader.load(() => {
   });
 
   global.events.onPlayerDead(() => {
+    engine.view.classList.remove('canvas--active');
+
     setTimeout(() => {
-      level = new Level(data);
-      global.mount(level);
-    }, 1000);
+      engine.view.classList.add('canvas--active');
+      global.mount((level = new Level(data)));
+    }, 800);
   });
 
   // const helper = new Helper(global);

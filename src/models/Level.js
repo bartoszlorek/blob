@@ -51,8 +51,6 @@ class Level {
       }
     });
 
-    console.log(this.layers);
-
     this.global = global;
     this.global.events.onResize(() => this.resize());
     this.background.set(global.assets.gradient.texture);
