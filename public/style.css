@@ -18,12 +18,12 @@ body {
   color: #f6019d;
 }
 
-.canvas {
+.view {
   opacity: 0;
   transition: opacity 400ms steps(3);
 }
 
-.canvas--active {
+.view--active {
   opacity: 1;
 }
 

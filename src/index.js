@@ -20,11 +20,13 @@ loader.load(() => {
     engine
   });
 
+  engine.view.classList.add('view--active');
+
   global.events.onPlayerDead(() => {
-    engine.view.classList.remove('canvas--active');
+    engine.view.classList.remove('view--active');
 
     setTimeout(() => {
-      engine.view.classList.add('canvas--active');
+      engine.view.classList.add('view--active');
       global.mount((level = new Level(data)));
     }, 800);
   });
