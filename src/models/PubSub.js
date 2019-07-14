@@ -7,7 +7,13 @@ class PubSub {
 
   publish(name, data) {
     const handlers = this.events[name] || [];
-    arrayForEach(handlers, handler => handler(data));
+    arrayForEach(handlers, handler => {
+      const result = handler(data);
+
+      if (result === false) {
+        this.unsubscribe(name, handler);
+      }
+    });
   }
 
   subscribe(name, handler) {

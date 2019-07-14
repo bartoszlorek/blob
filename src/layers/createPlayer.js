@@ -38,7 +38,6 @@ function createPlayer(global, {player}) {
   child.addTrait(new Animation());
   child.animation.add('dead', deadFrames);
 
-  // todo: remove listeners on level unload
   const input = new Keyboard();
   input.on('ArrowRight KeyD', pressed => {
     child.move[pressed ? 'forward' : 'backward']();
@@ -50,6 +49,11 @@ function createPlayer(global, {player}) {
 
   input.on('Space', pressed => {
     child.jump[pressed ? 'start' : 'cancel']();
+  });
+
+  global.events.onPlayerDead(() => {
+    input.destroy();
+    return false;
   });
 
   layer.addChild(child);
