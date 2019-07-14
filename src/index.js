@@ -13,14 +13,23 @@ import data from '@levels/1-4.json';
 loader.load(() => {
   renderGui();
 
+  let level = null;
+
   const global = new Global({
     assets: loader.resources,
     engine
   });
 
+  global.events.onPlayerDead(() => {
+    setTimeout(() => {
+      level = new Level(data);
+      global.mount(level);
+    }, 1000);
+  });
+
   // const helper = new Helper(global);
   // const pointer = new Creator(global);
-  const level = new Level(data);
+  level = new Level(data);
 
   global.mount(level);
   global.tick(deltaTime => {

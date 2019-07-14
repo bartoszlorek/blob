@@ -2,8 +2,9 @@ import Trait from '@traits/Trait';
 import {EDGE} from '@models/PhysicsEngine';
 
 class Watcher extends Trait {
-  constructor({physics, direction = 1, speed}) {
+  constructor({global, physics, direction = 1, speed}) {
     super('watcher');
+    this.global = global;
     this.physics = physics;
     this.direction = direction;
     this.speed = speed;
@@ -52,8 +53,10 @@ class Watcher extends Trait {
       if (other.velocity.y > 100) {
         entity.remove();
       } else {
-        other.remove();
+        // restart the current level
+        this.global.events.publish('player_dead');
         // other.animation.play('dead');
+        other.remove();
       }
     }
   }

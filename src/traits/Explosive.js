@@ -37,16 +37,15 @@ class Explosive extends Trait {
       const {effects, ground, player} = this.global.level.layers;
       effects.addChild(this.createBlastFrom(entity));
 
-      // destroy others entities
+      // destroy everything in range
       const others = this.getInRange(entity, [ground, player]);
       arrayForEach(others, destroy);
 
       // destroy mine itself
       destroy(entity);
 
-      // may we finish the game?
       if (!player.children.length) {
-        console.log('dead!');
+        this.global.events.publish('player_dead');
       }
     }
 

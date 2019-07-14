@@ -20,6 +20,10 @@ class Events extends PubSub {
   onUnmountLevel(handler) {
     this.subscribe('unmount_level', handler);
   }
+
+  onPlayerDead(handler) {
+    this.subscribe('player_dead', handler);
+  }
 }
 
 export default Events;
