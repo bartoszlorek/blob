@@ -8,5 +8,6 @@ const engine = new Application({
   backgroundColor: 0x160644
 });
 
+engine.view.className = 'canvas canvas--active';
 document.body.appendChild(engine.view);
 export default engine;

@@ -1,8 +1,10 @@
+const eventTypes = ['keydown', 'keyup'];
+
 class Keyboard {
-  constructor(view) {
+  constructor() {
     this.states = new Map();
     this.events = new Map();
-    this.listenTo(view);
+    this.listen();
   }
 
   on(code, callback) {
@@ -25,11 +27,17 @@ class Keyboard {
     }
   }
 
-  listenTo(view = window) {
-    ['keydown', 'keyup'].forEach(type => {
-      view.addEventListener(type, event => {
-        this.handleEvent(event);
-      });
+  listen() {
+    this._handler = this.handleEvent.bind(this);
+
+    eventTypes.forEach(type => {
+      window.addEventListener(type, this._handler);
+    });
+  }
+
+  destroy() {
+    eventTypes.forEach(type => {
+      window.removeEventListener(type, this._handler);
     });
   }
 }

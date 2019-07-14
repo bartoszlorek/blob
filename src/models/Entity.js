@@ -22,6 +22,18 @@ class Entity {
     this.sprite.scale.set(value, value);
   }
 
+  get scale() {
+    return this.sprite.scale.x;
+  }
+
+  set visible(value) {
+    this.sprite.visible = value;
+  }
+
+  get visible() {
+    return this.sprite.visible;
+  }
+
   set top(value) {
     this.sprite.position.y = value + baseSize / 2;
   }
@@ -96,6 +108,10 @@ class Entity {
 
   distance(other) {
     return Math.abs(this.gridX - other.gridX + this.gridY - other.gridY);
+  }
+
+  remove() {
+    this.parent.removeChild(this);
   }
 }
 

@@ -1,34 +1,27 @@
-import {objectForEach} from '@utils/object';
 import KeyFrames from '@models/KeyFrames';
 import Trait from '@traits/Trait';
 
 class Animation extends Trait {
   constructor() {
     super('animation');
-    this.keyframes = {};
+    this.keyframes = [];
   }
 
-  add(name, frames = [], loop = false) {
-    this.keyframes[name] = new KeyFrames(frames, loop);
-    return this;
-  }
-
-  play(name, frames, loop) {
-    if (frames !== undefined) {
-      this.add(name, frames, loop);
-    }
-    if (this.keyframes[name]) {
-      this.keyframes[name].play();
-    }
+  add(name, frames, loop) {
+    const keys = new KeyFrames(name, frames, loop);
+    this.keyframes.push(keys);
+    this[name] = keys;
     return this;
   }
 
   update(entity, deltaTime) {
-    objectForEach(this.keyframes, keyframe => {
-      if (keyframe.playing) {
-        keyframe.update(deltaTime);
+    let index = this.keyframes.length;
+
+    while (0 < index--) {
+      if (this.keyframes[index].playing) {
+        this.keyframes[index].update(entity, deltaTime);
       }
-    });
+    }
   }
 }
 

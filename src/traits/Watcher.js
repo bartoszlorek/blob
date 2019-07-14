@@ -2,8 +2,9 @@ import Trait from '@traits/Trait';
 import {EDGE} from '@models/PhysicsEngine';
 
 class Watcher extends Trait {
-  constructor({physics, direction = 1, speed}) {
+  constructor({global, physics, direction = 1, speed}) {
     super('watcher');
+    this.global = global;
     this.physics = physics;
     this.direction = direction;
     this.speed = speed;
@@ -18,8 +19,7 @@ class Watcher extends Trait {
     const bottom = closest && closest[7];
 
     if (!bottom) {
-      entity.parent.removeChild(entity);
-      return;
+      return entity.remove();
     }
     const beforeEdge = !closest[7 + this.direction];
 
@@ -45,6 +45,19 @@ class Watcher extends Trait {
       case EDGE.RIGHT:
         this.turnBack(entity);
         break;
+    }
+  }
+
+  collide(entity, other) {
+    if (other.parent.name === 'player') {
+      if (other.velocity.y > 100) {
+        entity.remove();
+      } else {
+        // restart the current level
+        this.global.events.publish('player_dead');
+        // other.animation.play('dead');
+        other.remove();
+      }
     }
   }
 
