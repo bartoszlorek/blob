@@ -28,7 +28,7 @@ loader.load(() => {
     setTimeout(() => {
       engine.view.classList.add('view--active');
       global.mount((level = new Level(data)));
-    }, 800);
+    }, 700);
   });
 
   // const helper = new Helper(global);

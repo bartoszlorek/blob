@@ -20,7 +20,7 @@ body {
 
 .view {
   opacity: 0;
-  transition: opacity 400ms steps(3);
+  transition: opacity 300ms steps(3);
 }
 
 .view--active {
