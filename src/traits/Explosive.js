@@ -1,17 +1,13 @@
 import {Sprite} from 'pixi.js';
 import {arrayForEach} from '@utils/array';
-import {objectForEach} from '@utils/object';
 import {matrix3Merge} from '@utils/matrix';
 
 import Entity from '@models/Entity';
 import Trait from '@traits/Trait';
-import Blink from '@traits/Blink';
 import Animation from '@traits/Animation';
 
 const identity = a => a;
-const destroy = child => {
-  child.parent.removeChild(child);
-};
+const destroy = child => child.remove();
 
 class Explosive extends Trait {
   constructor({global, range}) {
@@ -34,7 +30,7 @@ class Explosive extends Trait {
     }
     // bang
     if (this.ignition === 1) {
-      entity.addTrait(new Blink({freq: 0.1}));
+      entity.animation.blink.play();
     }
     // boom
     if (this.delay < 0) {
@@ -43,7 +39,7 @@ class Explosive extends Trait {
 
       // destroy others entities
       const others = this.getInRange(entity, [ground, player]);
-      objectForEach(others, destroy);
+      arrayForEach(others, destroy);
 
       // destroy mine itself
       destroy(entity);
@@ -68,12 +64,13 @@ class Explosive extends Trait {
     let scale = 1;
 
     blast.addTrait(new Animation());
-    blast.animation.play('explode', [
+    blast.animation.add('explode', [
       [10, () => (blast.scale = scale += this.range)],
       [100, () => (blast.scale = scale += this.range)],
       [200, () => (blast.scale = scale -= this.range / 2)],
-      [250, () => destroy(blast)]
+      [250, () => blast.remove()]
     ]);
+    blast.animation.explode.play();
     return blast;
   }
 

@@ -25,7 +25,7 @@ class Layer {
       return false;
     }
     if (child.parent !== null) {
-      child.parent.removeChild(child);
+      child.remove();
     }
     this.children.push(child);
     this.graphics.addChild(child.sprite);

@@ -1,10 +1,14 @@
 // frame = [ms, fn]
 
 class KeyFrames {
-  constructor(frames = [], loop = false) {
+  constructor(name = '', frames = [], loop = false) {
+    this.name = name;
     this.frames = frames;
     this.loop = loop;
-    this.stop(); // set default
+
+    this.playing = false;
+    this.nextIndex = 0;
+    this.timer = 0;
   }
 
   reload() {
@@ -25,13 +29,13 @@ class KeyFrames {
     this.pause();
   }
 
-  update(deltaTime) {
+  update(entity, deltaTime) {
     const milliseconds = deltaTime * 1000;
     const nextFrame = this.frames[this.nextIndex];
 
     if (nextFrame !== undefined) {
       if (this.timer >= nextFrame[0]) {
-        nextFrame[1](deltaTime);
+        nextFrame[1](entity, deltaTime);
         this.nextIndex += 1;
       }
       this.timer += milliseconds;

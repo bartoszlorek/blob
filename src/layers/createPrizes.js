@@ -5,8 +5,13 @@ import {resolveBlocks} from '@utils/blocks';
 
 import ActiveLayer from '@models/ActiveLayer';
 import Entity from '@models/Entity';
-import Shine from '@traits/Shine';
+import Animation from '@traits/Animation';
 import Collectable from '@traits/Collectable';
+
+const shineFrames = [
+  [600, entity => (entity.scale = 0.8)],
+  [1000, entity => (entity.scale = 1)]
+];
 
 function createPrizes(global, {prizes}) {
   const glow = new GlowFilter(10, 1, 0, 0xf2dc30);
@@ -21,8 +26,11 @@ function createPrizes(global, {prizes}) {
       gridToLocal(block.y)
     );
 
-    child.addTrait(new Shine());
     child.addTrait(new Collectable());
+    child.addTrait(new Animation());
+    child.animation.add('shine', shineFrames, true);
+    child.animation.shine.play();
+
     layer.addChild(child);
   });
 
