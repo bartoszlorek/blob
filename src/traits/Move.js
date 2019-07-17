@@ -37,6 +37,9 @@ class Move extends Trait {
 
     if (this.direction !== 0) {
       entity.velocity[axis] += this.acceleration * deltaTime * vector[axis];
+
+      // rotate sprite horizontally
+      entity.sprite.scale.x = this.direction;
     } else if (velocity !== 0) {
       const deceleration = Math.min(absolute, this.deceleration * deltaTime);
       entity.velocity[axis] += velocity > 0 ? -deceleration : deceleration;
