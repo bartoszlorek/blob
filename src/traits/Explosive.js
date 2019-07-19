@@ -20,7 +20,7 @@ class Explosive extends Trait {
     this.delay = 0.25;
   }
 
-  ignite() {
+  collide() {
     this.ignition += 1;
   }
 
@@ -28,10 +28,12 @@ class Explosive extends Trait {
     if (this.ignition === 0) {
       return;
     }
+
     // bang
     if (this.ignition === 1) {
       entity.animation.blink.play();
     }
+
     // boom
     if (this.delay < 0) {
       const {effects, ground, player} = this.global.level.layers;
@@ -50,7 +52,7 @@ class Explosive extends Trait {
     }
 
     this.delay -= deltaTime;
-    this.ignite();
+    this.ignition += 1;
   }
 
   createBlastFrom(entity) {

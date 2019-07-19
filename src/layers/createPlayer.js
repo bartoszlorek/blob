@@ -6,7 +6,6 @@ import ActiveLayer from '@models/ActiveLayer';
 import Entity from '@models/Entity';
 
 import Physics from '@traits/Physics';
-import Killable from '@traits/Killable';
 import Animation from '@traits/Animation';
 import Move from '@traits/Move';
 import Jump from '@traits/Jump';
@@ -34,7 +33,6 @@ function createPlayer(global, {player}) {
   child.addTrait(new Physics({physics}));
   child.addTrait(new Move({physics}));
   child.addTrait(new Jump({physics}));
-  child.addTrait(new Killable());
   child.addTrait(new Animation());
   child.animation.add('dead', deadFrames);
 

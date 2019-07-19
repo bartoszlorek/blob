@@ -22,7 +22,7 @@ class Physics extends Trait {
     entity.sprite.rotation = vectorRotation(this.gravity);
   }
 
-  obstruct(entity, edge, other) {
+  collide(entity, other, edge) {
     switch (edge) {
       case EDGE.BOTTOM:
         entity.bottom = other.top;

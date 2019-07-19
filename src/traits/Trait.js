@@ -5,8 +5,6 @@ class Trait {
 
   update() {}
 
-  obstruct() {}
-
   collide() {}
 }
 

@@ -2,20 +2,16 @@ import Trait from '@traits/Trait';
 import {EDGE} from '@models/PhysicsEngine';
 
 class Watcher extends Trait {
-  constructor({global, physics, direction = 1, speed}) {
+  constructor({global, direction = 1, speed}) {
     super('watcher');
     this.global = global;
-    this.physics = physics;
     this.direction = direction;
     this.speed = speed;
   }
 
   update(entity) {
-    // todo: multiple layers and axis
-    const closest = this.physics.passiveColliders[0].closest(
-      entity.gridX,
-      entity.gridY
-    );
+    const {ground} = this.global.level.layers;
+    const closest = ground.closest(entity.gridX, entity.gridY);
     const bottom = closest && closest[7];
 
     if (!bottom) {
@@ -39,18 +35,18 @@ class Watcher extends Trait {
     entity.velocity.x = this.direction * this.speed;
   }
 
-  obstruct(entity, edge) {
+  collide(entity, other, edge) {
+    // passive collision
     switch (edge) {
       case EDGE.LEFT:
       case EDGE.RIGHT:
         this.turnBack(entity);
-        break;
+        return;
     }
-  }
 
-  collide(entity, other) {
+    // active collision
     if (other.parent.name === 'player') {
-      if (other.velocity.y > 100) {
+      if (other.velocity.y > 0) {
         entity.remove();
       } else {
         // restart the current level

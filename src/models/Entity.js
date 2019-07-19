@@ -85,18 +85,6 @@ class Entity {
     }
   }
 
-  obstruct(edge, other) {
-    for (let i = 0, j = this.traits.length; i < j; ++i) {
-      this.traits[i].obstruct(this, edge, other);
-    }
-  }
-
-  collide(other) {
-    for (let i = 0, j = this.traits.length; i < j; ++i) {
-      this.traits[i].collide(this, other);
-    }
-  }
-
   intersection(other) {
     return (
       this.top < other.bottom &&

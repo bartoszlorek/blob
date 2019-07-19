@@ -41,14 +41,11 @@ class Move extends Trait {
       const deceleration = Math.min(absolute, this.deceleration * deltaTime);
       entity.velocity[axis] += velocity > 0 ? -deceleration : deceleration;
     }
-    // if (velocity) {
-    //   entity.parent.willChange(entity);
-    // }
 
     entity.velocity[axis] *= this.dragFactor;
   }
 
-  obstruct(entity) {
+  collide(entity, other, edge) {
     if (this.direction !== 0) {
       return;
     }
