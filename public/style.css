@@ -27,18 +27,36 @@ body {
   opacity: 1;
 }
 
+.gui__header,
 .gui__footer {
   position: fixed;
   display: flex;
-  width: 100%;
-  bottom: 0;
-  padding: 0 8px 8px;
-  z-index: 10;
+  z-index: 1;
+  left: 8px;
+  right: 8px;
+}
+
+.gui__header {
+  top: 8px;
+}
+
+.gui__footer {
+  bottom: 8px;
 }
 
 @media (min-width: 768px) {
+  .gui__header,
   .gui__footer {
-    padding: 0 32px 32px;
+    left: 32px;
+    right: 32px;
+  }
+
+  .gui__header {
+    top: 32px;
+  }
+
+  .gui__footer {
+    bottom: 32px;
   }
 }
 
@@ -65,4 +83,11 @@ body {
 .button-Space {
   background-image: url('./assets/arrow-up.png');
   margin-left: auto;
+}
+
+.text {
+  color: #fff;
+  font-size: 48px;
+  font-weight: bold;
+  font-family: monospace;
 }
