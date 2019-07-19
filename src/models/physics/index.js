@@ -1,3 +1,4 @@
+export {applyCollisions} from './collisions';
+export {createDefinition} from './definitions';
 export {calculateGravity} from './gravity';
-export {createDefinition} from './definition';
-export {resolveCollisions} from './collisions';
+export {default as schema} from './schema';

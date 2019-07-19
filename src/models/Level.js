@@ -50,7 +50,7 @@ class Level {
     this.global.events.onResize(() => this.resize());
     this.background.set(global.assets.gradient.texture);
 
-    this.physics.addCollisions(this.layers);
+    this.physics.setCollisions(this.layers);
     this.resize();
   }
 

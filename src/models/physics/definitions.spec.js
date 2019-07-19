@@ -1,4 +1,4 @@
-import {createDefinition} from './definition';
+import {createDefinition} from './definitions';
 
 describe('createDefinition()', () => {
   const player = {name: 'player'};

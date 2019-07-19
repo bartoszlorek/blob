@@ -56,13 +56,12 @@ class Jump extends Trait {
       this.force.apply(x, y);
       this.force.applyTo(entity.velocity);
       this.engageTime -= deltaTime;
-      // entity.parent.willChange(entity);
     }
 
     this.ready -= 1;
   }
 
-  obstruct(entity, edge) {
+  collide(entity, other, edge) {
     const rotatedEdge = rotateEdge(entity.physics.gravity, edge);
     if (rotatedEdge === EDGE.BOTTOM) {
       if (this.ready < 0) {

@@ -1,7 +1,6 @@
 import {objectForEach} from '@utils/object';
-import schema from './schema';
 
-export function createDefinition(layers) {
+export function createDefinition(schema, layers) {
   const {active = [], passive = []} = schema;
   const hydrator = createHydrator(layers);
 

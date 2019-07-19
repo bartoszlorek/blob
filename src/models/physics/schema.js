@@ -24,6 +24,12 @@ export default {
       links: {
         player: ['explosive']
       }
+    },
+    {
+      name: 'prizes',
+      links: {
+        player: ['collectable']
+      }
     }
   ]
 };

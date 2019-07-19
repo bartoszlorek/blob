@@ -18,7 +18,7 @@ function createEnemies(global, {enemies}) {
       gridToLocal(block.y)
     );
 
-    child.addTrait(new Watcher({global, physics, speed: 60}));
+    child.addTrait(new Watcher({global, speed: 60}));
     layer.addChild(child);
   });
 

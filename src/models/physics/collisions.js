@@ -1,6 +1,6 @@
 import {EDGE} from '@models/PhysicsEngine';
 
-export function resolveCollisions(definition, deltaTime = 1) {
+export function applyCollisions(definition, deltaTime = 1) {
   const {active, passive} = definition;
   const activeLength = active.length;
 
@@ -27,7 +27,7 @@ export function resolveCollisions(definition, deltaTime = 1) {
       // with other active but ONLY ONCE
 
       for (let j = i + 1; j < activeLength; j++) {
-        console.log('active');
+        // console.log('active');
         activeCollision(child, links, active[j]);
       }
     }
@@ -83,7 +83,7 @@ function methodY(child, other, childLinks, otherLinks) {
 }
 
 function activeCollision(child, childLinks, other) {
-  const {layer, action: otherLinks} = other;
+  const {layer, links: otherLinks} = other;
   const {name} = child.parent;
 
   let index = layer.children.length;

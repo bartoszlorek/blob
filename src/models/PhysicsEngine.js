@@ -1,7 +1,8 @@
 import {
+  schema,
   calculateGravity,
   createDefinition,
-  resolveCollisions
+  applyCollisions
 } from '@models/physics';
 
 export const EDGE = {
@@ -16,20 +17,20 @@ const maxShadowDistance = 5;
 
 class PhysicsEngine {
   constructor() {
-    this.collisions = [];
     this.gravitation = [];
-  }
-
-  addCollisions(layers) {
-    this.collisions = createDefinition(layers);
+    this.collisions = [];
   }
 
   addGravitation(layer) {
     this.gravitation.push(layer);
   }
 
+  setCollisions(layers) {
+    this.collisions = createDefinition(schema, layers);
+  }
+
   update(deltaTime) {
-    resolveCollisions(this.collisions, deltaTime);
+    applyCollisions(this.collisions, deltaTime);
   }
 
   calculateGravity(gravity, entity) {
