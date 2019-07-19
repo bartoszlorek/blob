@@ -29,8 +29,8 @@ loader.load(() => {
     }, 800);
   });
 
-  const helper = new Helper(global);
-  const pointer = new Creator(global);
+  // const helper = new Helper(global);
+  // const pointer = new Creator(global);
   level = new Level(data);
 
   global.mount(level);
