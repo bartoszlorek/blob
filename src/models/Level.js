@@ -41,11 +41,6 @@ class Level {
       this.foreground.addChild(layer.graphics);
       this.layers[layer.name] = layer;
 
-      if (
-        ['ground', 'mines', 'enemies', 'player', 'prizes'].includes(layer.name)
-      ) {
-        this.physics.addCollision(layer);
-      }
       if (layer.name === 'ground') {
         this.physics.addGravitation(layer);
       }
@@ -54,6 +49,8 @@ class Level {
     this.global = global;
     this.global.events.onResize(() => this.resize());
     this.background.set(global.assets.gradient.texture);
+
+    this.physics.addCollisions(this.layers);
     this.resize();
   }
 
