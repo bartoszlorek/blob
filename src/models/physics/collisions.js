@@ -27,7 +27,6 @@ export function applyCollisions(definition, deltaTime = 1) {
       // with other active but ONLY ONCE
 
       for (let j = i + 1; j < activeLength; j++) {
-        // console.log('active');
         activeCollision(child, links, active[j]);
       }
     }
@@ -40,8 +39,13 @@ function passiveCollision(child, childLinks, passive, method) {
 
   for (let i = 0; i < passiveLength; i++) {
     const {layer, links: otherLinks} = passive[i];
-    const closest = layer.closest(child.gridX, child.gridY);
 
+    // skip layers that do not have common links
+    if (!childLinks[layer.name] && !otherLinks[name]) {
+      continue;
+    }
+
+    const closest = layer.closest(child.gridX, child.gridY);
     let index = closest ? closest.length : 0;
 
     while (index > 0) {
@@ -86,15 +90,20 @@ function activeCollision(child, childLinks, other) {
   const {layer, links: otherLinks} = other;
   const {name} = child.parent;
 
+  const childAction = childLinks[layer.name];
+  const otherAction = otherLinks[name];
+
+  // skip layers that do not have common links
+  if (!childAction && !otherAction) {
+    return;
+  }
+
   let index = layer.children.length;
 
   while (index > 0) {
     const other = layer.children[--index];
 
     if (child.intersection(other)) {
-      const childAction = childLinks[layer.name];
-      const otherAction = otherLinks[name];
-
       childAction && childAction(child, other);
       otherAction && otherAction(other, child);
     }
