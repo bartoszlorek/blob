@@ -1,11 +1,11 @@
 class Text {
-  constructor(name, align = 'left') {
+  constructor(name) {
     if (!name) {
       throw 'Text requires name argument';
     }
 
     this.node = document.createElement('div');
-    this.node.className = `text text--align-${align} text-${name}`;
+    this.node.className = `text text-${name}`;
   }
 
   set value(str) {

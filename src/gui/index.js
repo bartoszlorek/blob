@@ -5,10 +5,14 @@ import Text from '@gui/Text';
 export default function render() {
   const header = document.querySelector('#gui-header');
 
+  const time = new Text('time');
   const score = new Text('score');
+
+  header.appendChild(time.node);
   header.appendChild(score.node);
 
-  score.value = '0/0';
+  time.value = 'time 00:00';
+  score.value = 'score 0-0';
 
   // virtual keyboard on mobile
   if (!isTouchDevice()) {
