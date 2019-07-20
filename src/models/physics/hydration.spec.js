@@ -1,13 +1,14 @@
-import {createDefinition} from './definitions';
+import {hydrateSchema} from './hydration';
+import schema from './schema.json';
 
-describe('createDefinition()', () => {
+describe('hydrateSchema()', () => {
   const player = {name: 'player'};
   const ground = {name: 'ground'};
   const mines = {name: 'mines'};
   const enemies = {name: 'enemies'};
 
-  it('handles player-ground collision', () => {
-    const result = createDefinition({player, ground});
+  it('hydrates player-ground collision schema', () => {
+    const result = hydrateSchema(schema, {player, ground});
 
     expect(result).toEqual({
       active: [
@@ -29,8 +30,8 @@ describe('createDefinition()', () => {
     });
   });
 
-  it('handles player-mines collision', () => {
-    const result = createDefinition({player, mines});
+  it('hydrates player-mines collision schema', () => {
+    const result = hydrateSchema(schema, {player, mines});
 
     expect(result).toEqual({
       active: [
@@ -54,8 +55,8 @@ describe('createDefinition()', () => {
     });
   });
 
-  it('handles player-enemies collision', () => {
-    const result = createDefinition({player, enemies});
+  it('hydrates player-enemies collision schema', () => {
+    const result = hydrateSchema(schema, {player, enemies});
 
     expect(result).toEqual({
       active: [
@@ -76,8 +77,8 @@ describe('createDefinition()', () => {
     });
   });
 
-  it('handles enemies-ground collision', () => {
-    const result = createDefinition({enemies, ground});
+  it('hydrates enemies-ground collision schema', () => {
+    const result = hydrateSchema(schema, {enemies, ground});
 
     expect(result).toEqual({
       active: [
