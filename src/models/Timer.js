@@ -9,6 +9,10 @@ class Timer {
     this.seconds += deltaTime;
   }
 
+  reset() {
+    this.seconds = 0;
+  }
+
   toTime() {
     const minutes = Math.floor(this.seconds / 60);
     const seconds = Math.floor(this.seconds % 60);

@@ -28,9 +28,11 @@ loader.load(() => {
     engine.view.classList.remove('view--active');
 
     setTimeout(() => {
-      score.value = 'score 0-0';
       engine.view.classList.add('view--active');
       global.mount((level = new Level(data)));
+
+      score.value = 'score 0-0';
+      timer.reset();
     }, 700);
   });
 
