@@ -7,24 +7,27 @@ export default function render() {
 
   const time = new Text('time');
   const score = new Text('score');
+  time.value = 'time 00:00';
+  score.value = 'score 0-0';
 
   header.appendChild(time.node);
   header.appendChild(score.node);
 
-  time.value = 'time 00:00';
-  score.value = 'score 0-0';
+  if (isTouchDevice()) {
+    // on-screen keyboard for touch devices
+    const footer = document.querySelector('#gui-footer');
 
-  // virtual keyboard on mobile
-  if (!isTouchDevice()) {
-    return false;
+    const moveLeft = new Button('ArrowLeft');
+    const moveRight = new Button('ArrowRight');
+    const jump = new Button('Space');
+
+    footer.appendChild(moveLeft.node);
+    footer.appendChild(moveRight.node);
+    footer.appendChild(jump.node);
   }
-  const footer = document.querySelector('#gui-footer');
 
-  const moveLeft = new Button('ArrowLeft');
-  const moveRight = new Button('ArrowRight');
-  const jump = new Button('Space');
-
-  footer.appendChild(moveLeft.node);
-  footer.appendChild(moveRight.node);
-  footer.appendChild(jump.node);
+  return {
+    time,
+    score
+  };
 }

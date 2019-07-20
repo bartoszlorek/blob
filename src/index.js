@@ -3,6 +3,7 @@ import engine from '@app/engine';
 import loader from '@app/loader';
 import renderGui from '@gui';
 
+import Timer from '@models/Timer';
 import Creator from '@models/Creator';
 import Helper from '@models/Helper';
 import Global from '@models/Global';
@@ -11,10 +12,11 @@ import Level from '@models/Level';
 import data from '@levels/1-4.json';
 
 loader.load(() => {
-  renderGui();
+  const {time, score} = renderGui();
 
   let level = null;
 
+  const timer = new Timer();
   const global = new Global({
     assets: loader.resources,
     engine
@@ -26,6 +28,7 @@ loader.load(() => {
     engine.view.classList.remove('view--active');
 
     setTimeout(() => {
+      score.value = 'score 0-0';
       engine.view.classList.add('view--active');
       global.mount((level = new Level(data)));
     }, 700);
@@ -37,6 +40,9 @@ loader.load(() => {
 
   global.mount(level);
   global.tick(deltaTime => {
+    timer.update(deltaTime);
+    time.value = `time ${timer.toTime()}`;
+
     level.update(deltaTime);
 
     // if (level.player) {
