@@ -1,7 +1,7 @@
 import {EDGE} from '@models/PhysicsEngine';
 
-export function applyCollisions(definition, deltaTime = 1) {
-  const {active, passive} = definition;
+export function applyCollisions(schema, deltaTime = 1) {
+  const {active, passive} = schema;
   const activeLength = active.length;
 
   for (let i = 0; i < activeLength; i++) {
