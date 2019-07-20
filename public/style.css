@@ -15,9 +15,9 @@ body {
   padding: 0;
   font-size: 36px;
   font-family: 'manaspace', monospace;
-  text-shadow: 2px 2px #160644;
   background-color: #160644;
-  color: #f6019d;
+  text-shadow: 2px 2px #fe3863, 0px 0px 40px #ffa600;
+  color: #fbf3b6;
 }
 
 .view {
