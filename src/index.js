@@ -64,6 +64,11 @@ loader.load(() => {
 
   start.onClick = () => {
     landing.classList.add('hidden');
-    events.publish('start');
+    blank.classList.remove('hidden');
+
+    setTimeout(() => {
+      blank.classList.add('hidden');
+      events.publish('start');
+    }, 1000);
   };
 });
