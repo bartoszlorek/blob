@@ -17,6 +17,7 @@ class Watcher extends Trait {
     if (!bottom) {
       return entity.remove();
     }
+
     const beforeEdge = !closest[7 + this.direction];
 
     if (beforeEdge) {
@@ -49,9 +50,7 @@ class Watcher extends Trait {
       if (other.velocity.y > 0) {
         entity.remove();
       } else {
-        // restart the current level
         this.global.events.publish('player_dead');
-        // other.animation.play('dead');
         other.remove();
       }
     }

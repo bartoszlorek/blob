@@ -1,6 +1,6 @@
 import {objectForEach} from '@utils/object';
 
-export function createDefinition(schema, layers) {
+export function hydrateSchema(schema, layers) {
   const {active = [], passive = []} = schema;
   const hydrator = createHydrator(layers);
 
@@ -22,9 +22,9 @@ function createHydrator(layers) {
   });
 
   return ({name, links}) => {
-    const entry = buffer[name];
+    const layer = buffer[name];
 
-    if (!entry) {
+    if (!layer) {
       return null;
     }
 
@@ -34,6 +34,8 @@ function createHydrator(layers) {
           return;
         }
 
+        // created action will apply to each
+        // colliding child from the given layer
         function action(entity, other, edge) {
           let index = traits.length;
 
@@ -42,11 +44,11 @@ function createHydrator(layers) {
           }
         }
 
-        entry.links[link] = action;
+        layer.links[link] = action;
       });
     }
 
-    return entry;
+    return layer;
   };
 }
 

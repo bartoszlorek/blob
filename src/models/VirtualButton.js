@@ -8,8 +8,14 @@ class VirtualButton {
 
     let timer;
 
+    const clearTimer = () => {
+      clearInterval(timer);
+      clearTimeout(timer);
+    };
+
     node.addEventListener('touchstart', e => {
       e.preventDefault();
+      clearTimer();
 
       timer = setTimeout(() => {
         timer = setInterval(() => {
@@ -23,10 +29,8 @@ class VirtualButton {
     });
 
     node.addEventListener('touchend', e => {
-      clearInterval(timer);
-      setTimeout(timer);
-
       this.handleEvent('keyup');
+      clearTimer();
     });
   }
 

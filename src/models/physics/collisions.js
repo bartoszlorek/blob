@@ -1,7 +1,7 @@
 import {EDGE} from '@models/PhysicsEngine';
 
-export function applyCollisions(definition, deltaTime = 1) {
-  const {active, passive} = definition;
+export function applyCollisions(schema, deltaTime = 1) {
+  const {active, passive} = schema;
   const activeLength = active.length;
 
   for (let i = 0; i < activeLength; i++) {
@@ -13,11 +13,11 @@ export function applyCollisions(definition, deltaTime = 1) {
 
       // passive collisions: compares
       // each active with every passive
-
       if (child.velocity.x !== 0) {
         child.sprite.x += child.velocity.x * deltaTime;
         passiveCollision(child, links, passive, methodX);
       }
+
       if (child.velocity.y !== 0) {
         child.sprite.y += child.velocity.y * deltaTime;
         passiveCollision(child, links, passive, methodY);
@@ -25,7 +25,6 @@ export function applyCollisions(definition, deltaTime = 1) {
 
       // active collisions: compares each active
       // with other active but ONLY ONCE
-
       for (let j = i + 1; j < activeLength; j++) {
         activeCollision(child, links, active[j]);
       }

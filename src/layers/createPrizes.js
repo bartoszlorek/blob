@@ -26,7 +26,7 @@ function createPrizes(global, {prizes}) {
       gridToLocal(block.y)
     );
 
-    child.addTrait(new Collectable());
+    child.addTrait(new Collectable({global}));
     child.addTrait(new Animation());
     child.animation.add('shine', shineFrames, true);
     child.animation.shine.play();

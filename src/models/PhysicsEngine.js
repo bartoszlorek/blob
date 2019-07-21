@@ -1,8 +1,8 @@
 import {
   schema,
   calculateGravity,
-  createDefinition,
-  applyCollisions
+  applyCollisions,
+  hydrateSchema
 } from '@models/physics';
 
 export const EDGE = {
@@ -26,7 +26,7 @@ class PhysicsEngine {
   }
 
   setCollisions(layers) {
-    this.collisions = createDefinition(schema, layers);
+    this.collisions = hydrateSchema(schema, layers);
   }
 
   update(deltaTime) {

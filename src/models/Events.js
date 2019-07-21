@@ -24,6 +24,10 @@ class Events extends PubSub {
   onPlayerDead(handler) {
     this.subscribe('player_dead', handler);
   }
+
+  onScore(handler) {
+    this.subscribe('score', handler);
+  }
 }
 
 export default Events;

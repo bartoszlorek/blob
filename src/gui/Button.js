@@ -2,6 +2,10 @@ import VirtualButton from '@models/VirtualButton';
 
 class Button extends VirtualButton {
   constructor(code) {
+    if (!code) {
+      throw 'Button requires code argument';
+    }
+
     super(code, document.createElement('div'));
 
     // style steering buttons

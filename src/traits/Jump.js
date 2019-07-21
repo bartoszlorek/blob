@@ -20,7 +20,7 @@ class Jump extends Trait {
 
     // parameters
     this.duration = 0.1;
-    this.gracePeriod = 0.1; // able to jump again before landing
+    this.gracePeriod = 0.1; // jump again before landing
 
     // sounds
     this.jumpSound = new Sound('jump_01', 'jump_02', 'jump_03', 'jump_04');
@@ -63,6 +63,7 @@ class Jump extends Trait {
 
   collide(entity, other, edge) {
     const rotatedEdge = rotateEdge(entity.physics.gravity, edge);
+
     if (rotatedEdge === EDGE.BOTTOM) {
       if (this.ready < 0) {
         // landing sounds

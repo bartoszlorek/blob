@@ -1,8 +1,8 @@
 @font-face {
   font-family: 'manaspace';
-  src: url('manaspace.woff2') format('woff2'),
-    url('manaspace.woff') format('woff'),
-    url('manaspace.ttf') format('truetype');
+  src: url('./fonts/manaspace.woff2') format('woff2'),
+    url('./fonts/manaspace.woff') format('woff'),
+    url('./fonts/manaspace.ttf') format('truetype');
 }
 
 * {
@@ -13,32 +13,57 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #160644;
+  font-size: 36px;
   font-family: 'manaspace', monospace;
-  color: #f6019d;
+  background-color: #160644;
+  text-shadow: 2px 2px #fe3863, 0px 0px 40px #ffa600;
+  color: #fbf3b6;
 }
 
-.canvas {
+.view {
   opacity: 0;
-  transition: opacity 400ms steps(3);
+  transition: opacity 300ms steps(3);
 }
 
-.canvas--active {
+.view--active {
   opacity: 1;
 }
 
+.gui {
+  user-select: none;
+}
+
+.gui__header,
 .gui__footer {
   position: fixed;
   display: flex;
-  width: 100%;
-  bottom: 0;
-  padding: 0 8px 8px;
-  z-index: 10;
+  z-index: 1;
+  left: 8px;
+  right: 8px;
+}
+
+.gui__header {
+  top: 8px;
+  text-transform: uppercase;
+}
+
+.gui__footer {
+  bottom: 8px;
 }
 
 @media (min-width: 768px) {
+  .gui__header,
   .gui__footer {
-    padding: 0 32px 32px;
+    left: 32px;
+    right: 32px;
+  }
+
+  .gui__header {
+    top: 32px;
+  }
+
+  .gui__footer {
+    bottom: 32px;
   }
 }
 
@@ -64,5 +89,9 @@ body {
 
 .button-Space {
   background-image: url('./assets/arrow-up.png');
+  margin-left: auto;
+}
+
+.text-score {
   margin-left: auto;
 }
