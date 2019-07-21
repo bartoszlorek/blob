@@ -11,10 +11,16 @@ import Level from '@models/Level';
 
 import data from '@levels/1-4.json';
 
+const getNumberOfPrizes = global => {
+  const {prizes} = global.level.layers;
+  return prizes ? prizes.children.length : 0;
+};
+
 loader.load(() => {
   const {time, score} = renderGui();
 
   let level = null;
+  let prizesLimit = 0;
 
   const timer = new Timer();
   const global = new Global({
@@ -30,10 +36,23 @@ loader.load(() => {
     setTimeout(() => {
       engine.view.classList.add('view--active');
       global.mount((level = new Level(data)));
-
-      score.value = 'score 0-0';
       timer.reset();
     }, 700);
+  });
+
+  global.events.onMountLevel(() => {
+    prizesLimit = getNumberOfPrizes(global);
+    score.value = `score 0-${prizesLimit}`;
+  });
+
+  global.events.onScore(() => {
+    const value = prizesLimit - getNumberOfPrizes(global);
+    score.value = `score ${value}-${prizesLimit}`;
+
+    if (value === prizesLimit) {
+      console.log('level up!');
+      timer.stop();
+    }
   });
 
   // const helper = new Helper(global);

@@ -3,10 +3,21 @@ const pad = n => (n < 10 ? `0${n}` : n);
 class Timer {
   constructor() {
     this.seconds = 0;
+    this.playing = true;
   }
 
   update(deltaTime) {
-    this.seconds += deltaTime;
+    if (this.playing) {
+      this.seconds += deltaTime;
+    }
+  }
+
+  play() {
+    this.playing = true;
+  }
+
+  stop() {
+    this.playing = false;
   }
 
   reset() {

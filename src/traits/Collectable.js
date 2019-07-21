@@ -1,13 +1,15 @@
 import Trait from '@traits/Trait';
 
 class Collectable extends Trait {
-  constructor() {
+  constructor({global}) {
     super('collectable');
+    this.global = global;
   }
 
   collide(entity, other) {
     if (other.parent.name === 'player') {
-      console.log('score!');
+      entity.remove();
+      this.global.events.publish('score');
     }
   }
 }
