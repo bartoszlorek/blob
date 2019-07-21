@@ -22,6 +22,11 @@ class Text {
   get value() {
     return this.text;
   }
+
+  set onClick(handler) {
+    this.node.classList.add('text--link');
+    this.node.onclick = handler;
+  }
 }
 
 export default Text;

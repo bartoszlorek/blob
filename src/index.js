@@ -1,11 +1,8 @@
-import {localToGrid, gridToLocal} from '@app/consts';
 import engine from '@app/engine';
 import loader from '@app/loader';
 import renderGui from '@gui';
 
 import Timer from '@models/Timer';
-import Creator from '@models/Creator';
-import Helper from '@models/Helper';
 import Global from '@models/Global';
 import Level from '@models/Level';
 
@@ -17,7 +14,7 @@ const getNumberOfPrizes = global => {
 };
 
 loader.load(() => {
-  const {time, score} = renderGui();
+  const {start, time, score, blank, landing} = renderGui();
 
   let level = null;
   let prizesLimit = 0;
@@ -28,24 +25,24 @@ loader.load(() => {
     engine
   });
 
-  engine.view.classList.add('view--active');
+  const {events} = global;
 
-  global.events.onPlayerDead(() => {
-    engine.view.classList.remove('view--active');
+  events.onPlayerDead(() => {
+    blank.classList.remove('hidden');
 
     setTimeout(() => {
-      engine.view.classList.add('view--active');
+      blank.classList.add('hidden');
       global.mount((level = new Level(data)));
     }, 700);
   });
 
-  global.events.onMountLevel(() => {
+  events.onMountLevel(() => {
     prizesLimit = getNumberOfPrizes(global);
     score.value = `score 0-${prizesLimit}`;
     timer.reset();
   });
 
-  global.events.onScore(() => {
+  events.onScore(() => {
     const value = prizesLimit - getNumberOfPrizes(global);
     score.value = `score ${value}-${prizesLimit}`;
 
@@ -55,31 +52,23 @@ loader.load(() => {
     }
   });
 
-  const helper = new Helper(global);
-  const pointer = new Creator(global);
-  level = new Level(data);
-
-  global.mount(level);
-  global.tick(deltaTime => {
-    timer.update(deltaTime);
-    time.value = `time ${timer.toTime()}`;
-
-    level.update(deltaTime);
-
-    // if (level.player) {
-    //   helper.renderBox({
-    //     x: gridToLocal(localToGrid(level.player.sprite.x)),
-    //     y: gridToLocal(localToGrid(level.player.sprite.y))
-    //   });
-    // }
-    // helper.renderBounds(level.physics.bounds);
-    // pointer.forEach(point => {
-    //   helper.renderBox({
-    //     x: gridToLocal(point.x),
-    //     y: gridToLocal(point.y)
-    //   });
-    // });
-
-    //
+  events.onStart(() => {
+    level = new Level(data);
+    global.mount(level);
+    global.tick(deltaTime => {
+      level.update(deltaTime);
+      timer.update(deltaTime);
+      time.value = `time ${timer.toTime()}`;
+    });
   });
+
+  start.onClick = () => {
+    landing.classList.add('hidden');
+    blank.classList.remove('hidden');
+
+    setTimeout(() => {
+      blank.classList.add('hidden');
+      events.publish('start');
+    }, 1000);
+  };
 });
