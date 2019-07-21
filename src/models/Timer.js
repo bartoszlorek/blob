@@ -27,7 +27,8 @@ class Timer {
   toTime() {
     const minutes = Math.floor(this.seconds / 60);
     const seconds = Math.floor(this.seconds % 60);
-    return `${pad(minutes)}:${pad(seconds)}`;
+    const milliseconds = Math.floor((this.seconds % 1) * 10);
+    return `${pad(minutes)}:${pad(seconds)}.${milliseconds}`;
   }
 }
 

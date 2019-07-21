@@ -36,13 +36,13 @@ loader.load(() => {
     setTimeout(() => {
       engine.view.classList.add('view--active');
       global.mount((level = new Level(data)));
-      timer.reset();
     }, 700);
   });
 
   global.events.onMountLevel(() => {
     prizesLimit = getNumberOfPrizes(global);
     score.value = `score 0-${prizesLimit}`;
+    timer.reset();
   });
 
   global.events.onScore(() => {
@@ -50,13 +50,13 @@ loader.load(() => {
     score.value = `score ${value}-${prizesLimit}`;
 
     if (value === prizesLimit) {
-      console.log('level up!');
+      console.log('level completed!');
       timer.stop();
     }
   });
 
-  // const helper = new Helper(global);
-  // const pointer = new Creator(global);
+  const helper = new Helper(global);
+  const pointer = new Creator(global);
   level = new Level(data);
 
   global.mount(level);
