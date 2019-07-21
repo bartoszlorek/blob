@@ -58,7 +58,12 @@ loader.load(() => {
     global.tick(deltaTime => {
       level.update(deltaTime);
       timer.update(deltaTime);
-      time.value = `time ${timer.toTime()}`;
+
+      if (timer.playing) {
+        time.value = `time ${timer.toTime()}`;
+      } else {
+        time.value = `time ${timer.toPreciseTime()}`;
+      }
     });
   });
 

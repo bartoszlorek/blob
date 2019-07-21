@@ -12,11 +12,9 @@
 
 @keyframes appears {
   from {
-    transform: translate3d(0, 15%, 0);
     opacity: 0;
   }
   to {
-    transform: translate3d(0, 0, 0);
     opacity: 1;
   }
 }
@@ -27,7 +25,7 @@ body {
   font-size: 36px;
   font-family: 'manaspace', monospace;
   background-color: #160644;
-  text-shadow: 2px 2px #fe3396, 0px 0px 40px #ffe60b;
+  text-shadow: 2px 2px #fe3396, 0px 0px 40px #ffad0a;
   color: #f0e375;
 }
 
@@ -91,7 +89,7 @@ img {
 .logo {
   width: 50%;
   max-width: 1000px;
-  animation: appears 500ms ease-in forwards;
+  animation: appears 500ms steps(3) forwards;
 }
 
 .button {

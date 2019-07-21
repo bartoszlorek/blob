@@ -27,7 +27,13 @@ class Timer {
   toTime() {
     const minutes = Math.floor(this.seconds / 60);
     const seconds = Math.floor(this.seconds % 60);
-    const milliseconds = Math.floor((this.seconds % 1) * 10);
+    return `${pad(minutes)}:${pad(seconds)}`;
+  }
+
+  toPreciseTime() {
+    const minutes = Math.floor(this.seconds / 60);
+    const seconds = Math.floor(this.seconds % 60);
+    const milliseconds = Math.floor((this.seconds % 1) * 100);
     return `${pad(minutes)}:${pad(seconds)}.${milliseconds}`;
   }
 }
