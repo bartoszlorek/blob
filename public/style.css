@@ -41,7 +41,9 @@ img {
   justify-content: center;
   align-items: center;
   background-color: #160644;
-  transition: opacity 300ms steps(3);
+  transition: visibility 300ms steps(3), opacity 300ms steps(3);
+  visibility: visible;
+  opacity: 1;
   left: 0;
   top: 0;
   width: 100%;
@@ -50,7 +52,12 @@ img {
 }
 
 .hidden {
+  visibility: hidden;
   opacity: 0;
+}
+
+.landing {
+  z-index: 2;
 }
 
 .gui__header,
