@@ -4,19 +4,19 @@ import renderGui from '@gui';
 
 import Timer from '@models/Timer';
 import Global from '@models/Global';
-import Level from '@models/Level';
+import Level from '@scenes/Level';
+import Intro from '@scenes/Intro';
 
 import data from '@levels/1-4.json';
 
 const getNumberOfPrizes = global => {
-  const {prizes} = global.level.layers;
+  const {prizes} = global.scenes[0].layers;
   return prizes ? prizes.children.length : 0;
 };
 
 loader.load(() => {
   const {start, time, score, blank, landing} = renderGui();
 
-  let level = null;
   let prizesLimit = 0;
 
   const timer = new Timer();
@@ -27,22 +27,22 @@ loader.load(() => {
 
   const {events} = global;
 
-  events.onPlayerDead(() => {
+  events.subscribe('player_dead', () => {
     blank.classList.remove('hidden');
 
     setTimeout(() => {
       blank.classList.add('hidden');
-      global.mount((level = new Level(data)));
+      global.replaceScene(0, new Level(data, global));
     }, 700);
   });
 
-  events.onMountLevel(() => {
+  events.subscribe('add_scene', () => {
     prizesLimit = getNumberOfPrizes(global);
     score.value = `score 0-${prizesLimit}`;
     timer.reset();
   });
 
-  events.onScore(() => {
+  events.subscribe('score', () => {
     const value = prizesLimit - getNumberOfPrizes(global);
     score.value = `score ${value}-${prizesLimit}`;
 
@@ -52,11 +52,8 @@ loader.load(() => {
     }
   });
 
-  events.onStart(() => {
-    level = new Level(data);
-    global.mount(level);
+  events.subscribe('start', () => {
     global.tick(deltaTime => {
-      level.update(deltaTime);
       timer.update(deltaTime);
 
       if (timer.playing) {
@@ -69,10 +66,14 @@ loader.load(() => {
 
   start.onClick = () => {
     landing.classList.add('hidden');
-    blank.classList.remove('hidden');
+    global.addScene(new Intro(global));
+
+    // blank.classList.remove('hidden');
 
     setTimeout(() => {
-      blank.classList.add('hidden');
+      global.replaceScene(0, new Level(data, global));
+
+      // blank.classList.add('hidden');
       events.publish('start');
     }, 1000);
   };

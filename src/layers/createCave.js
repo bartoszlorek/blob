@@ -5,7 +5,7 @@ import {resolveBlocks} from '@utils/blocks';
 import Layer from '@models/Layer';
 import Entity from '@models/Entity';
 
-function createCave(global, {cave}) {
+function createCave({cave}, global, level) {
   const layer = new Layer('cave');
 
   resolveBlocks('cave', cave, block => {

@@ -2,15 +2,17 @@ import Trait from '@traits/Trait';
 import {EDGE} from '@models/PhysicsEngine';
 
 class Watcher extends Trait {
-  constructor({global, direction = 1, speed}) {
+  constructor({global, scene, direction = 1, speed}) {
     super('watcher');
     this.global = global;
+    this.scene = scene;
+
     this.direction = direction;
     this.speed = speed;
   }
 
   update(entity) {
-    const {ground} = this.global.level.layers;
+    const {ground} = this.scene.layers;
     const closest = ground.closest(entity.gridX, entity.gridY);
     const bottom = closest && closest[7];
 

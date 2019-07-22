@@ -10,9 +10,11 @@ const identity = a => a;
 const destroy = child => child.remove();
 
 class Explosive extends Trait {
-  constructor({global, range}) {
+  constructor({global, scene, range}) {
     super('explosive');
     this.global = global;
+    this.scene = scene;
+
     this.range = range;
     this.ignition = 0;
 
@@ -36,7 +38,7 @@ class Explosive extends Trait {
 
     // boom
     if (this.delay < 0) {
-      const {effects, ground, player} = this.global.level.layers;
+      const {effects, ground, player} = this.scene.layers;
       effects.addChild(this.createBlastFrom(entity));
 
       // destroy everything in range

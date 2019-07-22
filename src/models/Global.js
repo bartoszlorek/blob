@@ -1,3 +1,4 @@
+import {utils} from 'pixi.js';
 import {localToGrid} from '@app/consts';
 import Events from '@models/Events';
 
@@ -5,7 +6,7 @@ class Global {
   constructor({engine, assets}) {
     this.engine = engine;
     this.assets = assets;
-    this.level = null;
+    this.scenes = [];
 
     // parameters
     this.time = 1 / 60;
@@ -17,8 +18,16 @@ class Global {
 
   tick(callback) {
     this.engine.ticker.add(deltaFrame => {
+      let index = this.scenes.length;
+
       const deltaTime = deltaFrame * this.time;
-      callback(deltaTime);
+
+      while (index > 0) {
+        this.scenes[--index].update(deltaTime);
+      }
+      if (callback) {
+        callback(deltaTime);
+      }
     });
   }
 
@@ -29,21 +38,26 @@ class Global {
     this.rootY = Math.round(innerHeight / 2);
   }
 
-  mount(level) {
-    if (this.level !== null) {
-      this.unmount();
-    }
-    this.level = level;
-    this.level.onMount(this);
-    this.engine.stage.addChild(level.elements);
-    this.events.publish('mount_level', this);
+  addScene(scene) {
+    this.scenes.push(scene);
+    this.engine.stage.addChild(scene.elements);
   }
 
-  unmount() {
-    this.events.publish('unmount_level', this);
-    this.engine.stage.removeChild(this.level.elements);
-    this.level.onUnmount();
-    this.level = null;
+  removeScene(index) {
+    const scene = this.scenes[index];
+
+    if (scene) {
+      this.engine.stage.removeChild(scene.elements);
+      utils.removeItems(this.scenes, index, 1);
+      scene.destroy();
+      return true;
+    }
+  }
+
+  replaceScene(index, scene) {
+    if (this.removeScene(index)) {
+      this.addScene(scene);
+    }
   }
 
   localToGlobalX(x) {
