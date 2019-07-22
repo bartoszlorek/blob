@@ -6,12 +6,12 @@ import createMines from './createMines';
 import createPlayer from './createPlayer';
 import createPrizes from './createPrizes';
 
-export default [
-  createGround,
-  createCave,
-  createMines,
-  createEnemies,
-  createPrizes,
-  createEffects,
-  createPlayer
-];
+export default {
+  ground: createGround,
+  cave: createCave,
+  mines: createMines,
+  enemies: createEnemies,
+  prizes: createPrizes,
+  effects: createEffects,
+  player: createPlayer
+};

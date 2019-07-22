@@ -6,7 +6,7 @@ class Global {
   constructor({engine, assets}) {
     this.engine = engine;
     this.assets = assets;
-    this.scenes = [];
+    this.level = null;
 
     // parameters
     this.time = 1 / 60;
@@ -18,13 +18,10 @@ class Global {
 
   tick(callback) {
     this.engine.ticker.add(deltaFrame => {
-      let index = this.scenes.length;
-
       const deltaTime = deltaFrame * this.time;
 
-      while (index > 0) {
-        this.scenes[--index].update(deltaTime);
-      }
+      this.level.update(deltaTime);
+
       if (callback) {
         callback(deltaTime);
       }
@@ -38,26 +35,23 @@ class Global {
     this.rootY = Math.round(innerHeight / 2);
   }
 
-  addScene(scene) {
-    this.scenes.push(scene);
-    this.engine.stage.addChild(scene.elements);
+  load(level) {
+    if (this.level !== null) {
+      this.unload();
+    }
+    this.level = level;
+    this.level.load(this);
+    this.engine.stage.addChild(level.elements);
+    this.engine.ticker.start();
+    this.events.publish('load_level', this);
   }
 
-  removeScene(index) {
-    const scene = this.scenes[index];
-
-    if (scene) {
-      this.engine.stage.removeChild(scene.elements);
-      utils.removeItems(this.scenes, index, 1);
-      scene.destroy();
-      return true;
-    }
-  }
-
-  replaceScene(index, scene) {
-    if (this.removeScene(index)) {
-      this.addScene(scene);
-    }
+  unload() {
+    this.events.publish('before_unload_level', this);
+    this.engine.ticker.stop();
+    this.engine.stage.removeChild(this.level.elements);
+    this.level.destroy();
+    this.level = null;
   }
 
   localToGlobalX(x) {

@@ -77,6 +77,12 @@ img {
   bottom: 8px;
 }
 
+.logo {
+  width: 85%;
+  max-width: 1000px;
+  animation: appears 500ms steps(3) forwards;
+}
+
 @media (min-width: 768px) {
   .gui__header,
   .gui__footer {
@@ -91,12 +97,10 @@ img {
   .gui__footer {
     bottom: 32px;
   }
-}
 
-.logo {
-  width: 50%;
-  max-width: 1000px;
-  animation: appears 500ms steps(3) forwards;
+  .logo {
+    width: 60%;
+  }
 }
 
 .button {

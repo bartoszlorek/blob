@@ -49,7 +49,7 @@ function createPlayer({player}, global, level) {
     child.jump[pressed ? 'start' : 'cancel']();
   });
 
-  global.events.subscribe('player_dead', () => {
+  global.events.subscribe('before_unload_level', () => {
     input.destroy();
     return false;
   });
