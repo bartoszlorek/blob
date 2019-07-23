@@ -4,7 +4,7 @@ const engine = new Application({
   //transparent: true,
   width: window.innerWidth,
   height: window.innerHeight,
-  backgroundColor: 0x160644
+  backgroundColor: 0x01024e
 });
 
 engine.view.className = 'view';

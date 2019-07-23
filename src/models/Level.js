@@ -39,7 +39,7 @@ class Level {
     const layerNames = Object.keys(layers);
 
     if (background) {
-      this.background.set(global.assets[background].texture);
+      this.background.set(global.assets[background].texture, [792]);
     }
     this.global = global;
     this.global.events.onResize(this.resize);
