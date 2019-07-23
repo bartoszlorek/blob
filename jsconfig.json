@@ -9,7 +9,6 @@
       "@layers": ["src/layers/*"],
       "@levels": ["src/levels/*"],
       "@models": ["src/models/*"],
-      "@scenes": ["src/scenes/*"],
       "@state": ["src/state/*"],
       "@traits": ["src/traits/*"],
       "@utils": ["src/utils/*"]
