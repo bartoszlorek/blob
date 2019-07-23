@@ -1,11 +1,11 @@
 import {Container} from 'pixi.js';
 import {baseSize} from '@app/consts';
-import layerCreators from '@layers';
 import {lerp} from '@utils/math';
 import {arrayForEach} from '@utils/array';
-import {objectForEach} from '@utils/object';
-import Background from '@models/Background';
+
+import layerCreators from '@layers';
 import PhysicsEngine from '@models/PhysicsEngine';
+import Background from '@models/Background';
 
 const cameraRadius = 100;
 const cameraSpeed = 0.01;
@@ -15,46 +15,60 @@ class Level {
     this.data = data;
     this.name = data.name;
     this.global = null;
-
     this.layers = {};
-    this.offsetX = 0;
-    this.offsetY = 0;
 
+    this.resize = this.resize.bind(this);
     this.physics = new PhysicsEngine();
     this.background = new Background();
     this.foreground = new Container();
-    this.helpers = new Container();
 
     this.elements = new Container();
     this.elements.addChild(this.background.sprite);
     this.elements.addChild(this.foreground);
-    this.elements.addChild(this.helpers);
+
+    this.offsetX = 0;
+    this.offsetY = 0;
   }
 
   get player() {
     return (this.layers.player && this.layers.player.children[0]) || null;
   }
 
-  onMount(global) {
-    arrayForEach(layerCreators, create => {
-      const layer = create(global, this.data);
-      this.foreground.addChild(layer.graphics);
-      this.layers[layer.name] = layer;
+  load(global) {
+    const {layers, background} = this.data;
+    const layerNames = Object.keys(layers);
 
-      if (layer.name === 'ground') {
+    if (background) {
+      this.background.set(global.assets[background].texture);
+    }
+    this.global = global;
+    this.global.events.onResize(this.resize);
+    this.resize();
+
+    // layers
+    arrayForEach(layerNames, name => {
+      const create = layerCreators[name];
+
+      if (!create) {
+        return;
+      }
+      const layer = create(layers, global, this);
+      this.foreground.addChild(layer.graphics);
+      this.layers[name] = layer;
+
+      if (name === 'ground') {
         this.physics.addGravitation(layer);
       }
     });
 
-    this.global = global;
-    this.global.events.onResize(() => this.resize());
-    this.background.set(global.assets.gradient.texture);
-
     this.physics.setCollisions(this.layers);
-    this.resize();
+    this.focus(this.player, false);
   }
 
-  onUnmount() {}
+  destroy() {
+    this.global.events.unsubscribe('resize', this.resize);
+    this.global = null;
+  }
 
   update(deltaTime) {
     const names = Object.keys(this.layers);
@@ -78,36 +92,41 @@ class Level {
     }
 
     // post-processes
-    this.cameraFollows();
+    this.focus(this.player);
   }
 
   resize() {
+    this.foreground.x = this.global.rootX;
+    this.foreground.y = this.global.rootY;
     this.background.resize();
-    objectForEach(this.layers, layer => {
-      layer.graphics.x = this.global.rootX;
-      layer.graphics.y = this.global.rootY;
-    });
   }
 
-  cameraFollows() {
-    if (!this.player) {
+  focus(entity, easeing = true) {
+    if (!entity || !this.global) {
       return;
     }
-    const {x, y} = this.player.sprite;
-    const a = x + this.offsetX;
-    const b = y + this.offsetY;
-    const distance = Math.sqrt(a * a + b * b);
 
-    if (distance < baseSize) {
-      return;
+    const {x, y} = entity.sprite;
+
+    if (easeing) {
+      const a = x + this.offsetX;
+      const b = y + this.offsetY;
+      const distance = Math.sqrt(a * a + b * b);
+
+      if (distance < baseSize) {
+        return;
+      }
+      const factor = Math.min(1, distance / cameraRadius);
+      this.offsetX = lerp(this.offsetX, -x, cameraSpeed * factor);
+      this.offsetY = lerp(this.offsetY, -y, cameraSpeed * factor);
+    } else {
+      this.offsetX = -x;
+      this.offsetY = -y;
     }
-    const factor = Math.min(1, distance / cameraRadius);
-    this.offsetX = lerp(this.offsetX, -x, cameraSpeed * factor);
-    this.offsetY = lerp(this.offsetY, -y, cameraSpeed * factor);
 
     // apply offset to visible elements
-    this.foreground.position.set(this.offsetX, this.offsetY);
-    this.helpers.position.set(this.offsetX, this.offsetY);
+    this.foreground.x = this.global.rootX + this.offsetX;
+    this.foreground.y = this.global.rootY + this.offsetY;
   }
 }
 

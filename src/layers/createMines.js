@@ -9,7 +9,7 @@ import Animation from '@traits/Animation';
 
 const blinkFrames = [[50, entity => (entity.visible = !entity.visible)]];
 
-function createMines(global, {mines}) {
+function createMines({mines}, global, scene) {
   const layer = new PassiveLayer('mines');
 
   resolveBlocks('mines', mines, block => {
@@ -21,7 +21,7 @@ function createMines(global, {mines}) {
     );
 
     child.addTrait(new Animation());
-    child.addTrait(new Explosive({global, range: 1}));
+    child.addTrait(new Explosive({global, scene, range: 1}));
     child.animation.add('blink', blinkFrames, true);
 
     layer.addChild(child);

@@ -6,18 +6,37 @@ import Timer from '@models/Timer';
 import Global from '@models/Global';
 import Level from '@models/Level';
 
-import data from '@levels/1-4.json';
+import dataLevel1 from '@levels/level-1.json';
+import dataLevel0 from '@levels/level-0.json';
 
 const getNumberOfPrizes = global => {
   const {prizes} = global.level.layers;
   return prizes ? prizes.children.length : 0;
 };
 
+const fastFadeIn = (blank, callback) => {
+  blank.classList.remove('hidden');
+
+  setTimeout(() => {
+    blank.classList.add('hidden');
+    callback();
+  }, 300);
+};
+
+const slowFadeIn = (blank, callback) => {
+  blank.classList.remove('hidden');
+
+  setTimeout(() => {
+    blank.classList.add('hidden');
+    callback();
+  }, 700);
+};
+
 loader.load(() => {
   const {start, time, score, blank, landing} = renderGui();
 
-  let level = null;
   let prizesLimit = 0;
+  let currentLevel = 0;
 
   const timer = new Timer();
   const global = new Global({
@@ -27,53 +46,56 @@ loader.load(() => {
 
   const {events} = global;
 
-  events.onPlayerDead(() => {
-    blank.classList.remove('hidden');
-
-    setTimeout(() => {
-      blank.classList.add('hidden');
-      global.mount((level = new Level(data)));
-    }, 700);
+  events.subscribe('player_dead', () => {
+    slowFadeIn(blank, () => {
+      global.load(new Level(dataLevel1));
+    });
   });
 
-  events.onMountLevel(() => {
+  events.subscribe('load_level', () => {
     prizesLimit = getNumberOfPrizes(global);
     score.value = `score 0-${prizesLimit}`;
     timer.reset();
   });
 
-  events.onScore(() => {
-    const value = prizesLimit - getNumberOfPrizes(global);
-    score.value = `score ${value}-${prizesLimit}`;
-
-    if (value === prizesLimit) {
-      console.log('level completed!');
+  events.subscribe('level_completed', () => {
+    if (currentLevel === 0) {
+      fastFadeIn(blank, () => {
+        global.load(new Level(dataLevel1));
+        currentLevel++;
+      });
+    }
+    if (currentLevel === 1) {
       timer.stop();
     }
   });
 
-  events.onStart(() => {
-    level = new Level(data);
-    global.mount(level);
-    global.tick(deltaTime => {
-      level.update(deltaTime);
-      timer.update(deltaTime);
+  events.subscribe('score', () => {
+    const value = prizesLimit - getNumberOfPrizes(global);
+    score.value = `score ${value}-${prizesLimit}`;
 
-      if (timer.playing) {
-        time.value = `time ${timer.toTime()}`;
-      } else {
-        time.value = `time ${timer.toPreciseTime()}`;
+    if (value === prizesLimit) {
+      events.publish('level_completed');
+    }
+  });
+
+  events.subscribe('start', () => {
+    global.load(new Level(dataLevel0));
+    global.tick(deltaTime => {
+      if (currentLevel > 0) {
+        timer.update(deltaTime);
+
+        if (timer.playing) {
+          time.value = `time ${timer.toTime()}`;
+        } else {
+          time.value = `time ${timer.toPreciseTime()}`;
+        }
       }
     });
   });
 
   start.onClick = () => {
     landing.classList.add('hidden');
-    blank.classList.remove('hidden');
-
-    setTimeout(() => {
-      blank.classList.add('hidden');
-      events.publish('start');
-    }, 1000);
+    fastFadeIn(blank, () => events.publish('start'));
   };
 });

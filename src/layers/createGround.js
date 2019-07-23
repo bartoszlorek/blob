@@ -6,7 +6,7 @@ import PassiveLayer from '@models/PassiveLayer';
 import Entity from '@models/Entity';
 import Colorful from '@traits/Colorful';
 
-function createGround(global, {ground}) {
+function createGround({ground}, global, level) {
   const layer = new PassiveLayer('ground');
 
   resolveBlocks('ground', ground, block => {

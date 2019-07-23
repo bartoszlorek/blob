@@ -19,9 +19,9 @@ const deadFrames = [
   [500, entity => entity.remove()]
 ];
 
-function createPlayer(global, {player}) {
+function createPlayer({player}, global, level) {
   const {texture} = global.assets['player'];
-  const {physics} = global.level;
+  const {physics} = level;
   const layer = new ActiveLayer('player');
 
   const child = new Entity(
@@ -49,7 +49,7 @@ function createPlayer(global, {player}) {
     child.jump[pressed ? 'start' : 'cancel']();
   });
 
-  global.events.onPlayerDead(() => {
+  global.events.subscribe('before_unload_level', () => {
     input.destroy();
     return false;
   });

@@ -14,6 +14,9 @@ class Background {
   }
 
   resize() {
+    if (!this.sprite.children.length) {
+      return;
+    }
     const {innerWidth, innerHeight} = window;
     const child = this.sprite.getChildAt(0);
 

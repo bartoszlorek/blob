@@ -1,4 +1,3 @@
-import {baseSize} from '@app/consts';
 import {utils, Container} from 'pixi.js';
 
 class Layer {

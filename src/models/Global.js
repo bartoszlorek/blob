@@ -1,3 +1,4 @@
+import {utils} from 'pixi.js';
 import {localToGrid} from '@app/consts';
 import Events from '@models/Events';
 
@@ -18,7 +19,12 @@ class Global {
   tick(callback) {
     this.engine.ticker.add(deltaFrame => {
       const deltaTime = deltaFrame * this.time;
-      callback(deltaTime);
+
+      this.level.update(deltaTime);
+
+      if (callback) {
+        callback(deltaTime);
+      }
     });
   }
 
@@ -29,20 +35,22 @@ class Global {
     this.rootY = Math.round(innerHeight / 2);
   }
 
-  mount(level) {
+  load(level) {
     if (this.level !== null) {
-      this.unmount();
+      this.unload();
     }
     this.level = level;
-    this.level.onMount(this);
+    this.level.load(this);
     this.engine.stage.addChild(level.elements);
-    this.events.publish('mount_level', this);
+    this.engine.ticker.start();
+    this.events.publish('load_level', this);
   }
 
-  unmount() {
-    this.events.publish('unmount_level', this);
+  unload() {
+    this.events.publish('before_unload_level', this);
+    this.engine.ticker.stop();
     this.engine.stage.removeChild(this.level.elements);
-    this.level.onUnmount();
+    this.level.destroy();
     this.level = null;
   }
 

@@ -6,8 +6,7 @@ import ActiveLayer from '@models/ActiveLayer';
 import Entity from '@models/Entity';
 import Watcher from '@traits/Watcher';
 
-function createEnemies(global, {enemies}) {
-  const {physics} = global.level;
+function createEnemies({enemies}, global, scene) {
   const layer = new ActiveLayer('enemies');
 
   resolveBlocks('enemies', enemies, block => {
@@ -18,7 +17,7 @@ function createEnemies(global, {enemies}) {
       gridToLocal(block.y)
     );
 
-    child.addTrait(new Watcher({global, speed: 60}));
+    child.addTrait(new Watcher({global, scene, speed: 60}));
     layer.addChild(child);
   });
 

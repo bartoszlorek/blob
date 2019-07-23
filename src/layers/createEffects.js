@@ -1,6 +1,6 @@
 import Layer from '@models/Layer';
 
-function createEffects(global, {}) {
+function createEffects({}, global, level) {
   return new Layer('effects');
 }
 

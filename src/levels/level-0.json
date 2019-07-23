@@ -1,0 +1,9 @@
+{
+  "name": "level-0",
+  "background": "gradient",
+  "layers": {
+    "ground": [[-6, 1, 1, 6], [-5, 1, 11, 11], [6, 1, 1, 5]],
+    "prizes": [[5, 0]],
+    "player": [0, 0]
+  }
+}

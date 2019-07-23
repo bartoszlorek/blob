@@ -1,7 +1,6 @@
 import {Application} from 'pixi.js';
 
 const engine = new Application({
-  //antialias: true,
   //transparent: true,
   width: window.innerWidth,
   height: window.innerHeight,

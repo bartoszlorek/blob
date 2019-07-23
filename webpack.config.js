@@ -15,6 +15,7 @@ module.exports = {
       '@layers': path.resolve(__dirname, 'src/layers/'),
       '@levels': path.resolve(__dirname, 'src/levels/'),
       '@models': path.resolve(__dirname, 'src/models/'),
+      '@scenes': path.resolve(__dirname, 'src/scenes/'),
       '@state': path.resolve(__dirname, 'src/state/'),
       '@traits': path.resolve(__dirname, 'src/traits/'),
       '@utils': path.resolve(__dirname, 'src/utils/')

@@ -13,7 +13,7 @@ const shineFrames = [
   [1000, entity => (entity.scale = 1)]
 ];
 
-function createPrizes(global, {prizes}) {
+function createPrizes({prizes}, global, level) {
   const glow = new GlowFilter(10, 1, 0, 0xf2dc30);
   const layer = new ActiveLayer('prizes', [glow]);
   glow.padding = 10;

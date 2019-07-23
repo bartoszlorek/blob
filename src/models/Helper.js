@@ -16,16 +16,16 @@ class Helper {
     this.lineWidth = 2;
     this.color = 0xffffff;
 
-    // events
-    global.events.onMountLevel(() => {
-      this.graphics = new Graphics();
-      this.level = global.level;
-      this.level.helpers.addChild(this.graphics);
-    });
+    // // events
+    // global.events.subscribe('add_scene', () => {
+    //   this.graphics = new Graphics();
+    //   this.level = global.level;
+    //   this.level.helpers.addChild(this.graphics);
+    // });
 
-    global.events.onUnmountLevel(() => {
-      this.level = null;
-    });
+    // global.events.subscribe('before_remove_scene', () => {
+    //   this.level = null;
+    // });
   }
 
   renderPoint(vector) {

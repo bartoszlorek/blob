@@ -1,10 +1,8 @@
-const eventTypes = ['keydown', 'keyup'];
-
 class Keyboard {
   constructor() {
     this.states = new Map();
     this.events = new Map();
-    this.listen();
+    this.destroy = this.listen();
   }
 
   on(code, callback) {
@@ -21,6 +19,11 @@ class Keyboard {
       return;
     }
     const pressed = event.type === 'keydown';
+
+    // prevents calling keyup before keydown
+    if (!pressed && !this.states.get(code)) {
+      return;
+    }
     if (this.states.get(code) !== pressed) {
       this.states.set(code, pressed);
       this.events.get(code)(pressed);
@@ -28,17 +31,14 @@ class Keyboard {
   }
 
   listen() {
-    this._handler = this.handleEvent.bind(this);
+    const handler = e => this.handleEvent(e);
+    window.addEventListener('keydown', handler);
+    window.addEventListener('keyup', handler);
 
-    eventTypes.forEach(type => {
-      window.addEventListener(type, this._handler);
-    });
-  }
-
-  destroy() {
-    eventTypes.forEach(type => {
-      window.removeEventListener(type, this._handler);
-    });
+    return () => {
+      window.removeEventListener('keydown', handler);
+      window.removeEventListener('keyup', handler);
+    };
   }
 }
 
