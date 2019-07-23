@@ -1,4 +1,4 @@
-import engine from '@app/engine';
+import engine, {fastFadeIn, slowFadeIn} from '@app/engine';
 import loader from '@app/loader';
 import renderGui from '@gui';
 
@@ -14,26 +14,8 @@ const getNumberOfPrizes = global => {
   return prizes ? prizes.children.length : 0;
 };
 
-const fastFadeIn = (blank, callback) => {
-  blank.classList.remove('hidden');
-
-  setTimeout(() => {
-    blank.classList.add('hidden');
-    callback();
-  }, 300);
-};
-
-const slowFadeIn = (blank, callback) => {
-  blank.classList.remove('hidden');
-
-  setTimeout(() => {
-    blank.classList.add('hidden');
-    callback();
-  }, 700);
-};
-
 loader.load(() => {
-  const {start, time, score, blank, landing} = renderGui();
+  const {start, time, score, landing} = renderGui();
 
   let prizesLimit = 0;
   let currentLevel = 0;
@@ -47,7 +29,7 @@ loader.load(() => {
   const {events} = global;
 
   events.subscribe('player_dead', () => {
-    slowFadeIn(blank, () => {
+    slowFadeIn(() => {
       global.load(new Level(dataLevel1));
     });
   });
@@ -60,7 +42,7 @@ loader.load(() => {
 
   events.subscribe('level_completed', () => {
     if (currentLevel === 0) {
-      fastFadeIn(blank, () => {
+      fastFadeIn(() => {
         global.load(new Level(dataLevel1));
         currentLevel++;
       });
@@ -96,6 +78,6 @@ loader.load(() => {
 
   start.onClick = () => {
     landing.classList.add('hidden');
-    fastFadeIn(blank, () => events.publish('start'));
+    fastFadeIn(() => events.publish('start'));
   };
 });
