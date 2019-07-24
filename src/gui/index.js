@@ -10,7 +10,7 @@ export default function render() {
   const time = new Text('time');
   const score = new Text('score');
 
-  start.value = 'start';
+  start.value = 'press start';
   time.value = 'time 00:00';
   score.value = 'score 0-0';
 
