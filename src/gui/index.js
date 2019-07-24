@@ -3,7 +3,6 @@ import Button from '@gui/Button';
 import Text from '@gui/Text';
 
 export default function render() {
-  const blank = document.querySelector('.blank');
   const landing = document.querySelector('.landing');
   const header = document.querySelector('.gui__header');
 
@@ -11,7 +10,7 @@ export default function render() {
   const time = new Text('time');
   const score = new Text('score');
 
-  start.value = 'start';
+  start.value = 'press start';
   time.value = 'time 00:00';
   score.value = 'score 0-0';
 
@@ -33,7 +32,6 @@ export default function render() {
   }
 
   return {
-    blank,
     landing,
     start,
     time,

@@ -39,7 +39,8 @@ class Level {
     const layerNames = Object.keys(layers);
 
     if (background) {
-      this.background.set(global.assets[background].texture);
+      const breakpoints = [144, 192, 336, 792];
+      this.background.set(global.assets[background].texture, breakpoints);
     }
     this.global = global;
     this.global.events.onResize(this.resize);
