@@ -10,8 +10,8 @@ class Background {
 
   set(texture, breakpoints = []) {
     this.texHeight = texture.height;
-
     this.sprite.removeChildren();
+
     this.layers = [0, ...breakpoints].map((position, index, points) => {
       const tile = new TilingSprite(texture);
       const height = (points[index + 1] || this.texHeight) - position;
@@ -46,9 +46,9 @@ class Background {
         tile.width = innerWidth;
         tile.height = height;
 
+        tile.position.y = position + offset;
         tile.tilePosition.y = -position;
         tile.tileScale.y = 1;
-        tile.position.y = position + offset;
 
         offset -= difference * percent;
       });
@@ -59,6 +59,8 @@ class Background {
           tile.visible = true;
           tile.width = innerWidth;
           tile.height = innerHeight;
+
+          tile.position.y = 0;
           tile.tilePosition.y = 0;
           tile.tileScale.y = innerHeight / this.texHeight;
         } else {
