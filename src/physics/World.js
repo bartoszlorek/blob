@@ -4,17 +4,16 @@ import Collider from './Collider';
 
 class World {
   constructor() {
-    // dynamic
-    this.dynamicBodies = new Set();
-    this.dynamicTree = new RTree();
+    this.dynamicBodies = [];
+    this.staticBodies = [];
 
-    // static
-    this.staticBodies = new Set();
+    // r-trees
+    this.dynamicTree = new RTree();
     this.staticTree = new RTree();
 
     // processing
     this.updated = false;
-    this.pendingDestroy = new Set();
+    this.pendingDestroy = [];
     this.colliders = [];
 
     // parameters
@@ -22,42 +21,51 @@ class World {
   }
 
   add(body) {
+    if (!body.isBody || body.world === this) {
+      return;
+    }
     if (body.type === DYNAMIC_TYPE) {
-      this.dynamicBodies.set(body);
+      this.dynamicBodies.push(body);
     } else if (body.type === STATIC_TYPE) {
-      this.staticBodies.set(body);
+      this.staticBodies.push(body);
       this.staticTree.insert(body);
     }
-    return body;
+    body.world = this;
   }
 
   collide(object1, object2, callback) {
+    this.add(object1);
+    this.add(object2);
     this.colliders.push(new Collider(this, object1, object2, callback));
   }
 
-  overlap() {
+  overlap(object1, object2, callback) {
+    this.add(object1);
+    this.add(object2);
     this.colliders.push(new Collider(this, object1, object2, callback, true));
   }
 
   update(deltaTime) {
-    if (this.dynamicBodies.size === 0) {
+    if (this.dynamicBodies.length === 0) {
       return;
     }
-    const {entries} = this.dynamicBodies;
+    const bodies = this.dynamicBodies;
     const shouldUpdate = true; // todo: proper logic
 
-    for (let i = 0; i < entries.length; i++) {
-      entries[i].update(deltaTime);
+    for (let i = 0; i < bodies.length; i++) {
+      bodies[i].update(deltaTime);
     }
 
     if (shouldUpdate) {
       this.updated = true;
 
       this.dynamicTree.clear();
-      this.dynamicTree.load(entries);
+      this.dynamicTree.load(bodies);
 
       for (let i = 0; i < this.colliders.length; i++) {
         const collider = this.colliders[i];
+
+        // console.log({collider});
 
         // collider.update();
       }
@@ -66,16 +74,16 @@ class World {
 
   postUpdate() {
     if (this.updated) {
-      const {entries} = this.dynamicBodies;
+      const bodies = this.dynamicBodies;
 
-      for (let i = 0; i < entries.length; i++) {
-        entries[i].postUpdate(deltaTime);
+      for (let i = 0; i < bodies.length; i++) {
+        bodies[i].postUpdate(deltaTime);
       }
     }
 
     const pending = this.pendingDestroy;
 
-    if (pending.size > 0) {
+    if (pending.length > 0) {
       const bodies = pending.entries;
 
       for (let i = 0; i < bodies.length; i++) {

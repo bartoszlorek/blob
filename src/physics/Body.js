@@ -1,20 +1,38 @@
+import {baseSize} from '@app/consts';
 import Vector from '@models/Vector';
 
 export const DYNAMIC_TYPE = Symbol('dynamic');
 export const STATIC_TYPE = Symbol('static');
 
 class Body {
-  constructor(type = StaticType, sprite) {
-    this.type = type;
+  constructor(sprite, type = DYNAMIC_TYPE) {
     this.sprite = sprite;
+    this.type = type;
 
     this.traits = [];
-    this.parent = null;
     this.active = true;
+    this.isBody = true;
+    this.world = null;
 
     // in simulation
     this.velocity = new Vector(0, 0);
     this.position = new Vector(sprite.x, sprite.y);
+  }
+
+  get left() {
+    return this.position.x;
+  }
+
+  get top() {
+    return this.position.y;
+  }
+
+  get right() {
+    return this.position.x + baseSize;
+  }
+
+  get bottom() {
+    return this.position.y + baseSize;
   }
 
   addTrait(trait) {
@@ -36,6 +54,7 @@ class Body {
 
   postUpdate() {
     if (this.active) {
+      console.log('postUpdateBody');
       this.sprite.x = this.position.x;
       this.sprite.y = this.position.y;
     }
@@ -44,8 +63,8 @@ class Body {
   destroy() {
     this.active = false;
 
-    if (this.parent) {
-      this.parent.pendingDestroy.set(this);
+    if (this.world) {
+      this.world.pendingDestroy.set(this);
     }
   }
 }

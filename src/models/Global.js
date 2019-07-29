@@ -19,12 +19,7 @@ class Global {
   tick(callback) {
     this.engine.ticker.add(deltaFrame => {
       const deltaTime = deltaFrame * this.time;
-
-      this.level.update(deltaTime);
-
-      if (callback) {
-        callback(deltaTime);
-      }
+      callback(deltaTime);
     });
   }
 

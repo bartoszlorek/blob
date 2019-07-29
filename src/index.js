@@ -28,51 +28,49 @@ loader.load(() => {
 
   const {events} = global;
 
-  events.subscribe('player_dead', () => {
-    slowFadeIn(() => {
-      global.load(new Level(dataLevel1));
-    });
-  });
+  // events.subscribe('player_dead', () => {
+  //   slowFadeIn(() => {
+  //     global.load(new Level(dataLevel1));
+  //   });
+  // });
 
-  events.subscribe('load_level', () => {
-    prizesLimit = getNumberOfPrizes(global);
-    score.value = `score 0-${prizesLimit}`;
-    timer.reset();
-  });
+  // events.subscribe('load_level', () => {
+  //   prizesLimit = getNumberOfPrizes(global);
+  //   score.value = `score 0-${prizesLimit}`;
+  //   timer.reset();
+  // });
 
-  events.subscribe('level_completed', () => {
-    if (currentLevel === 0) {
-      fastFadeIn(() => {
-        global.load(new Level(dataLevel1));
-        currentLevel++;
-      });
-    }
-    if (currentLevel === 1) {
-      timer.stop();
-    }
-  });
+  // events.subscribe('level_completed', () => {
+  //   if (currentLevel === 0) {
+  //     fastFadeIn(() => {
+  //       global.load(new Level(dataLevel1));
+  //       currentLevel++;
+  //     });
+  //   }
+  //   if (currentLevel === 1) {
+  //     timer.stop();
+  //   }
+  // });
 
-  events.subscribe('score', () => {
-    const value = prizesLimit - getNumberOfPrizes(global);
-    score.value = `score ${value}-${prizesLimit}`;
+  // events.subscribe('score', () => {
+  //   const value = prizesLimit - getNumberOfPrizes(global);
+  //   score.value = `score ${value}-${prizesLimit}`;
 
-    if (value === prizesLimit) {
-      events.publish('level_completed');
-    }
-  });
+  //   if (value === prizesLimit) {
+  //     events.publish('level_completed');
+  //   }
+  // });
 
   events.subscribe('start', () => {
-    global.load(new Level(dataLevel0));
-    global.tick(deltaTime => {
-      if (currentLevel > 0) {
-        timer.update(deltaTime);
+    const level = new Level(global);
 
-        if (timer.playing) {
-          time.value = `time ${timer.toTime()}`;
-        } else {
-          time.value = `time ${timer.toPreciseTime()}`;
-        }
-      }
+    level.create();
+
+    engine.stage.addChild(level.graphics);
+    engine.ticker.start();
+
+    global.tick(deltaTime => {
+      level.update(deltaTime);
     });
   });
 
