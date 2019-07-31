@@ -1,107 +1,130 @@
 import RTree from 'rbush';
-import {DYNAMIC_TYPE, STATIC_TYPE} from './Body';
 import Collider from './Collider';
 
 class World {
   constructor() {
-    this.dynamicBodies = [];
+    this.bodies = [];
     this.staticBodies = [];
 
     // r-trees
-    this.dynamicTree = new RTree();
+    this.tree = new RTree();
     this.staticTree = new RTree();
 
     // processing
     this.updated = false;
-    this.pendingDestroy = [];
     this.colliders = [];
 
     // parameters
-    this.stepsRate = 0.5;
+    this.simRate = 0.5;
+    this.simFlag = 0;
   }
 
-  add(body) {
-    if (!body.isBody || body.world === this) {
-      return;
-    }
-    if (body.type === DYNAMIC_TYPE) {
-      this.dynamicBodies.push(body);
-    } else if (body.type === STATIC_TYPE) {
-      this.staticBodies.push(body);
-      this.staticTree.insert(body);
-    }
-    body.world = this;
+  addDynamic(body) {
+    this.bodies.push(body);
+  }
+
+  addStatic(body) {
+    this.staticBodies.push(body);
+    this.staticTree.insert(body);
+  }
+
+  addGroup(group) {
+    group.children.forEach(child => {
+      if (child.type === 'dynamic') {
+        this.addDynamic(child);
+      } else {
+        this.addStatic(child);
+      }
+    });
   }
 
   collide(object1, object2, callback) {
-    this.add(object1);
-    this.add(object2);
     this.colliders.push(new Collider(this, object1, object2, callback));
   }
 
   overlap(object1, object2, callback) {
-    this.add(object1);
-    this.add(object2);
     this.colliders.push(new Collider(this, object1, object2, callback, true));
   }
 
+  gravity(object1, object2, callback) {
+    // this.colliders.push(new Collider(this, object1, object2, callback, true));
+  }
+
   update(deltaTime) {
-    if (this.dynamicBodies.length === 0) {
-      return;
+    let index;
+    const bodies = this.bodies;
+    const staticBodies = this.staticBodies;
+
+    index = bodies.length;
+    while (index > 0) {
+      bodies[--index].update(deltaTime);
     }
-    const bodies = this.dynamicBodies;
-    const shouldUpdate = true; // todo: proper logic
 
-    for (let i = 0; i < bodies.length; i++) {
-      bodies[i].update(deltaTime);
+    index = staticBodies.length;
+    while (index > 0) {
+      staticBodies[--index].update(deltaTime);
     }
 
-    if (shouldUpdate) {
-      this.updated = true;
+    this.simFlag += this.simRate;
 
-      this.dynamicTree.clear();
-      this.dynamicTree.load(bodies);
+    if (this.simFlag >= 1) {
+      this.simFlag = 0;
 
-      for (let i = 0; i < this.colliders.length; i++) {
-        const collider = this.colliders[i];
+      this.tree.clear();
+      this.tree.load(bodies);
 
-        // console.log({collider});
+      const colliders = this.colliders;
+      index = colliders.length;
 
-        // collider.update();
+      while (index > 0) {
+        this.resolveCollider(colliders[--index]);
       }
     }
   }
 
   postUpdate() {
-    if (this.updated) {
-      const bodies = this.dynamicBodies;
+    let index;
+    let body;
 
-      for (let i = 0; i < bodies.length; i++) {
-        bodies[i].postUpdate(deltaTime);
+    const bodies = this.bodies;
+    const staticBodies = this.staticBodies;
+
+    index = bodies.length;
+    while (index > 0) {
+      body = bodies[--index];
+      body.postUpdate(deltaTime);
+
+      if (!body.active) {
+        this._remove(body);
       }
     }
 
-    const pending = this.pendingDestroy;
+    index = staticBodies.length;
+    while (index > 0) {
+      body = staticBodies[--index];
+      body.postUpdate(deltaTime);
 
-    if (pending.length > 0) {
-      const bodies = pending.entries;
-
-      for (let i = 0; i < bodies.length; i++) {
-        const body = bodies[i];
-
-        if (body.type === DYNAMIC_TYPE) {
-          this.dynamicBodies.delete(body);
-          this.dynamicTree.remove(body);
-        } else if (body.type === STATIC_TYPE) {
-          this.staticBodies.delete(body);
-          this.staticTree.remove(body);
-        }
-
-        body.parent = null;
-        body.sprite = null;
+      if (!body.active) {
+        this._remove(body);
       }
+    }
+  }
 
-      pending.clear();
+  resolveCollider(collider) {
+    const {object1, object2, callback} = collider;
+
+    if (object1.isBody && object2.isTilemap) {
+      console.log(collider);
+    }
+  }
+
+  _remove(body) {
+    if (body.type === DYNAMIC_TYPE) {
+      this.bodies.delete(body);
+      this.tree.remove(body);
+    } else if (body.type === STATIC_TYPE) {
+      this.staticBodies.delete(body);
+      this.staticTree.remove(body);
     }
   }
 }

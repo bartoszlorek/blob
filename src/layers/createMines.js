@@ -2,7 +2,7 @@ import {Sprite} from 'pixi.js';
 import {gridToLocal} from '@app/consts';
 import {resolveBlocks} from '@utils/blocks';
 
-import PassiveLayer from '@models/PassiveLayer';
+import TileLayer from '@models/TileLayer';
 import Entity from '@models/Entity';
 import Explosive from '@traits/Explosive';
 import Animation from '@traits/Animation';
@@ -10,7 +10,7 @@ import Animation from '@traits/Animation';
 const blinkFrames = [[50, entity => (entity.visible = !entity.visible)]];
 
 function createMines({mines}, global, scene) {
-  const layer = new PassiveLayer('mines');
+  const layer = new TileLayer('mines');
 
   resolveBlocks('mines', mines, block => {
     const {texture} = global.assets[block.asset];

@@ -8,66 +8,126 @@ describe('Tilemap()', () => {
   it('adds tiles', () => {
     const map = new Tilemap(3, -1);
 
-    map.add({x: -1, y: -1});
-    map.add({x: 1, y: -1});
-    map.add({x: 0, y: 0});
-    map.add({x: -1, y: 1});
-    map.add({x: 1, y: 1});
+    const a = {x: -1, y: -1};
+    const b = {x: 1, y: -1};
+    const c = {x: 0, y: 0};
+    const d = {x: -1, y: 1};
+    const e = {x: 1, y: 1};
+
+    map.add(a);
+    map.add(b);
+    map.add(c);
+    map.add(d);
+    map.add(e);
 
     expect(map.tiles).toEqual([
-      {x: -1, y: -1},
+      a,
       undefined,
-      {x: 1, y: -1},
+      b,
       undefined,
-      {x: 0, y: 0},
+      c,
       undefined,
-      {x: -1, y: 1},
+      d,
       undefined,
-      {x: 1, y: 1}
+      e
     ]);
   });
 
   it('removes tiles', () => {
     const map = new Tilemap(3, -1);
 
-    map.add({x: 0, y: -1});
-    map.add({x: 0, y: 0});
-    map.add({x: 0, y: 1});
+    const a = {x: 0, y: -1};
+    const b = {x: 0, y: 0};
+    const c = {x: 0, y: 1};
+
+    map.add(a);
+    map.add(b);
+    map.add(c);
 
     expect(map.tiles).toEqual([
       undefined,
-      {x: 0, y: -1},
+      a,
       undefined,
       undefined,
-      {x: 0, y: 0},
+      b,
       undefined,
       undefined,
-      {x: 0, y: 1}
+      c
     ]);
 
-    map.remove({x: 0, y: -1});
-    map.remove({x: 0, y: 1});
+    map.remove(a);
+    map.remove(c);
 
     expect(map.tiles).toEqual([
       undefined,
       null,
       undefined,
+
       undefined,
-      {x: 0, y: 0},
+      b,
       undefined,
       undefined,
       null
     ]);
   });
 
-  it('allows to check tiles', () => {
-    const map = new Tilemap(3, -1);
+  it('re-calculates bounds', () => {
+    const map = new Tilemap(3);
 
     map.add({x: 0, y: 0});
+    map.add({x: 1, y: 0});
     map.add({x: 0, y: 1});
+    map.add({x: 1, y: 1});
 
-    expect(map.has(0, 0)).toBe(true);
-    expect(map.has(0, 1)).toBe(true);
-    expect(map.has(0, -1)).toBe(false);
+    expect(map.bounds).toEqual({minX: 0, maxX: 1, minY: 0, maxY: 1});
+
+    map.remove({x: 1, y: 1});
+    expect(map.bounds).toEqual({minX: 0, maxX: 1, minY: 0, maxY: 1});
+
+    map.remove({x: 0, y: 1});
+    expect(map.bounds).toEqual({minX: 0, maxX: 1, minY: 0, maxY: 0});
+  });
+
+  it('returns closest tiles for point', () => {
+    // 1 1 0
+    // 1 X 0
+    // 0 X P
+
+    const map = new Tilemap(3);
+    const a = {x: 1, y: 1};
+    const b = {x: 1, y: 2};
+
+    map.add({x: 0, y: 0});
+    map.add({x: 1, y: 0});
+    map.add({x: 0, y: 1});
+    map.add(a);
+    map.add(b);
+
+    expect(map.closest(2, 2)).toEqual([
+      a,
+      undefined,
+      undefined,
+      b,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    ]);
+  });
+
+  it('returns null for point outside bounds', () => {
+    // 1 1 0
+    // 0 0 0
+    // 0 0 P
+
+    const map = new Tilemap(3);
+    const a = {x: 0, y: 0};
+    const b = {x: 1, y: 0};
+
+    map.add(a);
+    map.add(b);
+
+    expect(map.closest(2, 2)).toBe(null);
   });
 });

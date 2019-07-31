@@ -7,7 +7,6 @@ class Scene {
   constructor(name, global) {
     this.name = name;
     this.global = global;
-    this.children = {};
     this.physics = new World();
 
     this._background = new Background();
@@ -20,42 +19,22 @@ class Scene {
     this.resize();
   }
 
-  add(name, child) {
-    this.children[name] = child;
-
-    if (child.isTilemap) {
-      child.tiles.forEach(tile => {
-        this._foreground.addChild(tile.sprite);
-      });
-    } else {
-      this._foreground.addChild(child);
-    }
+  addTilemap(tilemap) {
+    tilemap.tiles.forEach(tile => {
+      this._foreground.addChild(tile.sprite);
+    });
   }
 
-  remove(name) {
-    const child = this.children[name];
-
-    if (!child) {
-      return;
-    }
-    if (child.isTilemap) {
-      child.tiles.forEach(tile => {
-        this._foreground.removeChild(tile.sprite);
-        tile.remove();
-      });
-    } else {
-      this._foreground.removeChild(child);
-    }
-
-    this.children[name] = null;
+  addBody(body) {
+    this._foreground.addChild(body.sprite);
   }
 
   create() {
-    // in subclass
+    // call in subclass
   }
 
   update(deltaTime) {
-    // in subclass
+    // call in subclass
   }
 
   resize() {
