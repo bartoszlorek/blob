@@ -1,36 +1,39 @@
-import {baseSize} from '@app/consts';
+import {baseSize, localToGrid} from '@app/consts';
 import Vector from '@models/Vector';
 
 class Body {
   constructor(sprite, type = 'static') {
     this.sprite = sprite;
     this.type = type;
-    this.isBody = true;
 
     // parameters
-    this.position = new Vector(sprite.x, sprite.y);
-    this.active = true;
-    this.parent = null;
     this.traits = [];
+    this.parent = null;
+
+    // simulation
+    this.position = new Vector(sprite.x, sprite.y);
+
+    // flags
+    this.isBody = true;
+    this.isAlive = true;
   }
 
-  get left() {
-    return this.position.x;
+  set minX(value) {
+    this.position.x = value;
   }
 
-  get top() {
-    return this.position.y;
+  set minY(value) {
+    this.position.y = value;
   }
 
-  get right() {
-    return this.position.x + baseSize;
+  set maxX(value) {
+    this.position.x = value - baseSize;
   }
 
-  get bottom() {
-    return this.position.y + baseSize;
+  set maxY(value) {
+    this.position.y = value - baseSize;
   }
 
-  // aliases for RBush
   get minX() {
     return this.position.x;
   }
@@ -47,32 +50,41 @@ class Body {
     return this.position.y + baseSize;
   }
 
+  get gridX() {
+    return localToGrid(this.position.x);
+  }
+
+  get gridY() {
+    return localToGrid(this.position.y);
+  }
+
   addTrait(trait) {
     this.traits.push(trait);
     this[trait.name] = trait;
   }
 
   update(deltaTime) {
-    if (this.active) {
-      let index = this.traits.length;
+    let index = this.traits.length;
 
-      while (index > 0) {
-        this.traits[--index].update(this, deltaTime);
-      }
+    while (index > 0) {
+      this.traits[--index].update(this, deltaTime);
     }
   }
 
-  postUpdate() {
-    if (!this.active) {
-      this._destroy();
-    }
+  intersection(other) {
+    return !(
+      other.minX > this.maxX ||
+      other.maxX < this.minX ||
+      other.minY > this.maxY ||
+      other.maxY < this.minY
+    );
   }
 
   destroy() {
-    this.active = false;
+    this.isAlive = false;
   }
 
-  _destroy() {
+  unsafeDestroy() {
     if (this.parent) {
       this.parent.remove(this);
       this.parent = null;

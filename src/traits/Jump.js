@@ -1,14 +1,15 @@
 import {rotateEdge, rotateVector} from '@utils/physics';
 import Trait from '@traits/Trait';
-import {EDGE} from '@models/PhysicsEngine';
+
+import {EDGE} from '@physics/World';
 import Sound from '@models/Sound';
 import Force from '@models/Force';
 import Vector from '@models/Vector';
 
 class Jump extends Trait {
-  constructor({physics}) {
+  constructor() {
     super('jump');
-    this.physics = physics;
+
     this.force = new Force(0, -1, {
       strength: 100,
       dexterity: 0.6
@@ -61,15 +62,15 @@ class Jump extends Trait {
     this.ready -= 1;
   }
 
-  collide(entity, other, edge) {
-    const rotatedEdge = rotateEdge(entity.physics.gravity, edge);
+  collide(edge, body, tiles) {
+    const rotatedEdge = rotateEdge(body.gravity, edge);
 
     if (rotatedEdge === EDGE.BOTTOM) {
       if (this.ready < 0) {
         // landing sounds
       }
       // reset jumping force
-      const {x, y} = this._direction(entity);
+      const {x, y} = this._direction(body);
       this.force.set(x, y);
       this.ready = 1;
     } else if (rotatedEdge === EDGE.TOP) {
@@ -77,8 +78,8 @@ class Jump extends Trait {
     }
   }
 
-  _direction(entity) {
-    return rotateVector(entity.physics.gravity, new Vector(0, -1));
+  _direction(body) {
+    return rotateVector(body.gravity, new Vector(0, -1));
   }
 }
 

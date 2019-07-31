@@ -1,11 +1,10 @@
 class Collider {
-  constructor(world, object1, object2, callback, overlapOnly = false) {
+  constructor({world, object1, object2, callback, type}) {
     this.world = world;
     this.object1 = object1;
     this.object2 = object2;
-
     this.callback = callback;
-    this.overlapOnly = overlapOnly;
+    this.type = type;
   }
 
   destroy() {

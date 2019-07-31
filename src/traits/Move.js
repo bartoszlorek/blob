@@ -5,9 +5,8 @@ import Trait from '@traits/Trait';
 import Vector from '@models/Vector';
 
 class Move extends Trait {
-  constructor({physics}) {
+  constructor() {
     super('move');
-    this.physics = physics;
     this.direction = 0;
 
     // parameters
@@ -25,35 +24,33 @@ class Move extends Trait {
     this.direction -= 1;
   }
 
-  update(entity, deltaTime) {
-    const vector = rotateVector(
-      entity.physics.gravity,
-      new Vector(this.direction, 0)
-    );
+  update(body, deltaTime) {
+    const vector = rotateVector(body.gravity, new Vector(this.direction, 0));
 
-    const axis = entity.physics.gravity.vertical ? 'x' : 'y';
-    const velocity = entity.velocity[axis];
+    const axis = body.gravity.vertical ? 'x' : 'y';
+    const velocity = body.velocity[axis];
     const absolute = Math.abs(velocity);
 
     if (this.direction !== 0) {
-      entity.velocity[axis] += this.acceleration * deltaTime * vector[axis];
+      body.velocity[axis] += this.acceleration * deltaTime * vector[axis];
 
       // rotate sprite horizontally
-      entity.sprite.scale.x = this.direction;
+      // body.sprite.scale.x = this.direction;
     } else if (velocity !== 0) {
       const deceleration = Math.min(absolute, this.deceleration * deltaTime);
-      entity.velocity[axis] += velocity > 0 ? -deceleration : deceleration;
+      body.velocity[axis] += velocity > 0 ? -deceleration : deceleration;
     }
 
-    entity.velocity[axis] *= this.dragFactor;
+    body.velocity[axis] *= this.dragFactor;
   }
 
-  collide(entity, other, edge) {
+  collide(edge, body, tiles) {
+    return;
     if (this.direction !== 0) {
       return;
     }
-    const {position} = entity.sprite;
-    const axis = entity.physics.gravity.vertical ? 'x' : 'y';
+    const {position} = body;
+    const axis = body.gravity.vertical ? 'x' : 'y';
     const base = position[axis] / baseSize;
 
     const n = Math.abs(base) % 1;

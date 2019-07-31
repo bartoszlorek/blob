@@ -4,24 +4,21 @@ import Body from './Body';
 class DynamicBody extends Body {
   constructor(sprite) {
     super(sprite, 'dynamic');
+
+    // simulation
     this.velocity = new Vector(0, 0);
+    this.gravity = null;
   }
 
   update(deltaTime) {
-    if (this.active) {
-      this.position.x += this.velocity.x * deltaTime;
-      this.position.y += this.velocity.y * deltaTime;
-      super.update(deltaTime);
-    }
+    super.update(deltaTime);
+    this.position.x += this.velocity.x * deltaTime;
+    this.position.y += this.velocity.y * deltaTime;
   }
 
   postUpdate() {
-    if (this.active) {
-      this.sprite.x = this.position.x;
-      this.sprite.y = this.position.y;
-    } else {
-      super.postUpdate();
-    }
+    this.sprite.x = this.position.x;
+    this.sprite.y = this.position.y;
   }
 }
 

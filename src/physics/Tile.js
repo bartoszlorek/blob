@@ -1,11 +1,17 @@
-import {localToGrid} from '@app/consts';
+import {baseSize, localToGrid} from '@app/consts';
 
 class Tile {
   constructor(sprite) {
     this.sprite = sprite;
     this.parent = null;
-    this.x = localToGrid(sprite.x);
-    this.y = localToGrid(sprite.y);
+
+    const {x, y} = sprite;
+    this.x = localToGrid(x);
+    this.y = localToGrid(y);
+    this.minX = x;
+    this.minY = y;
+    this.maxX = x + baseSize;
+    this.maxY = y + baseSize;
   }
 
   destroy() {

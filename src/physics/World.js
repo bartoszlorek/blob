@@ -1,22 +1,33 @@
 import RTree from 'rbush';
+import {arrayRemove} from '@utils/array';
 import Collider from './Collider';
+import Force from '@models/Force';
+import Vector from '@models/Vector';
+
+const COLLIDER_COLLIDE = Symbol('collide');
+const COLLIDER_OVERLAP = Symbol('overlap');
+const COLLIDER_GRAVITY = Symbol('gravity');
+
+export const EDGE = {
+  TOP: Symbol('top'),
+  RIGHT: Symbol('right'),
+  BOTTOM: Symbol('bottom'),
+  LEFT: Symbol('left')
+};
 
 class World {
   constructor() {
     this.bodies = [];
     this.staticBodies = [];
+    this.colliders = [];
 
     // r-trees
     this.tree = new RTree();
     this.staticTree = new RTree();
 
     // processing
-    this.updated = false;
-    this.colliders = [];
-
-    // parameters
-    this.simRate = 0.5;
-    this.simFlag = 0;
+    this._destroyStack = [];
+    this._destroyIndex = 0;
   }
 
   addDynamic(body) {
@@ -39,91 +50,216 @@ class World {
   }
 
   collide(object1, object2, callback) {
-    this.colliders.push(new Collider(this, object1, object2, callback));
+    this.colliders.push(
+      new Collider({
+        type: COLLIDER_COLLIDE,
+        world: this,
+        object1,
+        object2,
+        callback
+      })
+    );
   }
 
   overlap(object1, object2, callback) {
-    this.colliders.push(new Collider(this, object1, object2, callback, true));
+    this.colliders.push(
+      new Collider({
+        type: COLLIDER_OVERLAP,
+        world: this,
+        object1,
+        object2,
+        callback
+      })
+    );
   }
 
   gravity(object1, object2, callback) {
-    // this.colliders.push(new Collider(this, object1, object2, callback, true));
+    this.colliders.push(
+      new Collider({
+        type: COLLIDER_GRAVITY,
+        world: this,
+        object1,
+        object2,
+        callback
+      })
+    );
+
+    object1.gravity = new Force(0, 1, {
+      strength: 25,
+      dexterity: 0.6
+    });
   }
 
   update(deltaTime) {
     let index;
-    const bodies = this.bodies;
-    const staticBodies = this.staticBodies;
 
-    index = bodies.length;
+    // dynamic bodies phase
+    index = this.bodies.length;
+
     while (index > 0) {
-      bodies[--index].update(deltaTime);
-    }
+      const body = this.bodies[--index];
 
-    index = staticBodies.length;
-    while (index > 0) {
-      staticBodies[--index].update(deltaTime);
-    }
-
-    this.simFlag += this.simRate;
-
-    if (this.simFlag >= 1) {
-      this.simFlag = 0;
-
-      this.tree.clear();
-      this.tree.load(bodies);
-
-      const colliders = this.colliders;
-      index = colliders.length;
-
-      while (index > 0) {
-        this.resolveCollider(colliders[--index]);
+      if (body.isAlive) {
+        body.update(deltaTime);
+      } else {
+        this._destroyStack[this._destroyIndex++] = body;
       }
+    }
+
+    // static bodies phase
+    index = this.staticBodies.length;
+
+    while (index > 0) {
+      const body = this.staticBodies[--index];
+
+      if (body.isAlive) {
+        body.update(deltaTime);
+      } else {
+        this._destroyStack[this._destroyIndex++] = body;
+      }
+    }
+
+    // simulation phase
+    // todo: limit simulation fps
+    this.tree.clear();
+    this.tree.load(this.bodies);
+
+    const {length} = this.colliders;
+    for (let i = 0; i < length; i++) {
+      this._resolveCollider(this.colliders[i], deltaTime);
     }
   }
 
   postUpdate() {
-    let index;
-    let body;
-
-    const bodies = this.bodies;
-    const staticBodies = this.staticBodies;
-
-    index = bodies.length;
-    while (index > 0) {
-      body = bodies[--index];
-      body.postUpdate(deltaTime);
-
-      if (!body.active) {
-        this._remove(body);
-      }
+    // cleanup phase
+    while (this._destroyIndex > 0) {
+      this._destroy(this._destroyStack[--this._destroyIndex]);
     }
 
-    index = staticBodies.length;
-    while (index > 0) {
-      body = staticBodies[--index];
-      body.postUpdate(deltaTime);
+    // actual post update
+    let index = this.bodies.length;
 
-      if (!body.active) {
-        this._remove(body);
-      }
+    while (index > 0) {
+      this.bodies[--index].postUpdate();
     }
   }
 
-  resolveCollider(collider) {
+  _resolveCollider(collider, deltaTime) {
+    const {type, object1, object2} = collider;
+
+    switch (type) {
+      case COLLIDER_GRAVITY:
+        if (object1.isBody && object2.isTilemap) {
+          this._handleGravityCollider(collider, deltaTime);
+        }
+        break;
+      case COLLIDER_COLLIDE:
+        if (object1.isBody && object2.isTilemap) {
+          this._handleBodyTilesCollider(collider);
+        }
+        break;
+      case COLLIDER_OVERLAP:
+        break;
+    }
+  }
+
+  _handleGravityCollider(collider, deltaTime) {
+    const {object1, object2} = collider;
+    const gravity = new Vector(0, 1); //calculateGravity(object1, object2);
+
+    if (gravity) {
+      collider.callback(gravity, object1, object2, deltaTime);
+    }
+  }
+
+  _handleBodyTilesCollider(collider) {
     const {object1, object2, callback} = collider;
+    const closest = object2.closest(object1.gridX, object1.gridY);
+    const length = closest ? closest.length : 0;
 
-    if (object1.isBody && object2.isTilemap) {
-      console.log(collider);
+    // x axis
+    for (let i = 0; i < length; i++) {
+      const other = closest[i];
+
+      if (other && object1.intersection(other)) {
+        if (object1.velocity.x > 0) {
+          if (object1.maxX > other.minX) {
+            this._separation(EDGE.RIGHT, object1, other);
+
+            if (callback) {
+              callback(EDGE.RIGHT, object1, other);
+            }
+          }
+        } else if (object1.velocity.x < 0) {
+          if (object1.minX < other.maxX) {
+            this._separation(EDGE.LEFT, object1, other);
+
+            if (callback) {
+              callback(EDGE.LEFT, object1, other);
+            }
+          }
+        }
+      }
+    }
+
+    // y axis
+    for (let i = 0; i < length; i++) {
+      const other = closest[i];
+
+      if (other && object1.intersection(other)) {
+        if (object1.velocity.y > 0) {
+          if (object1.maxY > other.minY) {
+            this._separation(EDGE.BOTTOM, object1, other);
+
+            if (callback) {
+              callback(EDGE.BOTTOM, object1, other);
+            }
+          }
+        } else if (object1.velocity.y < 0) {
+          if (object1.minY < other.maxY) {
+            this._separation(EDGE.TOP, object1, other);
+
+            if (callback) {
+              callback(EDGE.TOP, object1, other);
+            }
+          }
+        }
+      }
     }
   }
 
-  _remove(body) {
-    if (body.type === DYNAMIC_TYPE) {
-      this.bodies.delete(body);
+  _separation(edge, object1, other) {
+    switch (edge) {
+      case EDGE.BOTTOM:
+        object1.maxY = other.minY;
+        object1.velocity.y = 0;
+        break;
+
+      case EDGE.TOP:
+        object1.minY = other.maxY;
+        object1.velocity.y = 0;
+        break;
+
+      case EDGE.LEFT:
+        object1.minX = other.maxX;
+        object1.velocity.x = 0;
+        break;
+
+      case EDGE.RIGHT:
+        object1.maxX = other.minX;
+        object1.velocity.x = 0;
+        break;
+    }
+  }
+
+  _destroy(body) {
+    body.unsafeDestroy();
+
+    if (body.type === 'dynamic') {
+      arrayRemove(this.bodies, body);
       this.tree.remove(body);
-    } else if (body.type === STATIC_TYPE) {
-      this.staticBodies.delete(body);
+    } else if (body.type === 'static') {
+      arrayRemove(this.staticBodies, body);
       this.staticTree.remove(body);
     }
   }
