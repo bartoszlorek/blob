@@ -45,7 +45,6 @@ class Move extends Trait {
   }
 
   collide(edge, body, tiles) {
-    return;
     if (this.direction !== 0) {
       return;
     }

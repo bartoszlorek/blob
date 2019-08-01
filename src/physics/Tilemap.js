@@ -2,10 +2,10 @@ import Bounds from './Bounds';
 
 class Tilemap {
   constructor(width, offset = 0) {
-    this.width = width;
+    this.width = width + 3;
     this.offset = offset;
     this.isTilemap = true;
-    this.tiles = [];
+    this.tiles = {};
 
     // object pools
     this._closestArray = [];
@@ -89,6 +89,19 @@ class Tilemap {
     return null;
   }
 
+  forEach(iteratee) {
+    const tiles = this.tiles;
+    const props = Object.keys(tiles);
+
+    for (let index = 0; index < props.length; index++) {
+      const key = props[index];
+
+      if (iteratee(tiles[key], index) === false) {
+        return;
+      }
+    }
+  }
+
   _index(x, y) {
     return (y - this.offset) * this.width + x - this.offset;
   }
@@ -97,16 +110,9 @@ class Tilemap {
     this._bounds.clear();
     this._shouldUpdateBounds = false;
 
-    const tiles = this.tiles;
-    let index = tiles.length;
-
-    while (index > 0) {
-      const tile = tiles[--index];
-
-      if (tile) {
-        this._bounds.add(tile.x, tile.y);
-      }
-    }
+    this.forEach(tile => {
+      this._bounds.add(tile.x, tile.y);
+    });
   }
 }
 

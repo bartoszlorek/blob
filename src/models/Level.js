@@ -1,33 +1,31 @@
 import Scene from './Scene';
 import Sprite from './Sprite';
 
+import {resolveBlocks} from '@utils/blocks';
 import Keyboard from '@models/Keyboard';
+import DynamicBody from '@physics/DynamicBody';
 import Tile from '@physics/Tile';
 import Tilemap from '@physics/Tilemap';
-import DynamicBody from '@physics/DynamicBody';
 
 import Jump from '@traits/Jump';
 import Move from '@traits/Move';
 
-const groundSet = [[-1, 1], [0, 1], [1, 1]];
-
 class Level extends Scene {
-  constructor(global) {
-    super('level', global);
+  constructor(global, data) {
+    super('level', global, data);
   }
 
   create() {
-    const groundTex = this.global.assets['ground_01'].texture;
     const playerTex = this.global.assets['player'].texture;
-
-    const ground = new Tilemap(3, -1);
     const player = new DynamicBody(new Sprite(playerTex, 0, 0));
+    const ground = new Tilemap(8, -4);
 
     player.addTrait(new Jump());
     player.addTrait(new Move());
 
-    groundSet.forEach(([x, y]) => {
-      ground.add(new Tile(new Sprite(groundTex, x, y)));
+    resolveBlocks('ground', this.data.tiles.ground, block => {
+      const {texture} = this.global.assets[block.asset];
+      ground.add(new Tile(new Sprite(texture, block.x, block.y)));
     });
 
     this.addBody(player);

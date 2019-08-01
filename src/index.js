@@ -62,7 +62,7 @@ loader.load(() => {
   // });
 
   events.subscribe('start', () => {
-    const level = new Level(global);
+    const level = new Level(global, dataLevel1);
 
     level.create();
 

@@ -4,8 +4,10 @@ import Group from '@models/Group';
 import World from '@physics/World';
 
 class Scene {
-  constructor(name, global) {
+  constructor(name, global, data) {
     this.name = name;
+    this.data = data;
+
     this.global = global;
     this.physics = new World();
 
@@ -20,7 +22,7 @@ class Scene {
   }
 
   addTilemap(tilemap) {
-    tilemap.tiles.forEach(tile => {
+    tilemap.forEach(tile => {
       this._foreground.addChild(tile.sprite);
     });
   }
