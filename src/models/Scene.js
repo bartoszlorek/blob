@@ -22,9 +22,9 @@ class Scene {
   }
 
   addTilemap(tilemap) {
-    tilemap.forEach(tile => {
+    for (let tile of tilemap.tiles.values()) {
       this._foreground.addChild(tile.sprite);
-    });
+    }
   }
 
   addBody(body) {

@@ -18,7 +18,7 @@ class Level extends Scene {
   create() {
     const playerTex = this.global.assets['player'].texture;
     const player = new DynamicBody(new Sprite(playerTex, 0, 0));
-    const ground = new Tilemap(8, -4);
+    const ground = new Tilemap();
 
     player.addTrait(new Jump());
     player.addTrait(new Move());

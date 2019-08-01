@@ -1,11 +1,11 @@
 import Bounds from './Bounds';
 
 class Tilemap {
-  constructor(width, offset = 0) {
+  constructor(width = 10) {
     this.width = width + 3;
-    this.offset = offset;
+    this.tiles = new Map();
+
     this.isTilemap = true;
-    this.tiles = {};
 
     // object pools
     this._closestArray = [];
@@ -24,12 +24,12 @@ class Tilemap {
 
   add(tile) {
     tile.parent = this;
-    this.tiles[this._index(tile.x, tile.y)] = tile;
+    this.tiles.set(this._index(tile.x, tile.y), tile);
     this._bounds.add(tile.x, tile.y);
   }
 
   remove(tile) {
-    this.tiles[this._index(tile.x, tile.y)] = null;
+    this.tiles.delete(this._index(tile.x, tile.y));
     this._shouldUpdateBounds = true;
   }
 
@@ -48,17 +48,17 @@ class Tilemap {
     const row2 = this._index(x - 1, y);
     const row3 = this._index(x - 1, y + 1);
 
-    this._closestArray[0] = this.tiles[row1];
-    this._closestArray[1] = this.tiles[row1 + 1];
-    this._closestArray[2] = this.tiles[row1 + 2];
+    this._closestArray[0] = this.tiles.get(row1);
+    this._closestArray[1] = this.tiles.get(row1 + 1);
+    this._closestArray[2] = this.tiles.get(row1 + 2);
 
-    this._closestArray[3] = this.tiles[row2];
-    this._closestArray[4] = this.tiles[row2 + 1];
-    this._closestArray[5] = this.tiles[row2 + 2];
+    this._closestArray[3] = this.tiles.get(row2);
+    this._closestArray[4] = this.tiles.get(row2 + 1);
+    this._closestArray[5] = this.tiles.get(row2 + 2);
 
-    this._closestArray[6] = this.tiles[row3];
-    this._closestArray[7] = this.tiles[row3 + 1];
-    this._closestArray[8] = this.tiles[row3 + 2];
+    this._closestArray[6] = this.tiles.get(row3);
+    this._closestArray[7] = this.tiles.get(row3 + 1);
+    this._closestArray[8] = this.tiles.get(row3 + 2);
 
     return this._closestArray;
   }
@@ -78,7 +78,7 @@ class Tilemap {
     }
 
     while (0 <= limit--) {
-      const tile = this.tiles[this._index(a, b)];
+      const tile = this.tiles.get(this._index(a, b));
 
       if (tile) {
         return tile;
@@ -89,30 +89,18 @@ class Tilemap {
     return null;
   }
 
-  forEach(iteratee) {
-    const tiles = this.tiles;
-    const props = Object.keys(tiles);
-
-    for (let index = 0; index < props.length; index++) {
-      const tile = tiles[props[index]];
-
-      if (tile && iteratee(tile, index) === false) {
-        return;
-      }
-    }
-  }
-
   _index(x, y) {
-    return (y - this.offset) * this.width + x - this.offset;
+    return y * this.width + x;
   }
 
   _calculateBounds() {
     this._bounds.clear();
     this._shouldUpdateBounds = false;
+    const tiles = this.tiles.values();
 
-    this.forEach(tile => {
+    for (let tile of tiles) {
       this._bounds.add(tile.x, tile.y);
-    });
+    }
   }
 }
 

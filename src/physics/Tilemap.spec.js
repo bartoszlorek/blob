@@ -4,9 +4,13 @@ import Tilemap from './Tilemap';
 // 3 4 5
 // 6 7 8
 
+const getTiles = map => {
+  return Array.from(map.tiles.entries());
+};
+
 describe('Tilemap()', () => {
   it('adds tiles', () => {
-    const map = new Tilemap(3, -1);
+    const map = new Tilemap();
 
     const a = {x: -1, y: -1};
     const b = {x: 1, y: -1};
@@ -20,17 +24,17 @@ describe('Tilemap()', () => {
     map.add(d);
     map.add(e);
 
-    expect(map.tiles).toEqual({
-      '0': a,
-      '2': b,
-      '7': c,
-      '12': d,
-      '14': e
-    });
+    expect(getTiles(map)).toEqual([
+      [-14, a],
+      [-12, b],
+      [0, c],
+      [12, d],
+      [14, e]
+    ]);
   });
 
   it('removes tiles', () => {
-    const map = new Tilemap(3, -1);
+    const map = new Tilemap();
 
     const a = {x: 0, y: -1};
     const b = {x: 0, y: 0};
@@ -40,24 +44,16 @@ describe('Tilemap()', () => {
     map.add(b);
     map.add(c);
 
-    expect(map.tiles).toEqual({
-      '1': a,
-      '7': b,
-      '13': c
-    });
+    expect(getTiles(map)).toEqual([[-13, a], [0, b], [13, c]]);
 
     map.remove(a);
     map.remove(c);
 
-    expect(map.tiles).toEqual({
-      '1': null,
-      '7': b,
-      '13': null
-    });
+    expect(getTiles(map)).toEqual([[0, b]]);
   });
 
   it('re-calculates bounds', () => {
-    const map = new Tilemap(3);
+    const map = new Tilemap();
 
     map.add({x: 0, y: 0});
     map.add({x: 1, y: 0});
@@ -78,7 +74,7 @@ describe('Tilemap()', () => {
     // 1 X 0
     // 0 X P
 
-    const map = new Tilemap(3);
+    const map = new Tilemap();
     const a = {x: 1, y: 1};
     const b = {x: 1, y: 2};
 
@@ -106,7 +102,7 @@ describe('Tilemap()', () => {
     // 0 0 0
     // 0 0 P
 
-    const map = new Tilemap(3);
+    const map = new Tilemap();
     const a = {x: 0, y: 0};
     const b = {x: 1, y: 0};
 
