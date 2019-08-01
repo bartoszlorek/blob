@@ -94,9 +94,9 @@ class Tilemap {
     const props = Object.keys(tiles);
 
     for (let index = 0; index < props.length; index++) {
-      const key = props[index];
+      const tile = tiles[props[index]];
 
-      if (iteratee(tiles[key], index) === false) {
+      if (tile && iteratee(tile, index) === false) {
         return;
       }
     }

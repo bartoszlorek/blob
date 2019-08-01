@@ -20,17 +20,13 @@ describe('Tilemap()', () => {
     map.add(d);
     map.add(e);
 
-    expect(map.tiles).toEqual([
-      a,
-      undefined,
-      b,
-      undefined,
-      c,
-      undefined,
-      d,
-      undefined,
-      e
-    ]);
+    expect(map.tiles).toEqual({
+      '0': a,
+      '2': b,
+      '7': c,
+      '12': d,
+      '14': e
+    });
   });
 
   it('removes tiles', () => {
@@ -44,31 +40,20 @@ describe('Tilemap()', () => {
     map.add(b);
     map.add(c);
 
-    expect(map.tiles).toEqual([
-      undefined,
-      a,
-      undefined,
-      undefined,
-      b,
-      undefined,
-      undefined,
-      c
-    ]);
+    expect(map.tiles).toEqual({
+      '1': a,
+      '7': b,
+      '13': c
+    });
 
     map.remove(a);
     map.remove(c);
 
-    expect(map.tiles).toEqual([
-      undefined,
-      null,
-      undefined,
-
-      undefined,
-      b,
-      undefined,
-      undefined,
-      null
-    ]);
+    expect(map.tiles).toEqual({
+      '1': null,
+      '7': b,
+      '13': null
+    });
   });
 
   it('re-calculates bounds', () => {
