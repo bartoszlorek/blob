@@ -64,7 +64,7 @@ class Level extends Scene {
 
   update(deltaTime) {
     this.physics.update(deltaTime);
-    this.physics.postUpdate();
+    this.physics.postUpdate(deltaTime);
   }
 }
 

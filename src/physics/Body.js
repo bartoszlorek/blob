@@ -73,10 +73,10 @@ class Body {
 
   intersection(other) {
     return !(
-      other.minX > this.maxX ||
-      other.maxX < this.minX ||
-      other.minY > this.maxY ||
-      other.maxY < this.minY
+      other.minX >= this.maxX ||
+      other.maxX <= this.minX ||
+      other.minY >= this.maxY ||
+      other.maxY <= this.minY
     );
   }
 

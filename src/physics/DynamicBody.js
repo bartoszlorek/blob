@@ -10,13 +10,9 @@ class DynamicBody extends Body {
     this.gravity = null;
   }
 
-  update(deltaTime) {
-    super.update(deltaTime);
-    this.position.x += this.velocity.x * deltaTime;
-    this.position.y += this.velocity.y * deltaTime;
-  }
-
-  postUpdate() {
+  postUpdate(deltaTime) {
+    // this.position.x += this.velocity.x * deltaTime;
+    // this.position.y += this.velocity.y * deltaTime;
     this.sprite.x = this.position.x;
     this.sprite.y = this.position.y;
   }

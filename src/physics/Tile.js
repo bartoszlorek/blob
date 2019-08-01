@@ -8,6 +8,7 @@ class Tile {
     const {x, y} = sprite;
     this.x = localToGrid(x);
     this.y = localToGrid(y);
+
     this.minX = x;
     this.minY = y;
     this.maxX = x + baseSize;

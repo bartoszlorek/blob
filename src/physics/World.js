@@ -130,7 +130,7 @@ class World {
     }
   }
 
-  postUpdate() {
+  postUpdate(deltaTime) {
     // cleanup phase
     while (this._destroyIndex > 0) {
       this._destroy(this._destroyStack[--this._destroyIndex]);
@@ -140,7 +140,7 @@ class World {
     let index = this.bodies.length;
 
     while (index > 0) {
-      this.bodies[--index].postUpdate();
+      this.bodies[--index].postUpdate(deltaTime);
     }
   }
 
@@ -155,7 +155,7 @@ class World {
         break;
       case COLLIDER_COLLIDE:
         if (object1.isBody && object2.isTilemap) {
-          this._handleBodyTilesCollider(collider);
+          this._handleBodyTilesCollider(collider, deltaTime);
         }
         break;
       case COLLIDER_OVERLAP:
@@ -172,30 +172,35 @@ class World {
     }
   }
 
-  _handleBodyTilesCollider(collider) {
+  _handleBodyTilesCollider(collider, deltaTime) {
     const {object1, object2, callback} = collider;
     const closest = object2.closest(object1.gridX, object1.gridY);
     const length = closest ? closest.length : 0;
 
     // x axis
-    for (let i = 0; i < length; i++) {
-      const other = closest[i];
+    if (object1.velocity.x !== 0) {
+      // todo: put this assigment in body.postUpdate
+      object1.position.x += object1.velocity.x * deltaTime;
 
-      if (other && object1.intersection(other)) {
-        if (object1.velocity.x > 0) {
-          if (object1.maxX > other.minX) {
-            this._separation(EDGE.RIGHT, object1, other);
+      for (let i = 0; i < length; i++) {
+        const other = closest[i];
 
-            if (callback) {
-              callback(EDGE.RIGHT, object1, other);
+        if (other && object1.intersection(other)) {
+          if (object1.velocity.x > 0) {
+            if (object1.maxX > other.minX) {
+              this._separation(EDGE.RIGHT, object1, other);
+
+              if (callback) {
+                callback(EDGE.RIGHT, object1, other);
+              }
             }
-          }
-        } else if (object1.velocity.x < 0) {
-          if (object1.minX < other.maxX) {
-            this._separation(EDGE.LEFT, object1, other);
+          } else if (object1.velocity.x < 0) {
+            if (object1.minX < other.maxX) {
+              this._separation(EDGE.LEFT, object1, other);
 
-            if (callback) {
-              callback(EDGE.LEFT, object1, other);
+              if (callback) {
+                callback(EDGE.LEFT, object1, other);
+              }
             }
           }
         }
@@ -203,24 +208,29 @@ class World {
     }
 
     // y axis
-    for (let i = 0; i < length; i++) {
-      const other = closest[i];
+    if (object1.velocity.y !== 0) {
+      // todo: put this assigment in body.postUpdate
+      object1.position.y += object1.velocity.y * deltaTime;
 
-      if (other && object1.intersection(other)) {
-        if (object1.velocity.y > 0) {
-          if (object1.maxY > other.minY) {
-            this._separation(EDGE.BOTTOM, object1, other);
+      for (let i = 0; i < length; i++) {
+        const other = closest[i];
 
-            if (callback) {
-              callback(EDGE.BOTTOM, object1, other);
+        if (other && object1.intersection(other)) {
+          if (object1.velocity.y > 0) {
+            if (object1.maxY > other.minY) {
+              this._separation(EDGE.BOTTOM, object1, other);
+
+              if (callback) {
+                callback(EDGE.BOTTOM, object1, other);
+              }
             }
-          }
-        } else if (object1.velocity.y < 0) {
-          if (object1.minY < other.maxY) {
-            this._separation(EDGE.TOP, object1, other);
+          } else if (object1.velocity.y < 0) {
+            if (object1.minY < other.maxY) {
+              this._separation(EDGE.TOP, object1, other);
 
-            if (callback) {
-              callback(EDGE.TOP, object1, other);
+              if (callback) {
+                callback(EDGE.TOP, object1, other);
+              }
             }
           }
         }
