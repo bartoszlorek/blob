@@ -12,6 +12,7 @@ class Body {
 
     // simulation
     this.position = new Vector(sprite.x, sprite.y);
+    this.sprite.anchor.set(0.5);
 
     // flags
     this.isBody = true;
@@ -51,11 +52,11 @@ class Body {
   }
 
   get gridX() {
-    return localToGrid(this.position.x);
+    return localToGrid(this.position.x + baseSize / 2);
   }
 
   get gridY() {
-    return localToGrid(this.position.y);
+    return localToGrid(this.position.y + baseSize / 2);
   }
 
   addTrait(trait) {

@@ -1,38 +1,36 @@
 import Vector from '@models/Vector';
 
-export function raycast(out, objects, entity, dX, dY) {
-  // todo: handle multiple objects
-  const match = objects[0].closestInDirection(
-    entity.gridX,
-    entity.gridY,
-    dX,
-    dY
-  );
+export function raycast(out, tiles, body, dX, dY) {
+  const match = tiles.closestInDirection(body.gridX, body.gridY, dX, dY);
 
   if (match) {
     out.type = 'solid';
-    out.distance = entity.distance(match);
+    out.distance = distanceToTile(body, match);
   } else {
     out.type = 'border';
-    out.distance = distanceToBorder(objects[0], entity, dX, dY);
+    out.distance = distanceToBorder(tiles, body, dX, dY);
   }
 
   out.direction = new Vector(dX, dY);
   return out;
 }
 
-function distanceToBorder(object, entity, dX, dY) {
+function distanceToBorder(tiles, body, dX, dY) {
   if (dY === -1) {
-    return Math.abs(object.boundsGrid.top - entity.gridY) + 1;
+    return Math.abs(tiles.bounds.minY - body.gridY) + 1;
   }
   if (dX === 1) {
-    return Math.abs(object.boundsGrid.right - entity.gridX) + 1;
+    return Math.abs(tiles.bounds.maxX - body.gridX) + 1;
   }
   if (dY === 1) {
-    return Math.abs(object.boundsGrid.bottom - entity.gridY) + 1;
+    return Math.abs(tiles.bounds.maxY - body.gridY) + 1;
   }
   if (dX === -1) {
-    return Math.abs(object.boundsGrid.left - entity.gridX) + 1;
+    return Math.abs(tiles.bounds.minX - body.gridX) + 1;
   }
   return 0;
+}
+
+function distanceToTile(body, tile) {
+  return Math.abs(body.gridX - tile.x + body.gridY - tile.y);
 }

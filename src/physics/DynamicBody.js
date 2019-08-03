@@ -1,3 +1,4 @@
+import {baseSize} from '@app/consts';
 import Vector from '@models/Vector';
 import Body from './Body';
 
@@ -13,8 +14,8 @@ class DynamicBody extends Body {
   postUpdate(deltaTime) {
     // this.position.x += this.velocity.x * deltaTime;
     // this.position.y += this.velocity.y * deltaTime;
-    this.sprite.x = this.position.x;
-    this.sprite.y = this.position.y;
+    this.sprite.x = this.position.x + baseSize / 2;
+    this.sprite.y = this.position.y + baseSize / 2;
   }
 }
 

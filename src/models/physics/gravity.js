@@ -12,8 +12,8 @@ const ray = createPool({
   direction: new Vector()
 });
 
-export function calculateGravity(entity, objects) {
-  const outside = outsideBounds(entity, objects);
+export function calculateGravity(body, tiles) {
+  const outside = isOutsideBounds(body, tiles);
 
   if (outside) {
     return outside;
@@ -24,17 +24,19 @@ export function calculateGravity(entity, objects) {
     return null;
   }
 
-  const closestSolids = getClosestSolids(entity, objects);
+  const closest = tiles.closest(body.gridX, body.gridY);
 
   // corner case inside bounds
-  if (isCornerCase(closestSolids)) {
+  if (isCornerCase(closest)) {
     return null;
   }
 
-  const top = raycast(ray(0), objects, entity, 0, -1);
-  const right = raycast(ray(1), objects, entity, 1, 0);
-  const bottom = raycast(ray(2), objects, entity, 0, 1);
-  const left = raycast(ray(3), objects, entity, -1, 0);
+  const top = raycast(ray(0), tiles, body, 0, -1);
+  const right = raycast(ray(1), tiles, body, 1, 0);
+  const bottom = raycast(ray(2), tiles, body, 0, 1);
+  const left = raycast(ray(3), tiles, body, -1, 0);
+
+  // console.log({top, right, bottom, left});
 
   const y = sortPair(top, bottom);
   const x = sortPair(left, right);
@@ -95,31 +97,30 @@ export function calculateGravity(entity, objects) {
   }
 }
 
-function outsideBounds(entity, objects) {
-  // todo: handle multiple objects
-  const object = objects[0];
+function isOutsideBounds(body, tiles) {
+  const {minX, maxX, minY, maxY} = tiles.localBounds;
 
   // corners
   if (
-    (entity.bottom < object.bounds.top && entity.right < object.bounds.left) ||
-    (entity.bottom < object.bounds.top && entity.left > object.bounds.right) ||
-    (entity.top > object.bounds.bottom && entity.right < object.bounds.left) ||
-    (entity.top > object.bounds.bottom && entity.left > object.bounds.right)
+    (body.maxY < minY && body.maxX < minX) || // top-left
+    (body.maxY < minY && body.minX > maxX) || // top-right
+    (body.minY > maxY && body.maxX < minX) || // bottom-left
+    (body.minY > maxY && body.minX > maxX) //    bottom-right
   ) {
     return null;
   }
 
-  // straight
-  if (entity.bottom <= object.bounds.top) {
+  // on sides
+  if (body.maxY <= minY) {
     return new Vector(0, 1);
   }
-  if (entity.top >= object.bounds.bottom) {
+  if (body.minY >= maxY) {
     return new Vector(0, -1);
   }
-  if (entity.right <= object.bounds.left) {
+  if (body.maxX <= minX) {
     return new Vector(1, 0);
   }
-  if (entity.left >= object.bounds.right) {
+  if (body.minX >= maxX) {
     return new Vector(-1, 0);
   }
 }
@@ -131,11 +132,6 @@ function isCornerCase(matrix) {
     (matrix[0] && !matrix[3] && !matrix[1]) || // top-left
     (matrix[2] && !matrix[5] && !matrix[1]) //    top-right
   );
-}
-
-export function getClosestSolids(entity, objects) {
-  // todo: handle multiple objects
-  return objects[0].closest(entity.gridX, entity.gridY);
 }
 
 export function getClosestRay(...rays) {

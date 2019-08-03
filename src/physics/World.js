@@ -1,6 +1,7 @@
 import RTree from 'rbush';
 import {arrayRemove} from '@utils/array';
 import Collider from './Collider';
+import {calculateGravity} from '@models/physics';
 import Force from '@models/Force';
 import Vector from '@models/Vector';
 
@@ -128,16 +129,14 @@ class World {
     for (let i = 0; i < length; i++) {
       this._resolveCollider(this.colliders[i], deltaTime);
     }
-  }
 
-  postUpdate(deltaTime) {
     // cleanup phase
     while (this._destroyIndex > 0) {
       this._destroy(this._destroyStack[--this._destroyIndex]);
     }
 
-    // actual post update
-    let index = this.bodies.length;
+    // post update phase
+    index = this.bodies.length;
 
     while (index > 0) {
       this.bodies[--index].postUpdate(deltaTime);
@@ -164,12 +163,13 @@ class World {
   }
 
   _handleGravityCollider(collider, deltaTime) {
-    const {object1, object2} = collider;
-    const gravity = new Vector(0, 1); //calculateGravity(object1, object2);
+    const {object1, object2, callback} = collider;
+    const result = calculateGravity(object1, object2);
 
-    if (gravity) {
-      collider.callback(gravity, object1, object2, deltaTime);
+    if (result) {
+      object1.gravity.apply(result.x, result.y);
     }
+    callback(object1, object2, deltaTime);
   }
 
   _handleBodyTilesCollider(collider, deltaTime) {

@@ -1,6 +1,7 @@
 import Scene from './Scene';
 import Sprite from './Sprite';
 
+import {vectorRotation} from '@utils/physics';
 import {resolveBlocks} from '@utils/blocks';
 import Keyboard from '@models/Keyboard';
 import DynamicBody from '@physics/DynamicBody';
@@ -34,9 +35,9 @@ class Level extends Scene {
 
     this.physics.addDynamic(player);
 
-    this.physics.gravity(player, ground, (force, body) => {
-      body.gravity.apply(force.x, force.y);
+    this.physics.gravity(player, ground, body => {
       body.gravity.applyTo(body.velocity);
+      body.sprite.rotation = vectorRotation(body.gravity);
     });
 
     this.physics.collide(player, ground, (edge, body, tiles) => {
@@ -62,7 +63,6 @@ class Level extends Scene {
 
   update(deltaTime) {
     this.physics.update(deltaTime);
-    this.physics.postUpdate(deltaTime);
   }
 }
 

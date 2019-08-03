@@ -55,18 +55,33 @@ describe('Tilemap()', () => {
   it('re-calculates bounds', () => {
     const map = new Tilemap();
 
+    map.add({x: -1, y: -1});
     map.add({x: 0, y: 0});
-    map.add({x: 1, y: 0});
-    map.add({x: 0, y: 1});
     map.add({x: 1, y: 1});
 
-    expect(map.bounds).toEqual({minX: 0, maxX: 1, minY: 0, maxY: 1});
+    expect(map.bounds).toEqual({minX: -1, maxX: 1, minY: -1, maxY: 1});
 
     map.remove({x: 1, y: 1});
-    expect(map.bounds).toEqual({minX: 0, maxX: 1, minY: 0, maxY: 1});
+    expect(map.bounds).toEqual({minX: -1, maxX: 0, minY: -1, maxY: 0});
 
-    map.remove({x: 0, y: 1});
-    expect(map.bounds).toEqual({minX: 0, maxX: 1, minY: 0, maxY: 0});
+    map.remove({x: -1, y: -1});
+    expect(map.bounds).toEqual({minX: 0, maxX: 0, minY: 0, maxY: 0});
+  });
+
+  it('re-calculates local bounds', () => {
+    const map = new Tilemap();
+
+    map.add({x: -1, y: -1});
+    map.add({x: 0, y: 0});
+    map.add({x: 1, y: 1});
+
+    expect(map.localBounds).toEqual({minX: -24, maxX: 48, minY: -24, maxY: 48});
+
+    map.remove({x: 1, y: 1});
+    expect(map.localBounds).toEqual({minX: -24, maxX: 24, minY: -24, maxY: 24});
+
+    map.remove({x: -1, y: -1});
+    expect(map.localBounds).toEqual({minX: 0, maxX: 24, minY: 0, maxY: 24});
   });
 
   it('returns closest tiles for point', () => {

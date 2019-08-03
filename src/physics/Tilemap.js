@@ -1,3 +1,4 @@
+import {baseSize} from '@app/consts';
 import Bounds from './Bounds';
 
 class Tilemap {
@@ -10,6 +11,7 @@ class Tilemap {
     // object pools
     this._closestArray = [];
     this._bounds = new Bounds();
+    this._localBounds = new Bounds();
 
     // dirty flags
     this._shouldUpdateBounds = false;
@@ -22,10 +24,18 @@ class Tilemap {
     return this._bounds;
   }
 
+  get localBounds() {
+    if (this._shouldUpdateBounds) {
+      this._calculateBounds();
+    }
+    return this._localBounds;
+  }
+
   add(tile) {
     tile.parent = this;
     this.tiles.set(this._index(tile.x, tile.y), tile);
     this._bounds.add(tile.x, tile.y);
+    this._calculateLocalBounds();
   }
 
   remove(tile) {
@@ -101,6 +111,14 @@ class Tilemap {
     for (let tile of tiles) {
       this._bounds.add(tile.x, tile.y);
     }
+    this._calculateLocalBounds();
+  }
+
+  _calculateLocalBounds() {
+    this._localBounds.minX = this._bounds.minX * baseSize;
+    this._localBounds.minY = this._bounds.minY * baseSize;
+    this._localBounds.maxX = this._bounds.maxX * baseSize + baseSize;
+    this._localBounds.maxY = this._bounds.maxY * baseSize + baseSize;
   }
 }
 
