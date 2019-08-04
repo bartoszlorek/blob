@@ -62,7 +62,7 @@ class Jump extends Trait {
     this.ready -= 1;
   }
 
-  collide(edge, body, tiles) {
+  collide(body, tiles, edge) {
     const rotatedEdge = rotateEdge(body.gravity, edge);
 
     if (rotatedEdge === EDGE.BOTTOM) {

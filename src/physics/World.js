@@ -28,25 +28,26 @@ class World {
     // processing
     this._destroyStack = [];
     this._destroyIndex = 0;
+
+    // object pools
+    this._treeSearch = {};
+    this._treeResult = [];
   }
 
-  addDynamic(body) {
-    this.bodies.push(body);
-  }
-
-  addStatic(body) {
-    this.staticBodies.push(body);
-    this.staticTree.insert(body);
-  }
-
-  addGroup(group) {
-    group.children.forEach(child => {
-      if (child.type === 'dynamic') {
-        this.addDynamic(child);
-      } else {
-        this.addStatic(child);
+  add(entity) {
+    if (entity.isBody) {
+      if (entity.type === 'dynamic') {
+        this.bodies.push(entity);
       }
-    });
+      if (entity.type === 'static') {
+        this.staticBodies.push(entity);
+        this.staticTree.insert(entity);
+      }
+    } else if (entity.isGroup) {
+      entity.children.forEach(child => {
+        this.add(child);
+      });
+    }
   }
 
   collide(object1, object2, callback) {
@@ -152,11 +153,18 @@ class World {
         }
         break;
       case COLLIDER_COLLIDE:
-        if (object1.isBody && object2.isTilemap) {
-          this._handleBodyTilesCollider(collider, deltaTime);
+        if (object1.isBody) {
+          if (object2.isTilemap) {
+            this._handleBodyTilesCollider(collider, deltaTime);
+          } else if (object2.isGroup) {
+            this._handleBodyGroupCollider(collider);
+          }
         }
         break;
       case COLLIDER_OVERLAP:
+        if (object1.isBody && object2.isGroup) {
+          this._handleBodyGroupCollider(collider);
+        }
         break;
     }
   }
@@ -172,7 +180,9 @@ class World {
   }
 
   _handleBodyTilesCollider(collider, deltaTime) {
-    const {object1, object2, callback} = collider;
+    const {type, object1, object2, callback} = collider;
+    const shouldSeparate = type === COLLIDER_COLLIDE;
+
     const closest = object2.closest(object1.gridX, object1.gridY);
     const length = closest ? closest.length : 0;
 
@@ -187,18 +197,20 @@ class World {
         if (other && object1.intersection(other)) {
           if (object1.velocity.x > 0) {
             if (object1.maxX > other.minX) {
-              this._separation(EDGE.RIGHT, object1, other);
-
+              if (shouldSeparate) {
+                this._separation(object1, other, EDGE.RIGHT);
+              }
               if (callback) {
-                callback(EDGE.RIGHT, object1, other);
+                callback(object1, other, EDGE.RIGHT);
               }
             }
           } else if (object1.velocity.x < 0) {
             if (object1.minX < other.maxX) {
-              this._separation(EDGE.LEFT, object1, other);
-
+              if (shouldSeparate) {
+                this._separation(object1, other, EDGE.LEFT);
+              }
               if (callback) {
-                callback(EDGE.LEFT, object1, other);
+                callback(object1, other, EDGE.LEFT);
               }
             }
           }
@@ -217,18 +229,20 @@ class World {
         if (other && object1.intersection(other)) {
           if (object1.velocity.y > 0) {
             if (object1.maxY > other.minY) {
-              this._separation(EDGE.BOTTOM, object1, other);
-
+              if (shouldSeparate) {
+                this._separation(object1, other, EDGE.BOTTOM);
+              }
               if (callback) {
-                callback(EDGE.BOTTOM, object1, other);
+                callback(object1, other, EDGE.BOTTOM);
               }
             }
           } else if (object1.velocity.y < 0) {
             if (object1.minY < other.maxY) {
-              this._separation(EDGE.TOP, object1, other);
-
+              if (shouldSeparate) {
+                this._separation(object1, other, EDGE.TOP);
+              }
               if (callback) {
-                callback(EDGE.TOP, object1, other);
+                callback(object1, other, EDGE.TOP);
               }
             }
           }
@@ -237,27 +251,70 @@ class World {
     }
   }
 
-  _separation(edge, object1, other) {
+  _handleBodyGroupCollider(collider) {
+    const {type, object1, object2, callback} = collider;
+    const shouldSeparate = type === COLLIDER_COLLIDE;
+
+    this._treeSearch.minX = object1.minX;
+    this._treeSearch.minY = object1.minY;
+    this._treeSearch.maxX = object1.maxX;
+    this._treeSearch.maxY = object1.maxY;
+
+    const tree = object2.type === 'static' ? this.staticTree : this.tree;
+    const result = tree.search(this._treeSearch);
+    const length = result.length;
+
+    for (let i = 0; i < length; i++) {
+      const other = result[i];
+
+      if (object2.contains(other)) {
+        const edge = this._collidingEdge(object1, other);
+
+        if (shouldSeparate) {
+          this._separation(object1, other, edge);
+        }
+        if (callback) {
+          callback(object1, other, edge);
+        }
+      }
+    }
+  }
+
+  _separation(object1, object2, edge) {
     switch (edge) {
       case EDGE.BOTTOM:
-        object1.maxY = other.minY;
+        object1.maxY = object2.minY;
         object1.velocity.y = 0;
         break;
 
       case EDGE.TOP:
-        object1.minY = other.maxY;
+        object1.minY = object2.maxY;
         object1.velocity.y = 0;
         break;
 
       case EDGE.LEFT:
-        object1.minX = other.maxX;
+        object1.minX = object2.maxX;
         object1.velocity.x = 0;
         break;
 
       case EDGE.RIGHT:
-        object1.maxX = other.minX;
+        object1.maxX = object2.minX;
         object1.velocity.x = 0;
         break;
+    }
+  }
+
+  _collidingEdge(object1, object2) {
+    const diffX = object1.minX - object2.minX;
+    const diffY = object1.minY - object2.minY;
+
+    if (diffX === diffY) {
+      return null;
+    }
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      return diffX < 0 ? EDGE.RIGHT : EDGE.LEFT;
+    } else {
+      return diffY < 0 ? EDGE.BOTTOM : EDGE.TOP;
     }
   }
 

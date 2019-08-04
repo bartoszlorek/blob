@@ -44,7 +44,7 @@ class Move extends Trait {
     body.velocity[axis] *= this.dragFactor;
   }
 
-  collide(edge, body, tiles) {
+  collide(body, tiles, edge) {
     if (this.direction !== 0) {
       return;
     }
