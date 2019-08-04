@@ -5,6 +5,9 @@ class Collider {
     this.object2 = object2;
     this.callback = callback;
     this.type = type;
+
+    // flags
+    this.isActive = true;
   }
 
   destroy() {

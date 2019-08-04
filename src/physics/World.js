@@ -120,6 +120,11 @@ class World {
       }
     }
 
+    // cleanup phase
+    while (this._destroyIndex > 0) {
+      this._destroy(this._destroyStack[--this._destroyIndex]);
+    }
+
     // simulation phase
     // todo: limit simulation fps
     this.tree.clear();
@@ -130,11 +135,6 @@ class World {
       this._resolveCollider(this.colliders[i], deltaTime);
     }
 
-    // cleanup phase
-    while (this._destroyIndex > 0) {
-      this._destroy(this._destroyStack[--this._destroyIndex]);
-    }
-
     // post update phase
     index = this.bodies.length;
 
@@ -143,8 +143,30 @@ class World {
     }
   }
 
+  updateColliders(entity) {
+    let object = entity;
+    let active = true;
+
+    if (entity.parent) {
+      object = entity.parent;
+      active = object.children.length > 1;
+    } else if (entity.isBody) {
+      active = false;
+    }
+    for (let i = 0; i < this.colliders.length; i++) {
+      const collider = this.colliders[i];
+
+      if (collider.object1 === object || collider.object2 === object) {
+        collider.isActive = active;
+      }
+    }
+  }
+
   _resolveCollider(collider, deltaTime) {
-    const {type, object1, object2} = collider;
+    if (!collider.isActive) {
+      return;
+    }
+    const {object1, object2, type} = collider;
 
     switch (type) {
       case COLLIDER_GRAVITY:
@@ -267,7 +289,7 @@ class World {
     for (let i = 0; i < length; i++) {
       const other = result[i];
 
-      if (object2.contains(other)) {
+      if (other.isAlive && object2.contains(other)) {
         const edge = this._collidingEdge(object1, other);
 
         if (shouldSeparate) {
@@ -319,8 +341,7 @@ class World {
   }
 
   _destroy(body) {
-    body.unsafeDestroy();
-
+    // remove from the world
     if (body.type === 'dynamic') {
       arrayRemove(this.bodies, body);
       this.tree.remove(body);
@@ -328,6 +349,11 @@ class World {
       arrayRemove(this.staticBodies, body);
       this.staticTree.remove(body);
     }
+    // inactive unused colliders
+    this.updateColliders(body);
+
+    // actual removal
+    body.unsafeDestroy();
   }
 }
 
