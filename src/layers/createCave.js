@@ -1,25 +1,17 @@
-import {Sprite} from 'pixi.js';
-import {gridToLocal} from '@app/consts';
-import {resolveBlocks} from '@utils/blocks';
+import {resolveTiles} from '@utils/tiles';
+import Sprite from '@models/Sprite';
+import Tile from '@models/Tile';
+import Tilemap from '@models/Tilemap';
 
-import Layer from '@models/Layer';
-import Entity from '@models/Entity';
+function createCave(global, data) {
+  const cave = new Tilemap();
 
-function createCave({cave}, global, level) {
-  const layer = new Layer('cave');
-
-  resolveBlocks('cave', cave, block => {
-    const {texture} = global.assets[block.asset];
-    const child = new Entity(
-      new Sprite(texture),
-      gridToLocal(block.x),
-      gridToLocal(block.y)
-    );
-
-    layer.addChild(child);
+  resolveTiles('cave', data.tiles.cave, tile => {
+    const {texture} = global.assets[tile.asset];
+    cave.add(new Tile(new Sprite(texture, tile.x, tile.y)));
   });
 
-  return layer;
+  return cave;
 }
 
 export default createCave;

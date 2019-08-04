@@ -1,17 +1,6 @@
-import createCave from './createCave';
-import createEffects from './createEffects';
-import createEnemies from './createEnemies';
-import createGround from './createGround';
-import createMines from './createMines';
-import createPlayer from './createPlayer';
-import createPrizes from './createPrizes';
-
-export default {
-  ground: createGround
-  // cave: createCave,
-  // mines: createMines,
-  // enemies: createEnemies,
-  // prizes: createPrizes,
-  // effects: createEffects,
-  // player: createPlayer
-};
+export {default as createCave} from './createCave';
+export {default as createEnemies} from './createEnemies';
+export {default as createGround} from './createGround';
+export {default as createMines} from './createMines';
+export {default as createPlayer} from './createPlayer';
+export {default as createPrizes} from './createPrizes';

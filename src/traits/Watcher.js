@@ -1,5 +1,5 @@
 import Trait from '@traits/Trait';
-import {EDGE} from '@models/PhysicsEngine';
+import {EDGE} from '@physics/World';
 
 class Watcher extends Trait {
   constructor({global, scene, direction = 1, speed}) {

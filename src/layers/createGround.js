@@ -1,29 +1,17 @@
-import {Sprite} from 'pixi.js';
-import {gridToLocal} from '@app/consts';
-import {resolveBlocks} from '@utils/blocks';
+import {resolveTiles} from '@utils/tiles';
+import Sprite from '@models/Sprite';
+import Tile from '@models/Tile';
+import Tilemap from '@models/Tilemap';
 
-import TileLayer from '@models/TileLayer';
-import Entity from '@models/Entity';
-import Colorful from '@traits/Colorful';
+function createGround(global, data) {
+  const ground = new Tilemap();
 
-function createGround({ground}, global, level) {
-  const layer = new TileLayer('ground');
-
-  console.log({layer});
-
-  resolveBlocks('ground', ground, block => {
-    const {texture} = global.assets[block.asset];
-    const child = new Entity(
-      new Sprite(texture),
-      gridToLocal(block.x),
-      gridToLocal(block.y)
-    );
-
-    child.addTrait(new Colorful());
-    layer.addChild(child);
+  resolveTiles('ground', data.tiles.ground, tile => {
+    const {texture} = global.assets[tile.asset];
+    ground.add(new Tile(new Sprite(texture, tile.x, tile.y)));
   });
 
-  return layer;
+  return ground;
 }
 
 export default createGround;

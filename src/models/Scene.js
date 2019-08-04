@@ -32,14 +32,20 @@ class Scene {
     this.cameraSpeed = 0.01;
   }
 
-  addTilemap(tilemap) {
-    for (let tile of tilemap.tiles.values()) {
-      this.foreground.addChild(tile.sprite);
+  add(child) {
+    if (!child) {
+      return false;
     }
-  }
-
-  addBody(body) {
-    this.foreground.addChild(body.sprite);
+    if (child.isBody) {
+      this.foreground.addChild(child.sprite);
+    } else if (child.isGroup) {
+      this._addGroup(child);
+    } else if (child.isTilemap) {
+      this._addTilemap(child);
+    } else {
+      this.foreground.addChild(child);
+    }
+    return true;
   }
 
   create() {
@@ -65,6 +71,9 @@ class Scene {
   }
 
   follow(body) {
+    if (!body) {
+      return;
+    }
     const {x, y} = body.position;
     const a = x + this.offsetX;
     const b = y + this.offsetY;
@@ -85,6 +94,16 @@ class Scene {
     this.global = null;
     this.physics = null;
     this.refs = null;
+  }
+
+  _addGroup(group) {
+    group.children.forEach(child => this.add(child));
+  }
+
+  _addTilemap(tilemap) {
+    for (let tile of tilemap.tiles.values()) {
+      this.foreground.addChild(tile.sprite);
+    }
   }
 }
 

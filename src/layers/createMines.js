@@ -1,33 +1,23 @@
-import {Sprite} from 'pixi.js';
-import {gridToLocal} from '@app/consts';
-import {resolveBlocks} from '@utils/blocks';
+import Sprite from '@models/Sprite';
+import Group from '@models/Group';
+import Body from '@physics/Body';
 
-import TileLayer from '@models/TileLayer';
-import Entity from '@models/Entity';
-import Explosive from '@traits/Explosive';
-import Animation from '@traits/Animation';
+// import Explosive from '@traits/Explosive';
 
-const blinkFrames = [[50, entity => (entity.visible = !entity.visible)]];
+// const blinkFrames = [[50, entity => (entity.visible = !entity.visible)]];
 
-function createMines({mines}, global, scene) {
-  const layer = new TileLayer('mines');
+function createMines(global, data) {
+  const {texture} = global.assets['mines'];
+  const mines = new Group();
 
-  resolveBlocks('mines', mines, block => {
-    const {texture} = global.assets[block.asset];
-    const child = new Entity(
-      new Sprite(texture),
-      gridToLocal(block.x),
-      gridToLocal(block.y)
-    );
+  data.static.mines.forEach(([x, y]) => {
+    const body = new Body(new Sprite(texture, x, y));
 
-    child.addTrait(new Animation());
-    child.addTrait(new Explosive({global, scene, range: 1}));
-    child.animation.add('blink', blinkFrames, true);
-
-    layer.addChild(child);
+    // body.addTrait(new Explosive({global, scene, range: 1}));
+    mines.add(body);
   });
 
-  return layer;
+  return mines;
 }
 
 export default createMines;

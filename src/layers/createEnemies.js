@@ -1,27 +1,21 @@
-import {Sprite} from 'pixi.js';
-import {gridToLocal} from '@app/consts';
-import {resolveBlocks} from '@utils/blocks';
+import Sprite from '@models/Sprite';
+import Group from '@models/Group';
+import DynamicBody from '@physics/DynamicBody';
 
-import ActiveLayer from '@models/ActiveLayer';
-import Entity from '@models/Entity';
 import Watcher from '@traits/Watcher';
 
-function createEnemies({enemies}, global, scene) {
-  const layer = new ActiveLayer('enemies');
+function createEnemies(global, data) {
+  const {texture} = global.assets['enemies'];
+  const enemies = new Group();
 
-  resolveBlocks('enemies', enemies, block => {
-    const {texture} = global.assets[block.asset];
-    const child = new Entity(
-      new Sprite(texture),
-      gridToLocal(block.x),
-      gridToLocal(block.y)
-    );
+  data.bodies.enemies.forEach(([x, y]) => {
+    const body = new DynamicBody(new Sprite(texture, x, y));
 
-    child.addTrait(new Watcher({global, scene, speed: 60}));
-    layer.addChild(child);
+    // body.addTrait(new Watcher({global, scene, speed: 60}));
+    enemies.add(body);
   });
 
-  return layer;
+  return enemies;
 }
 
 export default createEnemies;
