@@ -1,12 +1,10 @@
 import {baseSize} from '@app/consts';
-import Bounds from './Bounds';
+import Bounds from '@models/Bounds';
 
 class Tilemap {
   constructor(width = 10) {
     this.width = width + 3;
     this.tiles = new Map();
-
-    this.isTilemap = true;
 
     // object pools
     this._closestArray = [];
@@ -15,6 +13,9 @@ class Tilemap {
 
     // dirty flags
     this._shouldUpdateBounds = false;
+
+    // flags
+    this.isTilemap = true;
   }
 
   get bounds() {

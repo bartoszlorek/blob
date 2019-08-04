@@ -1,34 +1,45 @@
 import {Container} from 'pixi.js';
+import {baseSize} from '@app/consts';
+import {lerp} from '@utils/math';
 import Background from '@models/Background';
-import Group from '@models/Group';
 import World from '@physics/World';
 
 class Scene {
   constructor(name, global, data) {
     this.name = name;
     this.data = data;
+    this.refs = {};
 
     this.global = global;
     this.physics = new World();
 
-    this._background = new Background();
-    this._foreground = new Container();
+    // pixijs layers di
+    this.background = new Background();
+    this.foreground = new Container();
 
     this.graphics = new Container();
-    this.graphics.addChild(this._background.sprite);
-    this.graphics.addChild(this._foreground);
+    this.graphics.addChild(this.background.sprite);
+    this.graphics.addChild(this.foreground);
 
-    this.resize();
+    // events
+    this.resize = this.resize.bind(this);
+    this.global.events.onResize(this.resize);
+
+    // parameters
+    this.offsetX = 0;
+    this.offsetY = 0;
+    this.cameraRadius = 100;
+    this.cameraSpeed = 0.01;
   }
 
   addTilemap(tilemap) {
     for (let tile of tilemap.tiles.values()) {
-      this._foreground.addChild(tile.sprite);
+      this.foreground.addChild(tile.sprite);
     }
   }
 
   addBody(body) {
-    this._foreground.addChild(body.sprite);
+    this.foreground.addChild(body.sprite);
   }
 
   create() {
@@ -40,9 +51,40 @@ class Scene {
   }
 
   resize() {
-    this._foreground.x = this.global.rootX;
-    this._foreground.y = this.global.rootY;
-    this._background.resize();
+    this.foreground.x = this.global.rootX + this.offsetX;
+    this.foreground.y = this.global.rootY + this.offsetY;
+    this.background.resize();
+  }
+
+  focus(body) {
+    const {x, y} = body.position;
+    this.offsetX = -x;
+    this.offsetY = -y;
+    this.foreground.x = this.global.rootX + this.offsetX;
+    this.foreground.y = this.global.rootY + this.offsetY;
+  }
+
+  follow(body) {
+    const {x, y} = body.position;
+    const a = x + this.offsetX;
+    const b = y + this.offsetY;
+    const distance = Math.sqrt(a * a + b * b);
+
+    if (distance < baseSize) {
+      return;
+    }
+    const factor = Math.min(1, distance / this.cameraRadius);
+    this.offsetX = lerp(this.offsetX, -x, this.cameraSpeed * factor);
+    this.offsetY = lerp(this.offsetY, -y, this.cameraSpeed * factor);
+    this.foreground.x = this.global.rootX + this.offsetX;
+    this.foreground.y = this.global.rootY + this.offsetY;
+  }
+
+  destroy() {
+    this.global.events.unsubscribe('resize', this.resize);
+    this.global = null;
+    this.physics = null;
+    this.refs = null;
   }
 }
 

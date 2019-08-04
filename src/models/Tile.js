@@ -2,10 +2,12 @@ import {baseSize, localToGrid} from '@app/consts';
 
 class Tile {
   constructor(sprite) {
-    this.sprite = sprite;
     this.parent = null;
 
+    // pixijs di
     const {x, y} = sprite;
+    this.sprite = sprite;
+
     this.x = localToGrid(x);
     this.y = localToGrid(y);
 

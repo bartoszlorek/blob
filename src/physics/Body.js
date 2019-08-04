@@ -3,16 +3,22 @@ import Vector from '@models/Vector';
 
 class Body {
   constructor(sprite, type = 'static') {
-    this.sprite = sprite;
     this.type = type;
+
+    // pixijs di
+    const {x, y} = sprite;
+    this.sprite = sprite;
+
+    sprite.anchor.set(0.5);
+    sprite.x = x + baseSize / 2;
+    sprite.y = y + baseSize / 2;
 
     // parameters
     this.traits = [];
     this.parent = null;
 
     // simulation
-    this.position = new Vector(sprite.x, sprite.y);
-    this.sprite.anchor.set(0.5);
+    this.position = new Vector(x, y);
 
     // flags
     this.isBody = true;
@@ -52,11 +58,11 @@ class Body {
   }
 
   get gridX() {
-    return localToGrid(this.position.x + baseSize / 2);
+    return localToGrid(this.position.x);
   }
 
   get gridY() {
-    return localToGrid(this.position.y + baseSize / 2);
+    return localToGrid(this.position.y);
   }
 
   addTrait(trait) {
@@ -70,6 +76,11 @@ class Body {
     while (index > 0) {
       this.traits[--index].update(this, deltaTime);
     }
+  }
+
+  updateSprite() {
+    this.sprite.x = this.position.x + baseSize / 2;
+    this.sprite.y = this.position.y + baseSize / 2;
   }
 
   intersection(other) {

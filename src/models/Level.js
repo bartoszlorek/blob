@@ -1,12 +1,12 @@
-import Scene from './Scene';
-import Sprite from './Sprite';
-
 import {vectorRotation} from '@utils/physics';
 import {resolveBlocks} from '@utils/blocks';
+
+import Scene from '@models/Scene';
+import Sprite from '@models/Sprite';
+import Tile from '@models/Tile';
+import Tilemap from '@models/Tilemap';
 import Keyboard from '@models/Keyboard';
 import DynamicBody from '@physics/DynamicBody';
-import Tile from '@physics/Tile';
-import Tilemap from '@physics/Tilemap';
 
 import Jump from '@traits/Jump';
 import Move from '@traits/Move';
@@ -17,20 +17,33 @@ class Level extends Scene {
   }
 
   create() {
-    const playerTex = this.global.assets['player'].texture;
-    const player = new DynamicBody(new Sprite(playerTex, 0, 0));
-    const ground = new Tilemap();
+    const {assets} = this.global;
+    const {
+      background: bgData,
+      bodies: {player: playerData}
+    } = this.data;
+
+    this.background.set(assets[bgData.texture].texture, bgData.breakpoints);
+
+    const playerTex = assets['player'].texture;
+    const player = new DynamicBody(
+      new Sprite(playerTex, playerData[0], playerData[1])
+    );
 
     player.addTrait(new Jump());
     player.addTrait(new Move());
 
+    this.refs.player = player;
+
+    const ground = new Tilemap();
+
     resolveBlocks('ground', this.data.tiles.ground, block => {
-      const {texture} = this.global.assets[block.asset];
+      const {texture} = assets[block.asset];
       ground.add(new Tile(new Sprite(texture, block.x, block.y)));
     });
 
-    this.addBody(player);
     this.addTilemap(ground);
+    this.addBody(player);
     // this.addGroup(enemies);
 
     this.physics.addDynamic(player);
@@ -58,11 +71,14 @@ class Level extends Scene {
       player.jump[pressed ? 'start' : 'cancel']();
     });
 
+    this.resize();
+    this.focus(player);
     console.log(this);
   }
 
   update(deltaTime) {
     this.physics.update(deltaTime);
+    this.follow(this.refs.player);
   }
 }
 

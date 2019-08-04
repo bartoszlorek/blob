@@ -1,6 +1,9 @@
 {
   "name": "level-1",
-  "background": "gradient",
+  "background": {
+    "texture": "gradient",
+    "breakpoints": [144, 192, 336, 792]
+  },
   "bodies": {
     "player": [0, -1],
     "enemies": [[-3, 2]]

@@ -1,9 +1,8 @@
 import RTree from 'rbush';
 import {arrayRemove} from '@utils/array';
-import Collider from './Collider';
-import {calculateGravity} from '@models/physics';
+import {calculateGravity} from './internal/gravity';
 import Force from '@models/Force';
-import Vector from '@models/Vector';
+import Collider from '@physics/Collider';
 
 const COLLIDER_COLLIDE = Symbol('collide');
 const COLLIDER_OVERLAP = Symbol('overlap');
