@@ -4,13 +4,10 @@ class Group {
   constructor() {
     this.children = [];
     this.isGroup = true;
-    this.type = null;
   }
 
   add(child) {
     this.children.push(child);
-    this.type = child.type;
-    child.parent = this;
   }
 
   remove(child) {
@@ -18,12 +15,20 @@ class Group {
 
     if (index !== -1) {
       utils.removeItems(this.children, index, 1);
-      child.parent = null;
     }
   }
 
   contains(child) {
-    return this.children.indexOf(child) !== -1;
+    let index = this.children.length;
+
+    while (index > 0) {
+      const item = this.children[--index];
+
+      if (item === child || (item.isGroup && item.contains(child))) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
