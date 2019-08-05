@@ -167,6 +167,22 @@ class World {
     }
   }
 
+  _destroy(body) {
+    // remove from the world
+    if (body.type === 'dynamic') {
+      arrayRemove(this.bodies, body);
+      this.tree.remove(body);
+    } else if (body.type === 'static') {
+      arrayRemove(this.staticBodies, body);
+      this.staticTree.remove(body);
+    }
+    // inactive unused colliders
+    this.updateColliders(body);
+
+    // actual removal
+    body.unsafeDestroy();
+  }
+
   _resolveCollider(collider, deltaTime) {
     if (!collider.isActive) {
       return;
@@ -282,24 +298,7 @@ class World {
     const {type, tree, object1, object2, callback} = collider;
     const shouldSeparate = type === COLLIDER_COLLIDE;
 
-    this._treeSearch.minX = object1.minX;
-    this._treeSearch.minY = object1.minY;
-    this._treeSearch.maxX = object1.maxX;
-    this._treeSearch.maxY = object1.maxY;
-
-    let result = null;
-
-    if (tree === DYNAMIC_TREE) {
-      result = this.tree.search(this._treeSearch);
-    } else if (tree === STATIC_TREE) {
-      result = this.staticTree.search(this._treeSearch);
-    } else {
-      result = mergeArrays(
-        this.tree.search(this._treeSearch),
-        this.staticTree.search(this._treeSearch)
-      );
-    }
-
+    const result = this._getBodyCollisions(object1, tree);
     const length = result.length;
 
     for (let i = 0; i < length; i++) {
@@ -359,20 +358,22 @@ class World {
     }
   }
 
-  _destroy(body) {
-    // remove from the world
-    if (body.type === 'dynamic') {
-      arrayRemove(this.bodies, body);
-      this.tree.remove(body);
-    } else if (body.type === 'static') {
-      arrayRemove(this.staticBodies, body);
-      this.staticTree.remove(body);
-    }
-    // inactive unused colliders
-    this.updateColliders(body);
+  _getBodyCollisions(body, type) {
+    this._treeSearch.minX = body.minX;
+    this._treeSearch.minY = body.minY;
+    this._treeSearch.maxX = body.maxX;
+    this._treeSearch.maxY = body.maxY;
 
-    // actual removal
-    body.unsafeDestroy();
+    if (type === DYNAMIC_TREE) {
+      return this.tree.search(this._treeSearch);
+    }
+    if (type === STATIC_TREE) {
+      return this.staticTree.search(this._treeSearch);
+    }
+    return mergeArrays(
+      this.tree.search(this._treeSearch),
+      this.staticTree.search(this._treeSearch)
+    );
   }
 
   _getCommonTree(elem) {
