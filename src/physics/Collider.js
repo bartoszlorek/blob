@@ -1,10 +1,11 @@
 class Collider {
-  constructor({world, object1, object2, callback, type}) {
+  constructor({world, object1, object2, callback, type, tree}) {
     this.world = world;
     this.object1 = object1;
     this.object2 = object2;
     this.callback = callback;
     this.type = type;
+    this.tree = tree;
 
     // flags
     this.isActive = true;

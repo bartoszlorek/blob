@@ -1,5 +1,5 @@
 import RTree from 'rbush';
-import {arrayRemove} from '@utils/array';
+import {arrayRemove, mergeArrays} from '@utils/array';
 import {calculateGravity} from './internal/gravity';
 import Force from '@models/Force';
 import Collider from '@physics/Collider';
@@ -7,6 +7,9 @@ import Collider from '@physics/Collider';
 const COLLIDER_COLLIDE = Symbol('collide');
 const COLLIDER_OVERLAP = Symbol('overlap');
 const COLLIDER_GRAVITY = Symbol('gravity');
+const STATIC_TREE = Symbol('static tree');
+const DYNAMIC_TREE = Symbol('dynamic tree');
+const COMMON_TREE = Symbol('common tree');
 
 export const EDGE = {
   TOP: Symbol('top'),
@@ -54,6 +57,7 @@ class World {
     this.colliders.push(
       new Collider({
         type: COLLIDER_COLLIDE,
+        tree: this._getCommonTree(object2),
         world: this,
         object1,
         object2,
@@ -66,6 +70,7 @@ class World {
     this.colliders.push(
       new Collider({
         type: COLLIDER_OVERLAP,
+        tree: this._getCommonTree(object2),
         world: this,
         object1,
         object2,
@@ -274,7 +279,7 @@ class World {
   }
 
   _handleBodyGroupCollider(collider) {
-    const {type, object1, object2, callback} = collider;
+    const {type, tree, object1, object2, callback} = collider;
     const shouldSeparate = type === COLLIDER_COLLIDE;
 
     this._treeSearch.minX = object1.minX;
@@ -282,13 +287,27 @@ class World {
     this._treeSearch.maxX = object1.maxX;
     this._treeSearch.maxY = object1.maxY;
 
-    const tree = object2.type === 'static' ? this.staticTree : this.tree;
-    const result = tree.search(this._treeSearch);
+    let result = null;
+
+    if (tree === DYNAMIC_TREE) {
+      result = this.tree.search(this._treeSearch);
+    } else if (tree === STATIC_TREE) {
+      result = this.staticTree.search(this._treeSearch);
+    } else {
+      result = mergeArrays(
+        this.tree.search(this._treeSearch),
+        this.staticTree.search(this._treeSearch)
+      );
+    }
+
     const length = result.length;
 
     for (let i = 0; i < length; i++) {
       const other = result[i];
 
+      if (other === object1) {
+        continue;
+      }
       if (other.isAlive && object2.contains(other)) {
         const edge = this._collidingEdge(object1, other);
 
@@ -354,6 +373,36 @@ class World {
 
     // actual removal
     body.unsafeDestroy();
+  }
+
+  _getCommonTree(elem) {
+    let tree = null;
+
+    if (elem.isBody) {
+      tree = elem.type;
+    }
+    if (elem.isGroup) {
+      elem.forEach(child => {
+        if (tree !== child.type) {
+          if (tree === null) {
+            tree = child.type;
+          } else {
+            tree = 'common'; // use symbol
+            return false;
+          }
+        }
+      });
+    }
+    switch (tree) {
+      case 'common':
+        return COMMON_TREE;
+      case 'dynamic':
+        return DYNAMIC_TREE;
+      case 'static':
+        return STATIC_TREE;
+      default:
+        return null;
+    }
   }
 }
 

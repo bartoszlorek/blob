@@ -32,20 +32,26 @@ class Scene {
     this.cameraSpeed = 0.01;
   }
 
-  add(child) {
-    if (!child) {
-      return false;
+  add(elem) {
+    if (!elem) {
+      return;
     }
-    if (child.isBody) {
-      this.foreground.addChild(child.sprite);
-    } else if (child.isGroup) {
-      this._addGroup(child);
-    } else if (child.isTilemap) {
-      this._addTilemap(child);
+
+    // prettier-ignore
+    if (elem.isBody) {
+      this.foreground.addChild(elem.sprite);
+
+    } else if (elem.isGroup) {
+      elem.children.forEach(child => {
+        this.add(child);
+      });
+    } else if (elem.isTilemap) {
+      for (let tile of elem.tiles.values()) {
+        this.foreground.addChild(tile.sprite);
+      }
     } else {
-      this.foreground.addChild(child);
+      this.foreground.addChild(elem);
     }
-    return true;
   }
 
   create() {
@@ -94,16 +100,6 @@ class Scene {
     this.global = null;
     this.physics = null;
     this.refs = null;
-  }
-
-  _addGroup(group) {
-    group.children.forEach(child => this.add(child));
-  }
-
-  _addTilemap(tilemap) {
-    for (let tile of tilemap.tiles.values()) {
-      this.foreground.addChild(tile.sprite);
-    }
   }
 }
 

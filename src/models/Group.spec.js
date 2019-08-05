@@ -58,4 +58,26 @@ describe('Group()', () => {
 
     expect(master.contains(child2)).toBe(true);
   });
+
+  it('should loop over every child inside', () => {
+    const master = new Group();
+    const group1 = new Group();
+    const group2 = new Group();
+    const child1 = {value: 1};
+    const child2 = {value: 2};
+
+    group2.add(child2);
+
+    master.add(child1);
+    master.add(group1);
+    master.add(group2);
+
+    const callback = jest.fn();
+    master.forEach(callback);
+
+    expect(callback.mock.calls).toEqual([
+      [child1, 0, master],
+      [child2, 1, group2]
+    ]);
+  });
 });

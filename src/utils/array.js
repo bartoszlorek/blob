@@ -53,3 +53,8 @@ export function arrayRemove(array, item) {
     utils.removeItems(array, index, 1);
   }
 }
+
+export function mergeArrays(array1, array2) {
+  Array.prototype.push.apply(array1, array2);
+  return array1;
+}
