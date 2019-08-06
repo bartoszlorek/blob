@@ -18,6 +18,21 @@ describe('Group()', () => {
     expect(group.children).toEqual([]);
   });
 
+  it('should remove deep child', () => {
+    const master = new Group();
+    const group = new Group();
+    const child1 = {value: 1};
+    const child2 = {value: 2};
+
+    group.add(child2);
+    master.add(child1);
+    master.add(group);
+
+    master.remove(child2);
+    expect(master.children).toEqual([child1, group]);
+    expect(group.children).toEqual([]);
+  });
+
   it('should return true when contains child', () => {
     const group = new Group();
     const child = {value: 1};
@@ -43,7 +58,7 @@ describe('Group()', () => {
     expect(master.children).toEqual([]);
   });
 
-  it('contains child in one of the inner group', () => {
+  it('should return true when contains deep child', () => {
     const master = new Group();
     const group1 = new Group();
     const group2 = new Group();
@@ -79,5 +94,36 @@ describe('Group()', () => {
       [child1, 0, master],
       [child2, 1, group2]
     ]);
+  });
+
+  it('returns true when is shallowly empty', () => {
+    const group = new Group();
+    expect(group.isEmpty()).toBe(true);
+  });
+
+  it('returns true when is deeply empty', () => {
+    const master = new Group();
+    const group = new Group();
+
+    master.add(group);
+    expect(master.isEmpty()).toBe(true);
+  });
+
+  it('returns false when is not shallowly empty', () => {
+    const group = new Group();
+    const child = {value: 1};
+
+    group.add(child);
+    expect(group.isEmpty()).toBe(false);
+  });
+
+  it('returns false when is not deeply empty', () => {
+    const master = new Group();
+    const group = new Group();
+    const child = {value: 1};
+
+    group.add(child);
+    master.add(group);
+    expect(master.isEmpty()).toBe(false);
   });
 });

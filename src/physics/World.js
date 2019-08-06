@@ -148,22 +148,11 @@ class World {
     }
   }
 
-  updateColliders(entity) {
-    let object = entity;
-    let active = true;
+  updateColliders(body) {
+    let index = this.colliders.length;
 
-    if (entity.parent) {
-      object = entity.parent;
-      active = object.children.length > 1;
-    } else if (entity.isBody) {
-      active = false;
-    }
-    for (let i = 0; i < this.colliders.length; i++) {
-      const collider = this.colliders[i];
-
-      if (collider.object1 === object || collider.object2 === object) {
-        collider.isActive = active;
-      }
+    while (index > 0) {
+      this.colliders[--index].update(body);
     }
   }
 
@@ -176,7 +165,7 @@ class World {
       arrayRemove(this.staticBodies, body);
       this.staticTree.remove(body);
     }
-    // inactive unused colliders
+    // disable unused colliders
     this.updateColliders(body);
 
     // actual removal

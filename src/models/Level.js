@@ -48,15 +48,23 @@ class Level extends Scene {
     // ---- physics layer ---- //
     this.physics.add(player);
     this.physics.add(prizes);
+    this.physics.add(mines);
 
     this.physics.gravity(player, ground, body => {
       body.gravity.applyTo(body.velocity);
       body.sprite.rotation = vectorRotation(body.gravity);
     });
 
-    this.physics.collide(player, ground, (body, tiles, edge) => {
-      body.jump.collide(body, tiles, edge);
-      body.move.collide(body, tiles, edge);
+    this.physics.collide(player, ground, (body, tile, edge) => {
+      body.jump.collide(body, tile, edge);
+      body.move.collide(body, tile, edge);
+    });
+
+    this.physics.collide(player, mines, (body, mine, edge) => {
+      body.jump.collide(body, mine, edge);
+      body.move.collide(body, mine, edge);
+
+      console.log(mine);
     });
 
     this.physics.overlap(player, prizes, (body, prize, edge) => {

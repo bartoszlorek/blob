@@ -14,15 +14,10 @@ class Body {
     sprite.y = y + baseSize / 2;
 
     // parameters
-    this.traits = [];
-    this.parent = null;
-
-    // simulation
     this.position = new Vector(x, y);
-
-    // flags
-    this.isBody = true;
+    this.traits = [];
     this.isAlive = true;
+    this.isBody = true;
   }
 
   set minX(value) {
@@ -97,10 +92,6 @@ class Body {
   }
 
   unsafeDestroy() {
-    if (this.parent) {
-      this.parent.remove(this);
-      this.parent = null;
-    }
     this.sprite.destroy();
     this.sprite = null;
   }

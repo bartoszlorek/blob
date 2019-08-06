@@ -11,10 +11,19 @@ class Group {
   }
 
   remove(child) {
-    const index = this.children.indexOf(child);
+    const {length} = this.children;
 
-    if (index !== -1) {
-      utils.removeItems(this.children, index, 1);
+    for (let index = 0; index < length; index++) {
+      const elem = this.children[index];
+
+      if (elem === child) {
+        utils.removeItems(this.children, index, 1);
+        return;
+      }
+      if (elem.isGroup && elem.contains(child)) {
+        elem.remove(child);
+        return;
+      }
     }
   }
 
@@ -29,6 +38,23 @@ class Group {
       }
     }
     return false;
+  }
+
+  isEmpty() {
+    let index = this.children.length;
+
+    while (index > 0) {
+      const child = this.children[--index];
+
+      if (child.isGroup) {
+        if (!child.isEmpty()) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+    return true;
   }
 
   forEach(iteratee, index = 0) {
