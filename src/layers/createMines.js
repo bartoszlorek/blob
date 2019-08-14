@@ -2,19 +2,17 @@ import Sprite from '@models/Sprite';
 import Group from '@models/Group';
 import Body from '@physics/Body';
 
-// import Explosive from '@traits/Explosive';
+import Explosive from '@traits/Explosive';
 
-// const blinkFrames = [[50, entity => (entity.visible = !entity.visible)]];
-
-function createMines(global, data) {
+function createMines({data, global, scene}) {
   const {texture} = global.assets['mines'];
   const mines = new Group();
 
   data.static.mines.forEach(([x, y]) => {
-    const body = new Body(new Sprite(texture, x, y));
+    const mine = new Body(new Sprite(texture, x, y));
 
-    // body.addTrait(new Explosive({global, scene, range: 1}));
-    mines.add(body);
+    mine.addTrait(new Explosive({global, scene}));
+    mines.add(mine);
   });
 
   return mines;

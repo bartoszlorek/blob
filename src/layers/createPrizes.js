@@ -8,7 +8,7 @@ import Body from '@physics/Body';
 //   [1000, entity => (entity.scale = 1)]
 // ];
 
-function createPrizes(global, data) {
+function createPrizes({data, global}) {
   const {texture} = global.assets['prizes'];
   const prizes = new Group();
 
@@ -17,9 +17,9 @@ function createPrizes(global, data) {
   filters[0].padding = 10;
 
   data.static.prizes.forEach(([x, y]) => {
-    const body = new Body(new Sprite(texture, x, y));
-    body.sprite.filters = filters;
-    prizes.add(body);
+    const prize = new Body(new Sprite(texture, x, y));
+    prize.sprite.filters = filters;
+    prizes.add(prize);
   });
 
   return prizes;

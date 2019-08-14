@@ -3,7 +3,7 @@ import Sprite from '@models/Sprite';
 import Tile from '@models/Tile';
 import Tilemap from '@models/Tilemap';
 
-function createCave(global, data) {
+function createCave({data, global}) {
   const cave = new Tilemap();
 
   resolveTiles('cave', data.tiles.cave, tile => {

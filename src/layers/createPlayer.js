@@ -5,7 +5,7 @@ import DynamicBody from '@physics/DynamicBody';
 import Jump from '@traits/Jump';
 import Move from '@traits/Move';
 
-function createPlayer(global, data) {
+function createPlayer({data, global}) {
   const {texture} = global.assets['player'];
 
   const [x, y] = data.bodies.player;

@@ -156,6 +156,19 @@ class World {
     }
   }
 
+  searchBodies(bounds, type = false) {
+    if (type === DYNAMIC_TREE) {
+      return this.tree.search(bounds);
+    }
+    if (type === STATIC_TREE) {
+      return this.staticTree.search(bounds);
+    }
+    return mergeArrays(
+      this.tree.search(bounds),
+      this.staticTree.search(bounds)
+    );
+  }
+
   _destroy(body) {
     // remove from the world
     if (body.type === 'dynamic') {
@@ -287,7 +300,12 @@ class World {
     const {type, tree, object1, object2, callback} = collider;
     const shouldSeparate = type === COLLIDER_COLLIDE;
 
-    const result = this._getBodyCollisions(object1, tree);
+    this._treeSearch.minX = object1.minX;
+    this._treeSearch.minY = object1.minY;
+    this._treeSearch.maxX = object1.maxX;
+    this._treeSearch.maxY = object1.maxY;
+
+    const result = this.searchBodies(this._treeSearch, tree);
     const length = result.length;
 
     for (let i = 0; i < length; i++) {
@@ -345,24 +363,6 @@ class World {
     } else {
       return diffY < 0 ? EDGE.BOTTOM : EDGE.TOP;
     }
-  }
-
-  _getBodyCollisions(body, type) {
-    this._treeSearch.minX = body.minX;
-    this._treeSearch.minY = body.minY;
-    this._treeSearch.maxX = body.maxX;
-    this._treeSearch.maxY = body.maxY;
-
-    if (type === DYNAMIC_TREE) {
-      return this.tree.search(this._treeSearch);
-    }
-    if (type === STATIC_TREE) {
-      return this.staticTree.search(this._treeSearch);
-    }
-    return mergeArrays(
-      this.tree.search(this._treeSearch),
-      this.staticTree.search(this._treeSearch)
-    );
   }
 
   _getCommonTree(elem) {

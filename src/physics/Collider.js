@@ -12,11 +12,15 @@ class Collider {
   }
 
   update(body) {
-    if (this.object1.isGroup) {
-      this._updateGroup(this.object1, body);
-    }
-    if (this.object2.isGroup) {
-      this._updateGroup(this.object2, body);
+    if (this.object1 === body || this.object2 === body) {
+      this.isActive = body.isAlive;
+    } else {
+      if (this.object1.isGroup) {
+        this._updateGroup(this.object1, body);
+      }
+      if (this.object2.isGroup) {
+        this._updateGroup(this.object2, body);
+      }
     }
   }
 

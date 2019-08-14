@@ -26,15 +26,22 @@ class Level extends Scene {
     );
 
     // ---- foreground layer ---- //
+    const props = {
+      data: this.data,
+      global: this.global,
+      scene: this
+    };
+
     const effects = new Container();
-    const cave = createCave(this.global, this.data);
-    const enemies = createEnemies(this.global, this.data);
-    const ground = createGround(this.global, this.data);
-    const mines = createMines(this.global, this.data);
-    const player = createPlayer(this.global, this.data);
-    const prizes = createPrizes(this.global, this.data);
+    const cave = createCave(props);
+    const enemies = createEnemies(props);
+    const ground = createGround(props);
+    const mines = createMines(props);
+    const player = createPlayer(props);
+    const prizes = createPrizes(props);
 
     this.refs.player = player;
+    this.refs.ground = ground;
     this.refs.effects = effects;
 
     this.add(ground);
@@ -63,8 +70,7 @@ class Level extends Scene {
     this.physics.collide(player, mines, (body, mine, edge) => {
       body.jump.collide(body, mine, edge);
       body.move.collide(body, mine, edge);
-
-      console.log(mine);
+      mine.explosive.ignite();
     });
 
     this.physics.overlap(player, prizes, (body, prize, edge) => {

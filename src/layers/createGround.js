@@ -3,7 +3,7 @@ import Sprite from '@models/Sprite';
 import Tile from '@models/Tile';
 import Tilemap from '@models/Tilemap';
 
-function createGround(global, data) {
+function createGround({data, global}) {
   const ground = new Tilemap();
 
   resolveTiles('ground', data.tiles.ground, tile => {
