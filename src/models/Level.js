@@ -74,8 +74,8 @@ class Level extends Scene {
     });
 
     this.physics.overlap(player, prizes, (body, prize, edge) => {
+      this.global.events.publish('score');
       prize.destroy();
-      console.log('score!');
     });
 
     this.resize();

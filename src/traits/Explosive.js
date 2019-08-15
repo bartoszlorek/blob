@@ -42,8 +42,7 @@ class Explosive extends Trait {
       entity.destroy();
 
       if (!player.isAlive) {
-        console.log('dead!');
-        // this.global.events.publish('player_dead');
+        this.global.events.publish('player_dead');
       }
     }
     this.delay -= deltaTime;

@@ -58,7 +58,7 @@ class Scene {
     // call in subclass
   }
 
-  update(deltaTime) {
+  update() {
     // call in subclass
   }
 
