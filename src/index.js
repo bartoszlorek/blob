@@ -65,6 +65,7 @@ loader.load(() => {
 
   events.subscribe('start', () => {
     global.load(new Level(global, levelData[currentLevel]));
+
     global.tick(deltaTime => {
       timer.update(deltaTime);
 

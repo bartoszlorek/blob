@@ -9,7 +9,7 @@ function createPlayer({data, global}) {
   const {texture} = global.assets['player'];
 
   const [x, y] = data.bodies.player;
-  const player = new DynamicBody(new Sprite(texture, x, y));
+  let player = new DynamicBody(new Sprite(texture, x, y));
 
   player.addTrait(new Jump());
   player.addTrait(new Move());
@@ -27,10 +27,12 @@ function createPlayer({data, global}) {
     player.jump[pressed ? 'start' : 'cancel']();
   });
 
-  // function cleanup() {
-  //   input.destroy();
-  // }
-  return player;
+  function cleanup() {
+    input.destroy();
+    player = null;
+  }
+
+  return [player, cleanup];
 }
 
 export default createPlayer;

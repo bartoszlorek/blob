@@ -9,11 +9,11 @@ import Body from '@physics/Body';
 // ];
 
 function createPrizes({data, global}) {
-  const {texture} = global.assets['prizes'];
-  const prizes = new Group();
+  let {texture} = global.assets['prizes'];
+  let prizes = new Group();
 
   // effects
-  const filters = [new GlowFilter(10, 1, 0, 0xf2dc30)];
+  let filters = [new GlowFilter(10, 1, 0, 0xf2dc30)];
   filters[0].padding = 10;
 
   data.static.prizes.forEach(([x, y]) => {
@@ -22,7 +22,13 @@ function createPrizes({data, global}) {
     prizes.add(prize);
   });
 
-  return prizes;
+  function cleanup() {
+    texture = null;
+    filters = null;
+    prizes = null;
+  }
+
+  return [prizes, cleanup];
 }
 
 export default createPrizes;

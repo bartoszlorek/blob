@@ -5,8 +5,8 @@ import DynamicBody from '@physics/DynamicBody';
 import Watcher from '@traits/Watcher';
 
 function createEnemies({data, global}) {
-  const {texture} = global.assets['enemies'];
-  const enemies = new Group();
+  let {texture} = global.assets['enemies'];
+  let enemies = new Group();
 
   data.bodies.enemies.forEach(([x, y]) => {
     const enemy = new DynamicBody(new Sprite(texture, x, y));
@@ -15,7 +15,12 @@ function createEnemies({data, global}) {
     enemies.add(enemy);
   });
 
-  return enemies;
+  function cleanup() {
+    texture = null;
+    enemies = null;
+  }
+
+  return [enemies, cleanup];
 }
 
 export default createEnemies;

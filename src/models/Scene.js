@@ -62,6 +62,10 @@ class Scene {
     // call in subclass
   }
 
+  cleanup() {
+    // call in subclass
+  }
+
   resize() {
     this.foreground.x = this.global.rootX + this.offsetX;
     this.foreground.y = this.global.rootY + this.offsetY;
@@ -96,6 +100,7 @@ class Scene {
   }
 
   destroy() {
+    this.cleanup();
     this.global.events.unsubscribe('resize', this.resize);
     this.global = null;
     this.physics = null;

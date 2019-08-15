@@ -33,12 +33,21 @@ class Level extends Scene {
     };
 
     const effects = new Container();
-    const cave = createCave(props);
-    const enemies = createEnemies(props);
-    const ground = createGround(props);
-    const mines = createMines(props);
-    const player = createPlayer(props);
-    const prizes = createPrizes(props);
+    const [cave, cleanupCave] = createCave(props);
+    const [enemies, cleanupEnemies] = createEnemies(props);
+    const [ground, cleanupGround] = createGround(props);
+    const [mines, cleanupMines] = createMines(props);
+    const [player, cleanupPlayer] = createPlayer(props);
+    const [prizes, cleanupPrizes] = createPrizes(props);
+
+    this.cleanup = function() {
+      cleanupCave();
+      cleanupEnemies();
+      cleanupGround();
+      cleanupMines();
+      cleanupPlayer();
+      cleanupPrizes();
+    };
 
     this.refs.player = player;
     this.refs.ground = ground;
@@ -51,6 +60,9 @@ class Level extends Scene {
     this.add(enemies);
     this.add(effects);
     this.add(player);
+
+    this.resize();
+    this.focus(player);
 
     // ---- physics layer ---- //
     this.physics.add(player);
@@ -78,8 +90,6 @@ class Level extends Scene {
       prize.destroy();
     });
 
-    this.resize();
-    this.focus(player);
     console.log(this);
   }
 
