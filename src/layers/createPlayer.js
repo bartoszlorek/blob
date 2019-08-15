@@ -7,8 +7,8 @@ import Move from '@traits/Move';
 
 function createPlayer({data, global}) {
   const {texture} = global.assets['player'];
-
   const [x, y] = data.bodies.player;
+
   let player = new DynamicBody(new Sprite(texture, x, y));
 
   player.addTrait(new Jump());

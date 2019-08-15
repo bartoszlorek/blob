@@ -17,15 +17,7 @@ class Level extends Scene {
   }
 
   create() {
-    // ---- background layer ---- //
-    const {background: bgData} = this.data;
-
-    this.background.set(
-      this.global.assets[bgData.texture].texture,
-      bgData.breakpoints
-    );
-
-    // ---- foreground layer ---- //
+    // ---- graphics layer ---- //
     const props = {
       data: this.data,
       global: this.global,
@@ -39,6 +31,16 @@ class Level extends Scene {
     const [mines, cleanupMines] = createMines(props);
     const [player, cleanupPlayer] = createPlayer(props);
     const [prizes, cleanupPrizes] = createPrizes(props);
+
+    if (!player) {
+      throw 'player is required';
+    }
+    if (!ground) {
+      throw 'ground is required';
+    }
+    if (!prizes) {
+      throw 'prizes are required';
+    }
 
     this.cleanup = function() {
       cleanupCave();
@@ -54,20 +56,24 @@ class Level extends Scene {
     this.refs.effects = effects;
 
     this.add(ground);
-    this.add(cave);
+
+    if (cave) {
+      this.add(cave);
+    }
+    if (mines) {
+      this.add(mines);
+    }
+    if (enemies) {
+      this.add(enemies);
+    }
+
     this.add(prizes);
-    this.add(mines);
-    this.add(enemies);
     this.add(effects);
     this.add(player);
-
-    this.resize();
-    this.focus(player);
 
     // ---- physics layer ---- //
     this.physics.add(player);
     this.physics.add(prizes);
-    this.physics.add(mines);
 
     this.physics.gravity(player, ground, body => {
       body.gravity.applyTo(body.velocity);
@@ -79,23 +85,45 @@ class Level extends Scene {
       body.move.collide(body, tile, edge);
     });
 
-    this.physics.collide(player, mines, (body, mine, edge) => {
-      body.jump.collide(body, mine, edge);
-      body.move.collide(body, mine, edge);
-      mine.explosive.ignite();
-    });
-
     this.physics.overlap(player, prizes, (body, prize, edge) => {
       this.global.events.publish('score');
       prize.destroy();
     });
 
-    console.log(this);
+    if (mines) {
+      this.physics.add(mines);
+      this.physics.collide(player, mines, (body, mine, edge) => {
+        body.jump.collide(body, mine, edge);
+        body.move.collide(body, mine, edge);
+        mine.explosive.ignite();
+      });
+    }
+
+    if (enemies) {
+      this.physics.add(enemies);
+      this.physics.overlap(player, enemies, (body, enemy, edge) => {
+        if (body.velocity.y > 0) {
+          enemy.destroy();
+        } else {
+          this.global.events.publish('player_dead');
+          body.destroy();
+        }
+      });
+    }
+
+    this.setupBackground();
+    this.resize();
+    this.focus(player);
   }
 
   update(deltaTime) {
     this.physics.update(deltaTime);
     this.follow(this.refs.player);
+  }
+
+  setupBackground() {
+    const {image, breaks} = this.data.background;
+    this.background.set(this.global.assets[image].texture, breaks);
   }
 }
 

@@ -2,33 +2,31 @@ import Trait from '@traits/Trait';
 import {EDGE} from '@physics/World';
 
 class Watcher extends Trait {
-  constructor({global, scene, direction = 1, speed}) {
+  constructor({scene, direction = 1, speed}) {
     super('watcher');
-    this.global = global;
     this.scene = scene;
-
     this.direction = direction;
     this.speed = speed;
   }
 
-  update(entity) {
-    const {ground} = this.scene.layers;
+  update(entity, deltaTime) {
+    const {ground} = this.scene.refs;
     const closest = ground.closest(entity.gridX, entity.gridY);
     const bottom = closest && closest[7];
 
     if (!bottom) {
-      return entity.remove();
+      return entity.destroy();
     }
 
     const beforeEdge = !closest[7 + this.direction];
 
     if (beforeEdge) {
       if (entity.velocity.x > 0) {
-        if (entity.right > bottom.right) {
+        if (entity.maxX > bottom.maxX) {
           this.turnBack(entity);
         }
       } else if (entity.velocity.x < 0) {
-        if (entity.left < bottom.left) {
+        if (entity.minX < bottom.minX) {
           this.turnBack(entity);
         }
       }
@@ -36,25 +34,15 @@ class Watcher extends Trait {
 
     // finally, apply movement
     entity.velocity.x = this.direction * this.speed;
+    entity.position.x += entity.velocity.x * deltaTime;
   }
 
   collide(entity, other, edge) {
-    // passive collision
     switch (edge) {
       case EDGE.LEFT:
       case EDGE.RIGHT:
         this.turnBack(entity);
         return;
-    }
-
-    // active collision
-    if (other.parent.name === 'player') {
-      if (other.velocity.y > 0) {
-        entity.remove();
-      } else {
-        this.global.events.publish('player_dead');
-        other.remove();
-      }
     }
   }
 

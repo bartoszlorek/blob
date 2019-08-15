@@ -6,10 +6,14 @@ import Tilemap from '@models/Tilemap';
 function createGround({data, global}) {
   let ground = new Tilemap();
 
-  resolveTiles('ground', data.tiles.ground, tile => {
-    const {texture} = global.assets[tile.asset];
-    ground.add(new Tile(new Sprite(texture, tile.x, tile.y)));
-  });
+  if (data.tiles.ground) {
+    resolveTiles('ground', data.tiles.ground, tile => {
+      const {texture} = global.assets[tile.asset];
+      ground.add(new Tile(new Sprite(texture, tile.x, tile.y)));
+    });
+  } else {
+    ground = null;
+  }
 
   function cleanup() {
     ground = null;

@@ -8,11 +8,11 @@ class Background {
     this.texHeight = 0;
   }
 
-  set(texture, breakpoints = []) {
+  set(texture, breaks = []) {
     this.texHeight = texture.height;
     this.sprite.removeChildren();
 
-    this.layers = [0, ...breakpoints].map((position, index, points) => {
+    this.layers = [0, ...breaks].map((position, index, points) => {
       const tile = new TilingSprite(texture);
       const height = (points[index + 1] || this.texHeight) - position;
       const percent = height / this.texHeight;

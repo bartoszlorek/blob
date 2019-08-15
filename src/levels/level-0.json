@@ -2,13 +2,15 @@
   "name": "level-0",
   "time": false,
   "background": {
-    "texture": "gradient",
-    "breakpoints": [144, 192, 336, 792]
+    "image": "gradient",
+    "breaks": [144, 192, 336, 792]
   },
   "bodies": {
     "player": [0, 0]
   },
-  "static": {},
+  "static": {
+    "prizes": [[5, 0]]
+  },
   "tiles": {
     "ground": [[-6, 1, 1, 6], [-5, 1, 11, 11], [6, 1, 1, 5]]
   }

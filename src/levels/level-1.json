@@ -2,8 +2,8 @@
   "name": "level-1",
   "time": true,
   "background": {
-    "texture": "gradient",
-    "breakpoints": [144, 192, 336, 792]
+    "image": "gradient",
+    "breaks": [144, 192, 336, 792]
   },
   "bodies": {
     "player": [0, -1],

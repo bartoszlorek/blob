@@ -1,3 +1,4 @@
+import {arrayForEach} from '@utils/array';
 import {GlowFilter} from '@pixi/filter-glow';
 import Sprite from '@models/Sprite';
 import Group from '@models/Group';
@@ -8,19 +9,24 @@ import Body from '@physics/Body';
 //   [1000, entity => (entity.scale = 1)]
 // ];
 
+const glowDistance = 10;
+
 function createPrizes({data, global}) {
   let {texture} = global.assets['prizes'];
   let prizes = new Group();
 
-  // effects
-  let filters = [new GlowFilter(10, 1, 0, 0xf2dc30)];
-  filters[0].padding = 10;
+  let filters = [new GlowFilter(glowDistance, 1, 0, 0xf2dc30)];
+  filters[0].padding = glowDistance;
 
-  data.static.prizes.forEach(([x, y]) => {
-    const prize = new Body(new Sprite(texture, x, y));
-    prize.sprite.filters = filters;
-    prizes.add(prize);
-  });
+  if (data.static.prizes) {
+    arrayForEach(data.static.prizes, ([x, y]) => {
+      const prize = new Body(new Sprite(texture, x, y));
+      prize.sprite.filters = filters;
+      prizes.add(prize);
+    });
+  } else {
+    prizes = null;
+  }
 
   function cleanup() {
     texture = null;

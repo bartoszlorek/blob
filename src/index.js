@@ -17,7 +17,7 @@ loader.load(() => {
 
   let prizesValue = 0;
   let prizesLimit = 0;
-  let currentLevel = 1;
+  let currentLevel = 0;
 
   const timer = new Timer();
   const global = new Global({
