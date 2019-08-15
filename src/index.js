@@ -4,12 +4,8 @@ import renderGui from '@gui';
 
 import Timer from '@models/Timer';
 import Global from '@models/Global';
-import Level from '@models/Level';
-
-import dataLevel1 from '@levels/level-1.json';
-import dataLevel0 from '@levels/level-0.json';
-
-const levelData = [dataLevel0, dataLevel1];
+import levelData from '@levels';
+import Level from '@levels/Level';
 
 const getNumberOfPrizes = levelIndex => {
   const {prizes} = levelData[levelIndex].static;
