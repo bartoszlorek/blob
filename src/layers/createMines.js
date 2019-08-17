@@ -1,33 +1,44 @@
-import {Sprite} from 'pixi.js';
-import {gridToLocal} from '@app/consts';
-import {resolveBlocks} from '@utils/blocks';
+import {arrayForEach} from '@utils/array';
 
-import PassiveLayer from '@models/PassiveLayer';
-import Entity from '@models/Entity';
+import Animator from '@models/Animator';
+import Sprite from '@models/Sprite';
+import Group from '@models/Group';
+import Body from '@physics/Body';
+
 import Explosive from '@traits/Explosive';
-import Animation from '@traits/Animation';
 
-const blinkFrames = [[50, entity => (entity.visible = !entity.visible)]];
+function createMines({data, global, scene}) {
+  let {texture} = global.assets['mines'];
+  let mines = new Group();
 
-function createMines({mines}, global, scene) {
-  const layer = new PassiveLayer('mines');
+  if (data.static.mines) {
+    arrayForEach(data.static.mines, ([x, y]) => {
+      const sprite = new Sprite(texture, x, y);
 
-  resolveBlocks('mines', mines, block => {
-    const {texture} = global.assets[block.asset];
-    const child = new Entity(
-      new Sprite(texture),
-      gridToLocal(block.x),
-      gridToLocal(block.y)
-    );
+      // animation
+      sprite.animator = new Animator();
+      sprite.animator.add('blink', [sprite]);
 
-    child.addTrait(new Animation());
-    child.addTrait(new Explosive({global, scene, range: 1}));
-    child.animation.add('blink', blinkFrames, true);
+      // group and traits
+      const mine = new Body(sprite);
+      mine.addTrait(new Explosive({global, scene}));
+      mines.add(mine);
+    });
 
-    layer.addChild(child);
-  });
+    scene.animations.add(mines);
+    scene.animations.keyframes['blink'] = [
+      [50, sprite => (sprite.visible = !sprite.visible)]
+    ];
+  } else {
+    mines = null;
+  }
 
-  return layer;
+  function cleanup() {
+    texture = null;
+    mines = null;
+  }
+
+  return [mines, cleanup];
 }
 
 export default createMines;

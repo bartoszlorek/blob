@@ -1,11 +1,10 @@
-// frame = [ms, fn]
-
-class KeyFrames {
-  constructor(name = '', frames = [], loop = false) {
+class Animation {
+  constructor(name, props = []) {
     this.name = name;
-    this.frames = frames;
-    this.loop = loop;
+    this.props = props;
+    this.loop = true;
 
+    // parameters
     this.playing = false;
     this.nextIndex = 0;
     this.timer = 0;
@@ -29,13 +28,13 @@ class KeyFrames {
     this.pause();
   }
 
-  update(entity, deltaTime) {
+  update(keyframes, deltaTime) {
     const milliseconds = deltaTime * 1000;
-    const nextFrame = this.frames[this.nextIndex];
+    const nextFrame = keyframes[this.nextIndex];
 
     if (nextFrame !== undefined) {
       if (this.timer >= nextFrame[0]) {
-        nextFrame[1](entity, deltaTime);
+        nextFrame[1].apply(null, this.props);
         this.nextIndex += 1;
       }
       this.timer += milliseconds;
@@ -47,4 +46,4 @@ class KeyFrames {
   }
 }
 
-export default KeyFrames;
+export default Animation;

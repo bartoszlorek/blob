@@ -5,7 +5,7 @@ import {arrayForEach} from '@utils/array';
 // length < 0  vertical
 // assetIndex  index of alternative name
 
-export function resolveBlocks(name, entries, iteratee) {
+export function resolveTiles(name, entries, iteratee) {
   if (!entries) {
     return;
   }

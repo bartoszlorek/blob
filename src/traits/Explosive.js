@@ -1,94 +1,98 @@
-import {Sprite} from 'pixi.js';
+import {baseSize} from '@app/consts';
 import {arrayForEach} from '@utils/array';
-import {matrix3Merge} from '@utils/matrix';
 
-import Entity from '@models/Entity';
+import Animator from '@models/Animator';
+import Sprite from '@models/Sprite';
 import Trait from '@traits/Trait';
-import Animation from '@traits/Animation';
-
-const identity = a => a;
-const destroy = child => child.remove();
 
 class Explosive extends Trait {
-  constructor({global, scene, range}) {
+  constructor({global, scene}) {
     super('explosive');
     this.global = global;
     this.scene = scene;
-
-    this.range = range;
-    this.ignition = 0;
+    this.active = false;
 
     // parameters
-    this.delay = 0.25;
+    this.range = 1;
+    this.delay = 0.3;
+    this.timer = 0;
+
+    // object pools
+    this._blastArea = {};
   }
 
-  collide() {
-    this.ignition += 1;
+  ignite() {
+    if (!this.active) {
+      this.active = true;
+    }
   }
 
   update(entity, deltaTime) {
-    if (this.ignition === 0) {
+    if (!this.active) {
       return;
     }
 
-    // bang
-    if (this.ignition === 1) {
-      entity.animation.blink.play();
+    if (this.timer === 0) {
+      entity.sprite.animator.blink.play();
     }
 
-    // boom
-    if (this.delay < 0) {
-      const {effects, ground, player} = this.scene.layers;
-      effects.addChild(this.createBlastFrom(entity));
+    if (this.timer >= this.delay) {
+      const {player, ground, effects} = this.scene.refs;
+      effects.addChild(this._createBlastFrom(entity));
 
       // destroy everything in range
-      const others = this.getInRange(entity, [ground, player]);
-      arrayForEach(others, destroy);
+      this._updateBlastArea(entity);
+      this._destroyTilemap(entity, ground);
+      this._destroyBodies(player);
+      entity.destroy();
 
-      // destroy mine itself
-      destroy(entity);
-
-      if (!player.children.length) {
+      if (!player.isAlive) {
         this.global.events.publish('player_dead');
       }
     }
 
-    this.delay -= deltaTime;
-    this.ignition += 1;
+    this.timer += deltaTime;
   }
 
-  createBlastFrom(entity) {
-    const {texture} = this.global.assets['blast'];
-    const blast = new Entity(
-      new Sprite(texture),
-      entity.sprite.x,
-      entity.sprite.y
-    );
-    let scale = 1;
-
-    blast.addTrait(new Animation());
-    blast.animation.add('explode', [
-      [10, () => (blast.scale = scale += this.range)],
-      [100, () => (blast.scale = scale += this.range)],
-      [200, () => (blast.scale = scale -= this.range / 2)],
-      [250, () => blast.remove()]
-    ]);
-    blast.animation.explode.play();
-    return blast;
+  _destroyTilemap(entity, tilemap) {
+    const closest = tilemap.closest(entity.gridX, entity.gridY);
+    arrayForEach(closest, tile => tile && tile.destroy());
   }
 
-  getInRange(entity, layers) {
-    const out = [];
-    let index = layers.length;
-
-    while (index > 0) {
-      const closest = layers[--index].closest(entity.gridX, entity.gridY);
-
-      if (closest) {
-        matrix3Merge(out, closest);
+  _destroyBodies(elem) {
+    const closest = this.scene.physics.searchBodies(this._blastArea);
+    arrayForEach(closest, body => {
+      if (elem === body || (elem.isGroup && elem.contains(child))) {
+        body.destroy();
       }
-    }
-    return out.filter(identity);
+    });
+  }
+
+  _updateBlastArea(entity) {
+    const offset = baseSize * this.range;
+    this._blastArea.minX = entity.minX - offset;
+    this._blastArea.maxX = entity.maxX + offset;
+    this._blastArea.minY = entity.minY - offset;
+    this._blastArea.maxY = entity.maxY + offset;
+  }
+
+  _createBlastFrom(entity) {
+    const {texture} = this.global.assets['blast'];
+    const sprite = new Sprite(texture, entity.gridX, entity.gridY);
+
+    // todo: put this in sprite
+    sprite.anchor.set(0.5);
+    sprite.x += baseSize / 2;
+    sprite.y += baseSize / 2;
+    sprite.scene = this.scene;
+
+    // animation
+    sprite.animator = new Animator();
+    sprite.animator.add('blast', [sprite, this.range]);
+    sprite.animator.blast.play();
+
+    this.scene.animations.add(sprite);
+    return sprite;
   }
 }
 

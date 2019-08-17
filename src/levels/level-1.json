@@ -1,7 +1,21 @@
 {
   "name": "level-1",
-  "background": "gradient",
-  "layers": {
+  "time": true,
+  "background": {
+    "image": "gradient",
+    "breaks": [144, 192, 336, 792]
+  },
+  "bodies": {
+    "player": [0, -1],
+    "enemies": [[-3, 2]]
+  },
+  "static": {
+    "mines": [[-4, 4], [2, 9]],
+    "prizes": [[0, 7], [2, -9], [-2, -11]],
+    "effects": []
+  },
+  "tiles": {
+    "cave": [[0, 7, 3]],
     "ground": [
       [-2, 0, 1, 6],
       [-1, 0, 4, 11],
@@ -39,12 +53,6 @@
       [0, 9, 1, 13],
       [1, 9, 1, 12],
       [-4, 9, 1, 2]
-    ],
-    "cave": [[0, 7, 3]],
-    "mines": [[-4, 4], [2, 9]],
-    "enemies": [[-3, 2]],
-    "prizes": [[0, 7], [2, -9], [-2, -11]],
-    "effects": [],
-    "player": [0, -1]
+    ]
   }
 }

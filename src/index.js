@@ -4,19 +4,18 @@ import renderGui from '@gui';
 
 import Timer from '@models/Timer';
 import Global from '@models/Global';
-import Level from '@models/Level';
+import levelData from '@levels';
+import Level from '@levels/Level';
 
-import dataLevel1 from '@levels/level-1.json';
-import dataLevel0 from '@levels/level-0.json';
-
-const getNumberOfPrizes = global => {
-  const {prizes} = global.level.layers;
-  return prizes ? prizes.children.length : 0;
+const getNumberOfPrizes = levelIndex => {
+  const {prizes} = levelData[levelIndex].static;
+  return prizes ? prizes.length : 0;
 };
 
 loader.load(() => {
   const {start, time, score, landing} = renderGui();
 
+  let prizesValue = 0;
   let prizesLimit = 0;
   let currentLevel = 0;
 
@@ -30,48 +29,46 @@ loader.load(() => {
 
   events.subscribe('player_dead', () => {
     slowFadeIn(() => {
-      global.load(new Level(dataLevel1));
+      global.load(new Level(global, levelData[currentLevel]));
     });
   });
 
-  events.subscribe('load_level', () => {
-    prizesLimit = getNumberOfPrizes(global);
-    score.value = `score 0-${prizesLimit}`;
+  events.subscribe('load_scene', () => {
+    prizesValue = 0;
+    prizesLimit = getNumberOfPrizes(currentLevel);
+    score.value = `score ${prizesValue}-${prizesLimit}`;
     timer.reset();
   });
 
-  events.subscribe('level_completed', () => {
-    if (currentLevel === 0) {
+  events.subscribe('scene_completed', () => {
+    if (++currentLevel < levelData.length) {
       fastFadeIn(() => {
-        global.load(new Level(dataLevel1));
-        currentLevel++;
+        global.load(new Level(global, levelData[currentLevel]));
       });
-    }
-    if (currentLevel === 1) {
+    } else {
       timer.stop();
     }
   });
 
   events.subscribe('score', () => {
-    const value = prizesLimit - getNumberOfPrizes(global);
-    score.value = `score ${value}-${prizesLimit}`;
+    prizesValue += 1;
+    score.value = `score ${prizesValue}-${prizesLimit}`;
 
-    if (value === prizesLimit) {
-      events.publish('level_completed');
+    if (prizesValue === prizesLimit) {
+      events.publish('scene_completed');
     }
   });
 
   events.subscribe('start', () => {
-    global.load(new Level(dataLevel0));
-    global.tick(deltaTime => {
-      if (currentLevel > 0) {
-        timer.update(deltaTime);
+    global.load(new Level(global, levelData[currentLevel]));
 
-        if (timer.playing) {
-          time.value = `time ${timer.toTime()}`;
-        } else {
-          time.value = `time ${timer.toPreciseTime()}`;
-        }
+    global.tick(deltaTime => {
+      timer.update(deltaTime);
+
+      if (timer.playing) {
+        time.value = `time ${timer.toTime()}`;
+      } else {
+        time.value = `time ${timer.toPreciseTime()}`;
       }
     });
   });
@@ -79,5 +76,6 @@ loader.load(() => {
   start.onClick = () => {
     landing.classList.add('hidden');
     fastFadeIn(() => events.publish('start'));
+    start.onClick = null; // unbind
   };
 });

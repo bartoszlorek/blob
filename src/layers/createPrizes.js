@@ -1,40 +1,50 @@
-import {Sprite} from 'pixi.js';
+import {arrayForEach} from '@utils/array';
 import {GlowFilter} from '@pixi/filter-glow';
-import {gridToLocal} from '@app/consts';
-import {resolveBlocks} from '@utils/blocks';
 
-import ActiveLayer from '@models/ActiveLayer';
-import Entity from '@models/Entity';
-import Animation from '@traits/Animation';
-import Collectable from '@traits/Collectable';
+import Sprite from '@models/Sprite';
+import Group from '@models/Group';
+import Animator from '@models/Animator';
+import Body from '@physics/Body';
 
-const shineFrames = [
-  [600, entity => (entity.scale = 0.8)],
-  [1000, entity => (entity.scale = 1)]
-];
+const glowDistance = 10;
 
-function createPrizes({prizes}, global, level) {
-  const glow = new GlowFilter(10, 1, 0, 0xf2dc30);
-  const layer = new ActiveLayer('prizes', [glow]);
-  glow.padding = 10;
+function createPrizes({data, global, scene}) {
+  let {texture} = global.assets['prizes'];
+  let prizes = new Group();
 
-  resolveBlocks('prizes', prizes, block => {
-    const {texture} = global.assets[block.asset];
-    const child = new Entity(
-      new Sprite(texture),
-      gridToLocal(block.x),
-      gridToLocal(block.y)
-    );
+  let filters = [new GlowFilter(glowDistance, 1, 0, 0xf2dc30)];
+  filters[0].padding = glowDistance;
 
-    child.addTrait(new Collectable({global}));
-    child.addTrait(new Animation());
-    child.animation.add('shine', shineFrames, true);
-    child.animation.shine.play();
+  if (data.static.prizes) {
+    arrayForEach(data.static.prizes, ([x, y]) => {
+      const sprite = new Sprite(texture, x, y);
+      sprite.filters = filters;
 
-    layer.addChild(child);
-  });
+      // animation
+      sprite.animator = new Animator();
+      sprite.animator.add('shine', [sprite]);
+      sprite.animator.shine.play();
 
-  return layer;
+      // group
+      prizes.add(new Body(sprite));
+    });
+
+    scene.animations.add(prizes);
+    scene.animations.keyframes['shine'] = [
+      [600, sprite => sprite.scale.set(0.8)],
+      [1000, sprite => sprite.scale.set(1)]
+    ];
+  } else {
+    prizes = null;
+  }
+
+  function cleanup() {
+    texture = null;
+    filters = null;
+    prizes = null;
+  }
+
+  return [prizes, cleanup];
 }
 
 export default createPrizes;

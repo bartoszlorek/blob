@@ -1,5 +1,5 @@
 import {modIndex} from '@utils/math';
-import {EDGE} from '@models/PhysicsEngine';
+import {EDGE} from '@physics/World';
 
 const edgeValues = Object.values(EDGE);
 

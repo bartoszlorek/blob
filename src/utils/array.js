@@ -1,3 +1,5 @@
+import {utils} from 'pixi.js';
+
 export function arrayForEach(array, iteratee) {
   for (let index = 0; index < array.length; index++) {
     if (iteratee(array[index], index, array) === false) {
@@ -42,4 +44,17 @@ export function isEqual(array1, array2) {
     }
   }
   return true;
+}
+
+export function arrayRemove(array, item) {
+  const index = array.indexOf(item);
+
+  if (index !== -1) {
+    utils.removeItems(array, index, 1);
+  }
+}
+
+export function mergeArrays(array1, array2) {
+  Array.prototype.push.apply(array1, array2);
+  return array1;
 }
