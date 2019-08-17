@@ -42,7 +42,6 @@ class Explosive extends Trait {
 
       // destroy everything in range
       this._updateBlastArea(entity);
-
       this._destroyTilemap(entity, ground);
       this._destroyBodies(player);
       entity.destroy();
