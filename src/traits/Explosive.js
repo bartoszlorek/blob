@@ -1,5 +1,7 @@
 import {baseSize} from '@app/consts';
 import {arrayForEach} from '@utils/array';
+
+import Animator from '@models/Animator';
 import Sprite from '@models/Sprite';
 import Trait from '@traits/Trait';
 
@@ -12,7 +14,8 @@ class Explosive extends Trait {
 
     // parameters
     this.range = 1;
-    this.delay = 0.25;
+    this.delay = 0.3;
+    this.timer = 0;
 
     // object pools
     this._blastArea = {};
@@ -21,7 +24,6 @@ class Explosive extends Trait {
   ignite() {
     if (!this.active) {
       this.active = true;
-      console.log('fire up');
     }
   }
 
@@ -30,7 +32,11 @@ class Explosive extends Trait {
       return;
     }
 
-    if (this.delay < 0) {
+    if (this.timer === 0) {
+      entity.sprite.animator.blink.play();
+    }
+
+    if (this.timer >= this.delay) {
       const {player, ground, effects} = this.scene.refs;
       effects.addChild(this._createBlastFrom(entity));
 
@@ -45,7 +51,8 @@ class Explosive extends Trait {
         this.global.events.publish('player_dead');
       }
     }
-    this.delay -= deltaTime;
+
+    this.timer += deltaTime;
   }
 
   _destroyTilemap(entity, tilemap) {
@@ -72,7 +79,21 @@ class Explosive extends Trait {
 
   _createBlastFrom(entity) {
     const {texture} = this.global.assets['blast'];
-    return new Sprite(texture, entity.gridX, entity.gridY);
+    const sprite = new Sprite(texture, entity.gridX, entity.gridY);
+
+    // todo: put this in sprite
+    sprite.anchor.set(0.5);
+    sprite.x += baseSize / 2;
+    sprite.y += baseSize / 2;
+    sprite.scene = this.scene;
+
+    // animation
+    sprite.animator = new Animator();
+    sprite.animator.add('blast', [sprite, this.range]);
+    sprite.animator.blast.play();
+
+    this.scene.animations.add(sprite);
+    return sprite;
   }
 }
 

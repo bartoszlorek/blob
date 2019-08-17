@@ -1,17 +1,14 @@
 import {arrayForEach} from '@utils/array';
 import {GlowFilter} from '@pixi/filter-glow';
+
 import Sprite from '@models/Sprite';
 import Group from '@models/Group';
+import Animator from '@models/Animator';
 import Body from '@physics/Body';
-
-// const shineFrames = [
-//   [600, entity => (entity.scale = 0.8)],
-//   [1000, entity => (entity.scale = 1)]
-// ];
 
 const glowDistance = 10;
 
-function createPrizes({data, global}) {
+function createPrizes({data, global, scene}) {
   let {texture} = global.assets['prizes'];
   let prizes = new Group();
 
@@ -20,10 +17,23 @@ function createPrizes({data, global}) {
 
   if (data.static.prizes) {
     arrayForEach(data.static.prizes, ([x, y]) => {
-      const prize = new Body(new Sprite(texture, x, y));
-      prize.sprite.filters = filters;
-      prizes.add(prize);
+      const sprite = new Sprite(texture, x, y);
+      sprite.filters = filters;
+
+      // animation
+      sprite.animator = new Animator();
+      sprite.animator.add('shine', [sprite]);
+      sprite.animator.shine.play();
+
+      // group
+      prizes.add(new Body(sprite));
     });
+
+    scene.animations.add(prizes);
+    scene.animations.keyframes['shine'] = [
+      [600, sprite => sprite.scale.set(0.8)],
+      [1000, sprite => sprite.scale.set(1)]
+    ];
   } else {
     prizes = null;
   }

@@ -111,13 +111,24 @@ class Level extends Scene {
       });
     }
 
+    // ---- animations layer ---- //
+    this.animations.keyframes['blast'] = [
+      [10, (sprite, range) => sprite.scale.set(sprite.scale.x + range)],
+      [100, (sprite, range) => sprite.scale.set(sprite.scale.x + range)],
+      [200, (sprite, range) => sprite.scale.set(sprite.scale.x - range / 2)],
+      [250, sprite => sprite.destroy()]
+    ];
+
     this.setupBackground();
     this.resize();
     this.focus(player);
+
+    console.log(this);
   }
 
   update(deltaTime) {
     this.physics.update(deltaTime);
+    this.animations.update(deltaTime);
     this.follow(this.refs.player);
   }
 

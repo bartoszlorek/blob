@@ -1,6 +1,8 @@
 import {Container} from 'pixi.js';
 import {baseSize} from '@app/consts';
 import {lerp} from '@utils/math';
+
+import Animations from '@models/Animations';
 import Background from '@models/Background';
 import World from '@physics/World';
 
@@ -11,6 +13,7 @@ class Scene {
     this.refs = {};
 
     this.global = global;
+    this.animations = new Animations();
     this.physics = new World();
 
     // pixijs layers di
@@ -40,6 +43,7 @@ class Scene {
     // prettier-ignore
     if (elem.isBody) {
       this.foreground.addChild(elem.sprite);
+      elem.sprite.scene = this;
 
     } else if (elem.isGroup) {
       elem.children.forEach(child => {
@@ -48,9 +52,14 @@ class Scene {
     } else if (elem.isTilemap) {
       for (let tile of elem.tiles.values()) {
         this.foreground.addChild(tile.sprite);
+        tile.sprite.scene = this;
       }
     } else {
       this.foreground.addChild(elem);
+
+      if (elem.isSprite) {
+        elem.scene = this;
+      }
     }
   }
 
