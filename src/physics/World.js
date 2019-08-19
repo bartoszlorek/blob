@@ -10,9 +10,6 @@ import bodyGroupCollision from './collisions/bodyGroupCollision';
 const COLLIDER_COLLIDE = Symbol('collide');
 const COLLIDER_OVERLAP = Symbol('overlap');
 const COLLIDER_GRAVITY = Symbol('gravity');
-const STATIC_TREE = Symbol('static tree');
-const DYNAMIC_TREE = Symbol('dynamic tree');
-const COMMON_TREE = Symbol('common tree');
 
 export const EDGE = {
   TOP: Symbol('top'),
@@ -155,22 +152,6 @@ class World {
     }
   }
 
-  _destroy(body) {
-    // remove from the world
-    if (body.type === 'dynamic') {
-      arrayRemove(this.bodies, body);
-      this.tree.remove(body);
-    } else if (body.type === 'static') {
-      arrayRemove(this.staticBodies, body);
-      this.staticTree.remove(body);
-    }
-    // disable unused colliders
-    this.updateColliders(body);
-
-    // actual removal
-    body.unsafeDestroy();
-  }
-
   _resolveCollider(collider, deltaTime) {
     if (!collider.isActive) {
       return;
@@ -251,6 +232,21 @@ class World {
       default:
         return null;
     }
+  }
+
+  _destroy(body) {
+    if (body.type === 'dynamic') {
+      arrayRemove(this.bodies, body);
+      this.tree.remove(body);
+    } else if (body.type === 'static') {
+      arrayRemove(this.staticBodies, body);
+      this.staticTree.remove(body);
+    }
+    // disable unused colliders
+    this.updateColliders(body);
+
+    // actual removal
+    body.unsafeDestroy();
   }
 }
 
