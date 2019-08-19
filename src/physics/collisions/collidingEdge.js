@@ -1,3 +1,5 @@
+import {EDGE} from '@physics/World';
+
 function collidingEdge(object1, object2) {
   const diffX = object1.minX - object2.minX;
   const diffY = object1.minY - object2.minY;

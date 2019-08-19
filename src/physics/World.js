@@ -1,9 +1,9 @@
 import RTree from 'rbush';
-import {arrayRemove, mergeArrays} from '@utils/array';
-import {calculateGravity} from './internal/gravity';
+import {arrayRemove} from '@utils/array';
 import Force from '@models/Force';
 import Collider from '@physics/Collider';
 
+import {calculateGravity} from './internal/gravity';
 import bodyTilesCollision from './collisions/bodyTilesCollision';
 import bodyGroupCollision from './collisions/bodyGroupCollision';
 

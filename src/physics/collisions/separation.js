@@ -1,3 +1,5 @@
+import {EDGE} from '@physics/World';
+
 function separation(object1, object2, edge) {
   switch (edge) {
     case EDGE.BOTTOM:

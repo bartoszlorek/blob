@@ -1,3 +1,4 @@
+import {EDGE} from '@physics/World';
 import separation from './separation';
 
 function bodyTilesCollision(body, tiles, callback, separate, deltaTime) {
