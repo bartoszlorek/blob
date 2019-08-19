@@ -217,39 +217,37 @@ class World {
   }
 
   _handleBodyGroupCollider(collider) {
-    const {type, object1, object2, callback} = collider;
+    const {type, object1, object2, callback, tree} = collider;
     const separate = type === COLLIDER_COLLIDE;
-
-    // todo: push only needed tree
-    const treeArray = [this.tree, this.staticTree];
-    bodyGroupCollision(object1, object2, callback, separate, treeArray);
+    bodyGroupCollision(object1, object2, callback, separate, tree);
   }
 
   _getCommonTree(elem) {
-    let tree = null;
+    let type = null;
 
+    // prettier-ignore
     if (elem.isBody) {
-      tree = elem.type;
+      type = elem.type;
     }
-    if (elem.isGroup) {
+    else if (elem.isGroup) {
       elem.forEach(child => {
-        if (tree !== child.type) {
-          if (tree === null) {
-            tree = child.type;
+        if (type !== child.type) {
+          if (type === null) {
+            type = child.type;
           } else {
-            tree = 'common'; // use symbol
+            type = 'both';
             return false;
           }
         }
       });
     }
-    switch (tree) {
-      case 'common':
-        return COMMON_TREE;
+    switch (type) {
       case 'dynamic':
-        return DYNAMIC_TREE;
+        return [this.tree];
       case 'static':
-        return STATIC_TREE;
+        return [this.staticTree];
+      case 'both':
+        return [this.tree, this.staticTree];
       default:
         return null;
     }
