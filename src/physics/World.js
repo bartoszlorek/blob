@@ -6,6 +6,7 @@ import Collider from '@physics/Collider';
 import {calculateGravity} from './internal/gravity';
 import bodyTilesCollision from './collisions/bodyTilesCollision';
 import bodyGroupCollision from './collisions/bodyGroupCollision';
+import treeSearch from './collisions/treeSearch';
 
 const COLLIDER_COLLIDE = Symbol('collide');
 const COLLIDER_OVERLAP = Symbol('overlap');
@@ -150,6 +151,10 @@ class World {
     while (index > 0) {
       this.colliders[--index].update(body);
     }
+  }
+
+  treeSearch(rect) {
+    return treeSearch([this.tree, this.staticTree], rect);
   }
 
   _resolveCollider(collider, deltaTime) {

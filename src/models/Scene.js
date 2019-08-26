@@ -50,10 +50,8 @@ class Scene {
         this.add(child);
       });
     } else if (elem.isTilemap) {
-      for (let tile of elem.tiles.values()) {
-        this.foreground.addChild(tile.sprite);
-        tile.sprite.scene = this;
-      }
+      this.foreground.addChild(elem.graphics);
+
     } else {
       this.foreground.addChild(elem);
 

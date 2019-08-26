@@ -60,7 +60,7 @@ class Explosive extends Trait {
   }
 
   _destroyBodies(elem) {
-    const closest = this.scene.physics.searchBodies(this._blastArea);
+    const closest = this.scene.physics.treeSearch(this._blastArea);
     arrayForEach(closest, body => {
       if (elem === body || (elem.isGroup && elem.contains(child))) {
         body.destroy();
