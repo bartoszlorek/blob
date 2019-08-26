@@ -1,3 +1,4 @@
+import {Container} from 'pixi.js';
 import {baseSize} from '@app/consts';
 import Bounds from '@models/Bounds';
 
@@ -5,6 +6,9 @@ class Tilemap {
   constructor(width = 10) {
     this.width = width + 3;
     this.tiles = new Map();
+
+    // pixijs di
+    this.graphics = new Container();
 
     // object pools
     this._closestArray = [];
@@ -35,13 +39,19 @@ class Tilemap {
   add(tile) {
     tile.parent = this;
     this.tiles.set(this._index(tile.x, tile.y), tile);
+    this.graphics.addChild(tile.sprite);
+
     this._bounds.add(tile.x, tile.y);
     this._calculateLocalBounds();
+    this._cache();
   }
 
   remove(tile) {
     this.tiles.delete(this._index(tile.x, tile.y));
+    this.graphics.removeChild(tile.sprite);
+
     this._shouldUpdateBounds = true;
+    this._cache();
   }
 
   closest(x, y) {
@@ -120,6 +130,11 @@ class Tilemap {
     this._localBounds.minY = this._bounds.minY * baseSize;
     this._localBounds.maxX = this._bounds.maxX * baseSize + baseSize;
     this._localBounds.maxY = this._bounds.maxY * baseSize + baseSize;
+  }
+
+  _cache() {
+    this.graphics.cacheAsBitmap = false;
+    this.graphics.cacheAsBitmap = true;
   }
 }
 
