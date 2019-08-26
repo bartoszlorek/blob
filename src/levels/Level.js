@@ -24,7 +24,6 @@ class Level extends Scene {
       scene: this
     };
 
-    const effects = new Container();
     const [cave, cleanupCave] = createCave(props);
     const [enemies, cleanupEnemies] = createEnemies(props);
     const [ground, cleanupGround] = createGround(props);
@@ -53,7 +52,6 @@ class Level extends Scene {
 
     this.refs.player = player;
     this.refs.ground = ground;
-    this.refs.effects = effects;
 
     this.add(ground);
 
@@ -68,7 +66,6 @@ class Level extends Scene {
     }
 
     this.add(prizes);
-    this.add(effects);
     this.add(player);
 
     // ---- physics layer ---- //

@@ -7,18 +7,8 @@ class Sprite extends PixiSprite {
 
     this.position.x = x * baseSize;
     this.position.y = y * baseSize;
-
     this.isSprite = true;
     this.animator = null;
-    this.scene = null;
-  }
-
-  destroy() {
-    if (this.animator) {
-      this.scene.animations.remove(this);
-    }
-    this.scene = null;
-    super.destroy();
   }
 }
 

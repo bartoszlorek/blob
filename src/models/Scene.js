@@ -19,6 +19,9 @@ class Scene {
     // pixijs layers di
     this.background = new Background();
     this.foreground = new Container();
+    this.foreground.on('childRemoved', child => {
+      this.animations.remove(child);
+    });
 
     this.graphics = new Container();
     this.graphics.addChild(this.background.sprite);
@@ -39,25 +42,18 @@ class Scene {
     if (!elem) {
       return;
     }
-
     // prettier-ignore
     if (elem.isBody) {
       this.foreground.addChild(elem.sprite);
-      elem.sprite.scene = this;
 
     } else if (elem.isGroup) {
-      elem.children.forEach(child => {
-        this.add(child);
-      });
+      elem.children.forEach(child => this.add(child));
+
     } else if (elem.isTilemap) {
       this.foreground.addChild(elem.graphics);
 
     } else {
       this.foreground.addChild(elem);
-
-      if (elem.isSprite) {
-        elem.scene = this;
-      }
     }
   }
 

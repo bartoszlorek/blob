@@ -37,8 +37,8 @@ class Explosive extends Trait {
     }
 
     if (this.timer >= this.delay) {
-      const {player, ground, effects} = this.scene.refs;
-      effects.addChild(this._createBlastFrom(entity));
+      const {player, ground} = this.scene.refs;
+      this.scene.add(this._createBlastFrom(entity));
 
       // destroy everything in range
       this._updateBlastArea(entity);
@@ -84,7 +84,6 @@ class Explosive extends Trait {
     sprite.anchor.set(0.5);
     sprite.x += baseSize / 2;
     sprite.y += baseSize / 2;
-    sprite.scene = this.scene;
 
     // animation
     sprite.animator = new Animator();
