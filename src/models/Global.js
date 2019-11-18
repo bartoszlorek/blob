@@ -13,14 +13,15 @@ class Global {
     this.events = new Events();
     this.events.onResize(() => this.resize());
     this.resize();
-  }
 
-  tick(callback) {
     this.engine.ticker.add(deltaFrame => {
       const deltaTime = deltaFrame * this.time;
       this.scene.update(deltaTime);
-      callback(deltaTime);
     });
+  }
+
+  tick(callback) {
+    // todo
   }
 
   load(scene) {

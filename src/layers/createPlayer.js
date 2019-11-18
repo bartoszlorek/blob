@@ -1,16 +1,20 @@
+import {Sprite} from 'pixi.js';
+import {baseSize} from '@app/consts';
 import Keyboard from '@models/Keyboard';
-import Sprite from '@models/Sprite';
-import DynamicBody from '@physics/DynamicBody';
+import Body from '@physics/Body';
 
 import Jump from '@traits/Jump';
 import Move from '@traits/Move';
 
-function createPlayer({data, global}) {
-  const {texture} = global.assets['player'];
-  const [x, y] = data.bodies.player;
+function createPlayer({sheet, specs}) {
+  const {id, position} = specs.player;
+  const [x, y] = position[0];
 
-  let player = new DynamicBody(new Sprite(texture, x, y));
+  const sprite = new Sprite(sheet.getById(id));
+  sprite.position.x = x * baseSize;
+  sprite.position.y = y * baseSize;
 
+  let player = new Body(sprite);
   player.addTrait(new Jump());
   player.addTrait(new Move());
 

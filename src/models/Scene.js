@@ -2,26 +2,20 @@ import {Container} from 'pixi.js';
 import {baseSize} from '@app/consts';
 import {lerp} from '@utils/math';
 
-import Animations from '@models/Animations';
-import Background from '@models/Background';
 import World from '@physics/World';
+import Background from '@models/Background';
 
 class Scene {
-  constructor(name, global, data) {
-    this.name = name;
-    this.data = data;
+  constructor(global) {
+    this.global = global;
     this.refs = {};
 
-    this.global = global;
-    this.animations = new Animations();
+    // physics
     this.physics = new World();
 
     // pixijs layers di
     this.background = new Background();
     this.foreground = new Container();
-    this.foreground.on('childRemoved', child => {
-      this.animations.remove(child);
-    });
 
     this.graphics = new Container();
     this.graphics.addChild(this.background.sprite);
@@ -36,6 +30,18 @@ class Scene {
     this.offsetY = 0;
     this.cameraRadius = 100;
     this.cameraSpeed = 0.01;
+  }
+
+  create() {
+    // call in subclass
+  }
+
+  update() {
+    // call in subclass
+  }
+
+  cleanup() {
+    // call in subclass
   }
 
   add(elem) {
@@ -57,18 +63,6 @@ class Scene {
     }
   }
 
-  create() {
-    // call in subclass
-  }
-
-  update() {
-    // call in subclass
-  }
-
-  cleanup() {
-    // call in subclass
-  }
-
   resize() {
     this.foreground.x = this.global.rootX + this.offsetX;
     this.foreground.y = this.global.rootY + this.offsetY;
@@ -76,7 +70,7 @@ class Scene {
   }
 
   focus(body) {
-    const {x, y} = body.position;
+    const {x, y} = body.sprite;
     this.offsetX = -x;
     this.offsetY = -y;
     this.foreground.x = this.global.rootX + this.offsetX;
@@ -87,7 +81,7 @@ class Scene {
     if (!body) {
       return;
     }
-    const {x, y} = body.position;
+    const {x, y} = body.sprite;
     const a = x + this.offsetX;
     const b = y + this.offsetY;
     const distance = Math.sqrt(a * a + b * b);
@@ -106,7 +100,6 @@ class Scene {
     this.cleanup();
     this.global.events.unsubscribe('resize', this.resize);
     this.global = null;
-    this.physics = null;
     this.refs = null;
   }
 }
