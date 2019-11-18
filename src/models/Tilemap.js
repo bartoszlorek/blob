@@ -17,20 +17,8 @@ class Tilemap {
     ];
   }
 
-  get bounds() {
-    if (this._shouldBoundsUpdate) {
-      this._calculateBounds();
-    }
-    return this._bounds;
-  }
-
   getIndex(x, y) {
     return y * this.width + x;
-  }
-
-  removeByIndex(index) {
-    this.values[index] = 0;
-    this._shouldBoundsUpdate = true;
   }
 
   closest(x, y) {
@@ -68,29 +56,45 @@ class Tilemap {
   raycast(x, y, dx, dy) {
     const ox = x - this.offset[0];
     const oy = y - this.offset[1];
-    const {minX, maxX, minY, maxY} = this.tilesBounds;
+    const {minX, maxX, minY, maxY} = this.bounds;
 
-    if (dy === 1 && oy > maxY) {
-      return -1;
-    }
+    // shift distance closer when the point is outside the map
+    const distX = dx > 0 ? minX - ox : dx < 0 ? maxX - ox : 0;
+    const distY = dy > 0 ? minY - oy : dy < 0 ? maxY - oy : 0;
+    let distance = Math.abs(distX + distY);
 
-    let dist = Math.max(minY - oy, 0);
+    // limit amount of steps from one side to the other of the map
+    const limitX = dx < 0 ? ox - minX : dx > 0 ? maxX - ox : 0;
+    const limitY = dy < 0 ? oy - minY : dy > 0 ? maxY - oy : 0;
+    let limit = limitX + limitY;
 
-    let a = ox;
-    let b = oy + dist;
+    // initial index and index shift between steps
+    const ix = ox + distX;
+    const iy = oy + distY;
 
-    while (dist < 100) {
-      const tile = this.tilemap[this._index(a, b)];
+    let currentIndex = this.getIndex(ix, iy);
+    const indexShift = this.getIndex(ix + dx, iy + dy) - currentIndex;
 
-      if (tile > 0) {
-        return dist;
+    while (0 <= limit--) {
+      if (this.values[currentIndex] > 0) {
+        return distance;
       }
-      a += dx;
-      b += dy;
-      dist += 1;
+      currentIndex += indexShift;
+      distance += 1;
     }
+    return -1;
+  }
 
-    return dist;
+  removeByIndex(index) {
+    this.values[index] = 0;
+    this._shouldBoundsUpdate = true;
+  }
+
+  get bounds() {
+    if (this._shouldBoundsUpdate) {
+      this._calculateBounds();
+    }
+    return this._bounds;
   }
 
   _calculateBounds() {

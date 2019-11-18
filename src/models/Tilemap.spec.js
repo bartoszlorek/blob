@@ -188,4 +188,108 @@ describe('Tilemap()', () => {
     const map = new Tilemap(values, width);
     expect(map.closest(pos[0], pos[1])).toEqual(result);
   });
+
+  // prettier-ignore
+  test.each`
+    name              | xy         | dxy       | width | result | values
+    ${'top-dist'}     | ${[1, -2]} | ${[0, 1]} | ${3}  | ${2}   | ${[ 1, 2, 3,
+                                                                      4, 5, 6 ]}
+
+    ${'top-close'}    | ${[1, -1]} | ${[0, 1]} | ${3}  | ${1}   | ${[ 1, 2, 3,
+                                                                      4, 5, 6 ]}
+
+    ${'top-hole'}     | ${[1, -1]} | ${[0, 1]} | ${3}  | ${2}   | ${[ 1, 0, 3,
+                                                                      4, 5, 6 ]}
+
+    ${'right-dist'}   | ${[3, 1]} | ${[-1, 0]} | ${2}  | ${2}   | ${[ 1, 2,
+                                                                      3, 4,
+                                                                      5, 6 ]}
+
+    ${'right-close'}  | ${[2, 1]} | ${[-1, 0]} | ${2}  | ${1}   | ${[ 1, 2,
+                                                                      3, 4,
+                                                                      5, 6 ]}
+
+    ${'right-hole'}   | ${[2, 1]} | ${[-1, 0]} | ${2}  | ${2}   | ${[ 1, 2,
+                                                                      3, 0,
+                                                                      5, 6 ]}
+
+    ${'bottom-dist'}  | ${[1, 3]} | ${[0, -1]} | ${3}  | ${2}   | ${[ 1, 2, 3,
+                                                                      4, 5, 6 ]}
+
+    ${'bottom-close'} | ${[1, 2]} | ${[0, -1]} | ${3}  | ${1}   | ${[ 1, 2, 3,
+                                                                      4, 5, 6 ]}
+
+    ${'bottom-hole'}  | ${[1, 2]} | ${[0, -1]} | ${3}  | ${2}   | ${[ 1, 2, 3,
+                                                                      4, 0, 6 ]}
+
+    ${'left-dist'}    | ${[-2, 1]} | ${[1, 0]} | ${2}  | ${2}   | ${[ 1, 2,
+                                                                      3, 4,
+                                                                      5, 6 ]}
+
+    ${'left-close'}   | ${[-1, 1]} | ${[1, 0]} | ${2}  | ${1}   | ${[ 1, 2,
+                                                                      3, 4,
+                                                                      5, 6 ]}
+
+    ${'left-hole'}    | ${[-1, 1]} | ${[1, 0]} | ${2}  | ${2}   | ${[ 1, 2,
+                                                                      0, 4,
+                                                                      5, 6 ]}
+  `('should return raycast length $name (outside)', ({xy, dxy, width, result, values}) => {
+    const map = new Tilemap(values, width);
+    const [x, y] = xy;
+    const [dx, dy] = dxy;
+
+    expect(map.raycast(x, y, dx, dy)).toBe(result);
+  });
+
+  // prettier-ignore
+  test.each`
+    name        | xy        | dxy        | width | result | values
+    ${'top'}    | ${[1, 0]} | ${[0, 1]}  | ${3}  | ${2}   | ${[ 1, 0, 3,
+                                                                4, 0, 6,
+                                                                7, 8, 9 ]}
+
+    ${'right'}  | ${[2, 1]} | ${[-1, 0]} | ${3}  | ${2}   | ${[ 1, 2, 3,
+                                                                4, 0, 0,
+                                                                7, 8, 9 ]}
+
+    ${'bottom'} | ${[1, 2]} | ${[0, -1]} | ${3}  | ${2}   | ${[ 1, 2, 3,
+                                                                4, 0, 6,
+                                                                7, 0, 9 ]}
+
+    ${'left'}   | ${[0, 1]} | ${[1, 0]}  | ${3}  | ${2}   | ${[ 1, 2, 3,
+                                                                0, 0, 6,
+                                                                7, 8, 9 ]}
+  `('should return raycast length $name (inside)', ({xy, dxy, width, result, values}) => {
+    const map = new Tilemap(values, width);
+    const [x, y] = xy;
+    const [dx, dy] = dxy;
+
+    expect(map.raycast(x, y, dx, dy)).toBe(result);
+  });
+
+  // prettier-ignore
+  test.each`
+    name        | xy        | dxy        | width | result | values
+    ${'top'}    | ${[1, 0]} | ${[0, 1]}  | ${3}  | ${-1}   | ${[ 1, 0, 3,
+                                                                 4, 0, 6,
+                                                                 7, 0, 9 ]}
+
+    ${'right'}  | ${[2, 1]} | ${[-1, 0]} | ${3}  | ${-1}   | ${[ 1, 2, 3,
+                                                                 0, 0, 0,
+                                                                 7, 8, 9 ]}
+
+    ${'bottom'} | ${[1, 2]} | ${[0, -1]} | ${3}  | ${-1}   | ${[ 1, 0, 3,
+                                                                 4, 0, 6,
+                                                                 7, 0, 9 ]}
+
+    ${'left'}   | ${[0, 1]} | ${[1, 0]}  | ${3}  | ${-1}   | ${[ 1, 2, 3,
+                                                                 0, 0, 0,
+                                                                 7, 8, 9 ]}
+  `('should return raycast length $name (through)', ({xy, dxy, width, result, values}) => {
+    const map = new Tilemap(values, width);
+    const [x, y] = xy;
+    const [dx, dy] = dxy;
+
+    expect(map.raycast(x, y, dx, dy)).toBe(result);
+  });
 });
