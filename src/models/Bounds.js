@@ -13,6 +13,15 @@ class Bounds {
     this.maxY = Math.max(this.maxY, y);
   }
 
+  contains(x, y, margin = 0) {
+    return !(
+      x < this.minX - margin ||
+      x > this.maxX + margin ||
+      y < this.minY - margin ||
+      y > this.maxY + margin
+    );
+  }
+
   clear() {
     this.minX = Infinity;
     this.minY = Infinity;

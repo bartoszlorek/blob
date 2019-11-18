@@ -1,140 +1,110 @@
-import {Container} from 'pixi.js';
-import {baseSize} from '@app/consts';
 import Bounds from '@models/Bounds';
 
 class Tilemap {
-  constructor(width = 10) {
-    this.width = width + 3;
-    this.tiles = new Map();
+  constructor(values = [], width = 8, offset = [0, 0]) {
+    this.values = values;
+    this.width = width;
+    this.offset = offset;
 
-    // pixijs di
-    this.graphics = new Container();
-
-    // object pools
-    this._closestArray = [];
+    this._shouldBoundsUpdate = true;
     this._bounds = new Bounds();
-    this._localBounds = new Bounds();
 
-    // dirty flags
-    this._shouldUpdateBounds = false;
-
-    // flags
-    this.isTilemap = true;
+    // prettier-ignore
+    this._closestArray = [
+      0, 0, 0,
+      0, 0, 0,
+      0, 0, 0,
+    ];
   }
 
   get bounds() {
-    if (this._shouldUpdateBounds) {
+    if (this._shouldBoundsUpdate) {
       this._calculateBounds();
     }
     return this._bounds;
   }
 
-  get localBounds() {
-    if (this._shouldUpdateBounds) {
-      this._calculateBounds();
-    }
-    return this._localBounds;
+  getIndex(x, y) {
+    return y * this.width + x;
   }
 
-  add(tile) {
-    tile.parent = this;
-    this.tiles.set(this._index(tile.x, tile.y), tile);
-    this.graphics.addChild(tile.sprite);
-
-    this._bounds.add(tile.x, tile.y);
-    this._calculateLocalBounds();
-    this._cache();
-  }
-
-  remove(tile) {
-    this.tiles.delete(this._index(tile.x, tile.y));
-    this.graphics.removeChild(tile.sprite);
-
-    this._shouldUpdateBounds = true;
-    this._cache();
+  removeByIndex(index) {
+    this.values[index] = 0;
+    this._shouldBoundsUpdate = true;
   }
 
   closest(x, y) {
-    const bounds = this.bounds;
-    if (
-      x < bounds.minX - 1 ||
-      x > bounds.maxX + 1 ||
-      y < bounds.minY - 1 ||
-      y > bounds.maxY + 1
-    ) {
-      return null;
-    }
+    const ox = x - this.offset[0];
+    const oy = y - this.offset[1];
+    const arr = this._closestArray;
 
-    const row1 = this._index(x - 1, y - 1);
-    const row2 = this._index(x - 1, y);
-    const row3 = this._index(x - 1, y + 1);
+    const start0 = this.getIndex(ox - 1, oy - 1);
+    const start1 = this.getIndex(ox - 1, oy);
+    const start2 = this.getIndex(ox - 1, oy + 1);
 
-    this._closestArray[0] = this.tiles.get(row1);
-    this._closestArray[1] = this.tiles.get(row1 + 1);
-    this._closestArray[2] = this.tiles.get(row1 + 2);
+    const row0 = oy - 1 >= 0;
+    const row1 = oy >= 0;
+    const row2 = oy + 1 >= 0;
 
-    this._closestArray[3] = this.tiles.get(row2);
-    this._closestArray[4] = this.tiles.get(row2 + 1);
-    this._closestArray[5] = this.tiles.get(row2 + 2);
+    const col0 = !(ox - 1 < 0 || ox - 1 >= this.width);
+    const col1 = !(ox < 0 || ox >= this.width);
+    const col2 = !(ox + 1 < 0 || ox + 1 >= this.width);
 
-    this._closestArray[6] = this.tiles.get(row3);
-    this._closestArray[7] = this.tiles.get(row3 + 1);
-    this._closestArray[8] = this.tiles.get(row3 + 2);
+    arr[0] = row0 && col0 ? this.values[start0] || 0 : 0;
+    arr[1] = row0 && col1 ? this.values[start0 + 1] || 0 : 0;
+    arr[2] = row0 && col2 ? this.values[start0 + 2] || 0 : 0;
 
-    return this._closestArray;
+    arr[3] = row1 && col0 ? this.values[start1] || 0 : 0;
+    arr[4] = row1 && col1 ? this.values[start1 + 1] || 0 : 0;
+    arr[5] = row1 && col2 ? this.values[start1 + 2] || 0 : 0;
+
+    arr[6] = row2 && col0 ? this.values[start2] || 0 : 0;
+    arr[7] = row2 && col1 ? this.values[start2 + 1] || 0 : 0;
+    arr[8] = row2 && col2 ? this.values[start2 + 2] || 0 : 0;
+
+    return arr;
   }
 
-  closestInDirection(x, y, dX, dY, forceLimit = 0) {
-    const {minX, maxX, minY, maxY} = this.bounds;
-    const xLimit = dX < 0 ? x - minX : dX > 0 ? maxX - x : 0;
-    const yLimit = dY < 0 ? y - minY : dY > 0 ? maxY - y : 0;
+  raycast(x, y, dx, dy) {
+    const ox = x - this.offset[0];
+    const oy = y - this.offset[1];
+    const {minX, maxX, minY, maxY} = this.tilesBounds;
 
-    // for abs(x) !== abs(y)
-    let limit = xLimit + yLimit;
-    let a = x;
-    let b = y;
-
-    if (forceLimit && forceLimit < limit) {
-      limit = forceLimit;
+    if (dy === 1 && oy > maxY) {
+      return -1;
     }
 
-    while (0 <= limit--) {
-      const tile = this.tiles.get(this._index(a, b));
+    let dist = Math.max(minY - oy, 0);
 
-      if (tile) {
-        return tile;
+    let a = ox;
+    let b = oy + dist;
+
+    while (dist < 100) {
+      const tile = this.tilemap[this._index(a, b)];
+
+      if (tile > 0) {
+        return dist;
       }
-      a += dX;
-      b += dY;
+      a += dx;
+      b += dy;
+      dist += 1;
     }
-    return null;
-  }
 
-  _index(x, y) {
-    return y * this.width + x;
+    return dist;
   }
 
   _calculateBounds() {
     this._bounds.clear();
     this._shouldUpdateBounds = false;
-    const tiles = this.tiles.values();
+    const [ox, oy] = this.offset;
 
-    for (let tile of tiles) {
-      this._bounds.add(tile.x, tile.y);
+    for (let index = 0; index < this.values.length; index++) {
+      if (this.values[index] > 0) {
+        const x = index % this.width;
+        const y = Math.floor(index / this.width);
+        this._bounds.add(x + ox, y + oy);
+      }
     }
-    this._calculateLocalBounds();
-  }
-
-  _calculateLocalBounds() {
-    this._localBounds.minX = this._bounds.minX * baseSize;
-    this._localBounds.minY = this._bounds.minY * baseSize;
-    this._localBounds.maxX = this._bounds.maxX * baseSize + baseSize;
-    this._localBounds.maxY = this._bounds.maxY * baseSize + baseSize;
-  }
-
-  _cache() {
-    this.graphics.cacheAsBitmap = false;
-    this.graphics.cacheAsBitmap = true;
   }
 }
 

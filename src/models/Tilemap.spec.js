@@ -1,129 +1,191 @@
 import Tilemap from './Tilemap';
 
-// 0 1 2
-// 3 4 5
-// 6 7 8
-
-const getTiles = map => {
-  return Array.from(map.tiles.entries());
-};
-
 describe('Tilemap()', () => {
-  it('adds tiles', () => {
-    const map = new Tilemap();
-
-    const a = {x: -1, y: -1};
-    const b = {x: 1, y: -1};
-    const c = {x: 0, y: 0};
-    const d = {x: -1, y: 1};
-    const e = {x: 1, y: 1};
-
-    map.add(a);
-    map.add(b);
-    map.add(c);
-    map.add(d);
-    map.add(e);
-
-    expect(getTiles(map)).toEqual([
-      [-14, a],
-      [-12, b],
-      [0, c],
-      [12, d],
-      [14, e]
-    ]);
+  it('should create from array of values', () => {
+    const map = new Tilemap([1, 0, 1], 3);
+    expect(map.values).toEqual([1, 0, 1]);
   });
 
-  it('removes tiles', () => {
-    const map = new Tilemap();
-
-    const a = {x: 0, y: -1};
-    const b = {x: 0, y: 0};
-    const c = {x: 0, y: 1};
-
-    map.add(a);
-    map.add(b);
-    map.add(c);
-
-    expect(getTiles(map)).toEqual([[-13, a], [0, b], [13, c]]);
-
-    map.remove(a);
-    map.remove(c);
-
-    expect(getTiles(map)).toEqual([[0, b]]);
+  it('should return index', () => {
+    const map = new Tilemap([1, 0, 1, 1], 2);
+    expect(map.getIndex(1, 1)).toBe(3);
   });
 
-  it('re-calculates bounds', () => {
-    const map = new Tilemap();
-
-    map.add({x: -1, y: -1});
-    map.add({x: 0, y: 0});
-    map.add({x: 1, y: 1});
-
-    expect(map.bounds).toEqual({minX: -1, maxX: 1, minY: -1, maxY: 1});
-
-    map.remove({x: 1, y: 1});
-    expect(map.bounds).toEqual({minX: -1, maxX: 0, minY: -1, maxY: 0});
-
-    map.remove({x: -1, y: -1});
-    expect(map.bounds).toEqual({minX: 0, maxX: 0, minY: 0, maxY: 0});
+  it('should remove value by index', () => {
+    const map = new Tilemap([1, 0, 1], 3);
+    map.removeByIndex(2);
+    expect(map.values).toEqual([1, 0, 0]);
   });
 
-  it('re-calculates local bounds', () => {
-    const map = new Tilemap();
+  it('should calculate bounds', () => {
+    const map = new Tilemap([1, 0, 1, 1], 4);
 
-    map.add({x: -1, y: -1});
-    map.add({x: 0, y: 0});
-    map.add({x: 1, y: 1});
-
-    expect(map.localBounds).toEqual({minX: -24, maxX: 48, minY: -24, maxY: 48});
-
-    map.remove({x: 1, y: 1});
-    expect(map.localBounds).toEqual({minX: -24, maxX: 24, minY: -24, maxY: 24});
-
-    map.remove({x: -1, y: -1});
-    expect(map.localBounds).toEqual({minX: 0, maxX: 24, minY: 0, maxY: 24});
+    expect(map.bounds).toEqual({
+      minX: 0,
+      maxX: 3,
+      minY: 0,
+      maxY: 0,
+    });
   });
 
-  it('returns closest tiles for point', () => {
-    // 1 1 0
-    // 1 X 0
-    // 0 X P
+  it('should re-calculate bounds', () => {
+    const map = new Tilemap([1, 0, 1, 1], 4);
 
-    const map = new Tilemap();
-    const a = {x: 1, y: 1};
-    const b = {x: 1, y: 2};
-
-    map.add({x: 0, y: 0});
-    map.add({x: 1, y: 0});
-    map.add({x: 0, y: 1});
-    map.add(a);
-    map.add(b);
-
-    expect(map.closest(2, 2)).toEqual([
-      a,
-      undefined,
-      undefined,
-      b,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined
-    ]);
+    map.removeByIndex(0);
+    expect(map.bounds).toEqual({
+      minX: 2,
+      maxX: 3,
+      minY: 0,
+      maxY: 0,
+    });
   });
 
-  it('returns null for point outside bounds', () => {
-    // 1 1 0
-    // 0 0 0
-    // 0 0 P
+  // prettier-ignore
+  test.each([
+    [
+      'middle', 3, [1, 1],
+      [ 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9 ],
 
-    const map = new Tilemap();
-    const a = {x: 0, y: 0};
-    const b = {x: 1, y: 0};
+      [ 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9 ]
+    ],
+    [
+      'top-left', 3, [0, 0],
+      [ 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9 ],
 
-    map.add(a);
-    map.add(b);
+      [ 0, 0, 0,
+        0, 1, 2,
+        0, 4, 5 ]
+    ],
+    [
+      'top-left-outside', 3, [-1, -1],
+      [ 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9 ],
 
-    expect(map.closest(2, 2)).toBe(null);
+      [ 0, 0, 0,
+        0, 0, 0,
+        0, 0, 1 ]
+    ],
+    [
+      'top-left-8x8', 4, [1, 1],
+      [ 1, 2, 3, 4,
+        5, 6, 7, 8,
+        9, 1, 2, 3,
+        4, 5, 6, 7 ],
+
+      [ 1, 2, 3,
+        5, 6, 7,
+        9, 1, 2 ],
+    ],
+    [
+      'top-right', 3, [2, 0],
+      [ 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9 ],
+
+      [ 0, 0, 0,
+        2, 3, 0,
+        5, 6, 0 ]
+    ],
+    [
+      'top-right-outside', 3, [3, -1],
+      [ 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9 ],
+
+      [ 0, 0, 0,
+        0, 0, 0,
+        3, 0, 0 ]
+    ],
+    [
+      'bottom-right', 3, [2, 2],
+      [ 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9 ],
+
+      [ 5, 6, 0,
+        8, 9, 0,
+        0, 0, 0 ]
+    ],
+    [
+      'bottom-right-outside', 3, [3, 3],
+      [ 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9 ],
+
+      [ 9, 0, 0,
+        0, 0, 0,
+        0, 0, 0 ]
+    ],
+    [
+      'bottom-right-8x8', 4, [2, 2],
+      [ 1, 2, 3, 4,
+        5, 6, 7, 8,
+        9, 1, 2, 3,
+        4, 5, 6, 7 ],
+
+      [ 6, 7, 8,
+        1, 2, 3,
+        5, 6, 7 ],
+    ],
+    [
+      'bottom-left', 3, [0, 2],
+      [ 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9 ],
+
+      [ 0, 4, 5,
+        0, 7, 8,
+        0, 0, 0 ]
+    ],
+    [
+      'bottom-left-outside', 3, [-1, 3],
+      [ 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9 ],
+
+      [ 0, 0, 7,
+        0, 0, 0,
+        0, 0, 0 ]
+    ],
+    [
+      'outside', 3, [10, 3],
+      [ 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9 ],
+
+      [ 0, 0, 0,
+        0, 0, 0,
+        0, 0, 0 ]
+    ],
+    [
+      'vertical', 1, [0, 0],
+      [ 1,
+        2,
+        3,
+        4,
+        5 ],
+
+      [ 0, 0, 0,
+        0, 1, 0,
+        0, 2, 0 ]
+    ],
+    [
+      'horizontal', 5, [0, 0],
+      [ 1, 2, 3, 4, 5 ],
+
+      [ 0, 0, 0,
+        0, 1, 2,
+        0, 0, 0 ]
+    ],
+  ])('should return closest values for: %s', (name, width, pos, values, result) => {
+    const map = new Tilemap(values, width);
+    expect(map.closest(pos[0], pos[1])).toEqual(result);
   });
 });
