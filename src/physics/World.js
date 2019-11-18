@@ -1,119 +1,30 @@
-import RTree from 'rbush';
 import {arrayRemove} from '@utils/array';
 import Force from '@models/Force';
-import Collider from '@physics/Collider';
+import Collider, {colliderType} from '@physics/Collider';
 
-import {calculateGravity} from './internal/gravity';
-import bodyTilesCollision from './collisions/bodyTilesCollision';
-import bodyGroupCollision from './collisions/bodyGroupCollision';
-import treeSearch from './collisions/treeSearch';
-
-const COLLIDER_COLLIDE = Symbol('collide');
-const COLLIDER_OVERLAP = Symbol('overlap');
-const COLLIDER_GRAVITY = Symbol('gravity');
+import {resolveCollider} from './resolvers';
 
 export const EDGE = {
   TOP: Symbol('top'),
   RIGHT: Symbol('right'),
   BOTTOM: Symbol('bottom'),
-  LEFT: Symbol('left')
+  LEFT: Symbol('left'),
 };
 
 class World {
   constructor() {
     this.bodies = [];
-    this.staticBodies = [];
     this.colliders = [];
-
-    // r-trees
-    this.tree = new RTree();
-    this.staticTree = new RTree();
 
     // processing
     this._destroyStack = [];
     this._destroyIndex = 0;
   }
 
-  add(entity) {
-    if (entity.isBody) {
-      if (entity.type === 'dynamic') {
-        this.bodies.push(entity);
-      }
-      if (entity.type === 'static') {
-        this.staticBodies.push(entity);
-        this.staticTree.insert(entity);
-      }
-    } else if (entity.isGroup) {
-      entity.children.forEach(child => {
-        this.add(child);
-      });
-    }
-  }
-
-  collide(object1, object2, callback) {
-    this.colliders.push(
-      new Collider({
-        type: COLLIDER_COLLIDE,
-        tree: this._getCommonTree(object2),
-        world: this,
-        object1,
-        object2,
-        callback
-      })
-    );
-  }
-
-  overlap(object1, object2, callback) {
-    this.colliders.push(
-      new Collider({
-        type: COLLIDER_OVERLAP,
-        tree: this._getCommonTree(object2),
-        world: this,
-        object1,
-        object2,
-        callback
-      })
-    );
-  }
-
-  gravity(object1, object2, callback) {
-    this.colliders.push(
-      new Collider({
-        type: COLLIDER_GRAVITY,
-        world: this,
-        object1,
-        object2,
-        callback
-      })
-    );
-
-    object1.gravity = new Force(0, 1, {
-      strength: 25,
-      dexterity: 0.6
-    });
-  }
-
   update(deltaTime) {
-    let index;
-
-    // dynamic bodies phase
-    index = this.bodies.length;
-
-    while (index > 0) {
-      const body = this.bodies[--index];
-
-      if (body.isAlive) {
-        body.update(deltaTime);
-      } else {
-        this._destroyStack[this._destroyIndex++] = body;
-      }
-    }
-
-    // static bodies phase
-    index = this.staticBodies.length;
-
-    while (index > 0) {
-      const body = this.staticBodies[--index];
+    // update phase
+    for (let index = 0; index < this.bodies.length; index++) {
+      const body = this.bodies[index];
 
       if (body.isAlive) {
         body.update(deltaTime);
@@ -128,21 +39,58 @@ class World {
     }
 
     // simulation phase
-    // todo: limit simulation fps
-    this.tree.clear();
-    this.tree.load(this.bodies);
-
-    const {length} = this.colliders;
-    for (let i = 0; i < length; i++) {
-      this._resolveCollider(this.colliders[i], deltaTime);
+    for (let index = 0; index < this.colliders.length; index++) {
+      resolveCollider(this.colliders[index], deltaTime);
     }
+  }
 
-    // post update phase
-    index = this.bodies.length;
-
-    while (index > 0) {
-      this.bodies[--index].postUpdate(deltaTime);
+  addBody(body) {
+    if (!body.isBody) {
+      throw `${body.constructor.name} is not a Body`;
     }
+    this.bodies.push(body);
+  }
+
+  gravity(object1, object2, callback) {
+    this.colliders.push(
+      new Collider({
+        type: colliderType.gravity,
+        object1,
+        object2,
+        callback,
+      })
+    );
+
+    object1.gravity = new Force(0, 1, {
+      strength: 0.1, //25,
+      dexterity: 0.6,
+    });
+  }
+
+  collide(object1, object2, callback) {
+    this.colliders.push(
+      new Collider({
+        type: COLLIDER_COLLIDE,
+        tree: this._getCommonTree(object2),
+        world: this,
+        object1,
+        object2,
+        callback,
+      })
+    );
+  }
+
+  overlap(object1, object2, callback) {
+    this.colliders.push(
+      new Collider({
+        type: COLLIDER_OVERLAP,
+        tree: this._getCommonTree(object2),
+        world: this,
+        object1,
+        object2,
+        callback,
+      })
+    );
   }
 
   updateColliders(body) {
@@ -150,39 +98,6 @@ class World {
 
     while (index > 0) {
       this.colliders[--index].update(body);
-    }
-  }
-
-  treeSearch(rect) {
-    return treeSearch([this.tree, this.staticTree], rect);
-  }
-
-  _resolveCollider(collider, deltaTime) {
-    if (!collider.isActive) {
-      return;
-    }
-    const {object1, object2, type} = collider;
-
-    switch (type) {
-      case COLLIDER_GRAVITY:
-        if (object1.isBody && object2.isTilemap) {
-          this._handleGravityCollider(collider, deltaTime);
-        }
-        break;
-      case COLLIDER_COLLIDE:
-        if (object1.isBody) {
-          if (object2.isTilemap) {
-            this._handleBodyTilesCollider(collider, deltaTime);
-          } else if (object2.isGroup) {
-            this._handleBodyGroupCollider(collider);
-          }
-        }
-        break;
-      case COLLIDER_OVERLAP:
-        if (object1.isBody && object2.isGroup) {
-          this._handleBodyGroupCollider(collider);
-        }
-        break;
     }
   }
 
@@ -206,37 +121,6 @@ class World {
     const {type, object1, object2, callback, tree} = collider;
     const separate = type === COLLIDER_COLLIDE;
     bodyGroupCollision(object1, object2, callback, separate, tree);
-  }
-
-  _getCommonTree(elem) {
-    let type = null;
-
-    // prettier-ignore
-    if (elem.isBody) {
-      type = elem.type;
-    }
-    else if (elem.isGroup) {
-      elem.forEach(child => {
-        if (type !== child.type) {
-          if (type === null) {
-            type = child.type;
-          } else {
-            type = 'both';
-            return false;
-          }
-        }
-      });
-    }
-    switch (type) {
-      case 'dynamic':
-        return [this.tree];
-      case 'static':
-        return [this.staticTree];
-      case 'both':
-        return [this.tree, this.staticTree];
-      default:
-        return null;
-    }
   }
 
   _destroy(body) {

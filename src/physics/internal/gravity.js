@@ -9,11 +9,16 @@ export const BORDER_BORDER = Symbol('border-border');
 const ray = createPool({
   type: '',
   distance: 0,
-  direction: new Vector()
+  direction: new Vector(),
 });
 
 export function calculateGravity(body, tiles) {
-  const outside = isOutsideBounds(body, tiles);
+  const btn = tiles.raycast(body.tileX, body.tileY, 0, 1);
+
+  console.log({btn});
+
+  return null;
+  const outside = testOutsideBounds(body, tiles);
 
   if (outside) {
     return outside;
@@ -24,7 +29,7 @@ export function calculateGravity(body, tiles) {
     return null;
   }
 
-  const closest = tiles.closest(body.gridX, body.gridY);
+  const closest = tiles.closest(body.tileX, body.tileY);
 
   // corner case inside bounds
   if (isCornerCase(closest)) {
@@ -36,7 +41,7 @@ export function calculateGravity(body, tiles) {
   const bottom = raycast(ray(2), tiles, body, 0, 1);
   const left = raycast(ray(3), tiles, body, -1, 0);
 
-  // console.log({top, right, bottom, left});
+  console.log({top, right, bottom, left});
 
   const y = sortPair(top, bottom);
   const x = sortPair(left, right);
@@ -97,7 +102,7 @@ export function calculateGravity(body, tiles) {
   }
 }
 
-function isOutsideBounds(body, tiles) {
+function testOutsideBounds(body, tiles) {
   const {minX, maxX, minY, maxY} = tiles.localBounds;
 
   // corners

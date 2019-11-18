@@ -1,11 +1,15 @@
+export const colliderType = {
+  gravity: 0,
+  overlap: 1,
+  collide: 2,
+};
+
 class Collider {
-  constructor({world, object1, object2, callback, type, tree = null}) {
-    this.world = world;
+  constructor({object1, object2, callback, type}) {
     this.object1 = object1;
     this.object2 = object2;
     this.callback = callback;
     this.type = type;
-    this.tree = tree;
 
     // flags
     this.isActive = true;
@@ -43,8 +47,6 @@ class Collider {
   }
 
   destroy() {
-    this.world.removeCollider(this);
-    this.world = null;
     this.object1 = null;
     this.object2 = null;
     this.callback = null;

@@ -1,7 +1,9 @@
 import Vector from '@models/Vector';
 
 export function raycast(out, tiles, body, dX, dY) {
-  const match = tiles.closestInDirection(body.gridX, body.gridY, dX, dY);
+  const match = tiles.closestInDirection(body.tileX, body.tileY, dX, dY);
+
+  console.log({match});
 
   if (match) {
     out.type = 'solid';
@@ -17,16 +19,16 @@ export function raycast(out, tiles, body, dX, dY) {
 
 function distanceToBorder(tiles, body, dX, dY) {
   if (dY === -1) {
-    return Math.abs(tiles.bounds.minY - body.gridY) + 1;
+    return Math.abs(tiles.tilesBounds.minY - body.gridY) + 1;
   }
   if (dX === 1) {
-    return Math.abs(tiles.bounds.maxX - body.gridX) + 1;
+    return Math.abs(tiles.tilesBounds.maxX - body.gridX) + 1;
   }
   if (dY === 1) {
-    return Math.abs(tiles.bounds.maxY - body.gridY) + 1;
+    return Math.abs(tiles.tilesBounds.maxY - body.gridY) + 1;
   }
   if (dX === -1) {
-    return Math.abs(tiles.bounds.minX - body.gridX) + 1;
+    return Math.abs(tiles.tilesBounds.minX - body.gridX) + 1;
   }
   return 0;
 }

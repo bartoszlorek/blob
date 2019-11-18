@@ -2,62 +2,57 @@ import {baseSize, localToGrid} from '@app/consts';
 import Vector from '@models/Vector';
 
 class Body {
-  constructor(sprite, type = 'static') {
-    this.type = type;
-
-    // pixijs di
-    const {x, y} = sprite;
+  constructor(sprite) {
     this.sprite = sprite;
 
-    sprite.anchor.set(0.5);
-    sprite.x = x + baseSize / 2;
-    sprite.y = y + baseSize / 2;
-
     // parameters
-    this.position = new Vector(x, y);
     this.traits = [];
     this.isAlive = true;
     this.isBody = true;
+
+    // physics
+    this.velocity = new Vector(0, 0);
+    this.gravity = null;
   }
 
   set minX(value) {
-    this.position.x = value;
+    this.sprite.position.x = value;
   }
 
   set minY(value) {
-    this.position.y = value;
+    this.sprite.position.y = value;
   }
 
   set maxX(value) {
-    this.position.x = value - baseSize;
+    this.sprite.position.x = value - baseSize;
   }
 
   set maxY(value) {
-    this.position.y = value - baseSize;
+    this.sprite.position.y = value - baseSize;
   }
 
   get minX() {
-    return this.position.x;
+    return this.sprite.position.x;
   }
 
   get minY() {
-    return this.position.y;
+    return this.sprite.position.y;
   }
 
   get maxX() {
-    return this.position.x + baseSize;
+    return this.sprite.position.x + baseSize;
   }
 
   get maxY() {
-    return this.position.y + baseSize;
+    return this.sprite.position.y + baseSize;
   }
 
-  get gridX() {
-    return localToGrid(this.position.x);
+  get tileX() {
+    return localToGrid(this.sprite.position.x);
   }
 
-  get gridY() {
-    return localToGrid(this.position.y);
+  get tileY() {
+    return localToGrid(this.sprite.position.y);
   }
 
   addTrait(trait) {
@@ -66,16 +61,12 @@ class Body {
   }
 
   update(deltaTime) {
-    let index = this.traits.length;
-
-    while (index > 0) {
-      this.traits[--index].update(this, deltaTime);
+    for (let index = 0; index < this.traits.length; index++) {
+      this.traits[index].update(this, deltaTime);
     }
-  }
 
-  updateSprite() {
-    this.sprite.x = this.position.x + baseSize / 2;
-    this.sprite.y = this.position.y + baseSize / 2;
+    this.sprite.position.x += this.velocity.x * deltaTime;
+    this.sprite.position.y += this.velocity.y * deltaTime;
   }
 
   intersection(other) {
