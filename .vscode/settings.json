@@ -1,5 +1,3 @@
 {
-  "editor.formatOnSave": true,
-  "prettier.singleQuote": true,
-  "prettier.bracketSpacing": false
+  "editor.formatOnSave": true
 }
