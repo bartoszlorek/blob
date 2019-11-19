@@ -7,7 +7,7 @@ import Jump from '@traits/Jump';
 import Move from '@traits/Move';
 
 function createPlayer({sheet, specs}) {
-  const {id, position} = specs.player;
+  const {id, position} = specs.sprites.player;
   const [x, y] = position[0];
 
   const sprite = new Sprite(sheet.getById(id));

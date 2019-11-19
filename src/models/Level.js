@@ -6,6 +6,8 @@ import Pointer from '@models/Pointer';
 
 import {createPlayer, createTiles} from '@layers';
 
+import Ray from '../physics/internal/Ray';
+
 class Level extends Scene {
   constructor({global, specs}) {
     super(global);
@@ -15,13 +17,13 @@ class Level extends Scene {
   }
 
   create() {
+    this.sheet = this.createSpritesheet();
+
     const props = {
       global: this.global,
       sheet: this.sheet,
       specs: this.specs,
     };
-
-    this.sheet = this.createSpritesheet();
 
     const [tiles] = createTiles(props);
     const [player] = createPlayer(props);
@@ -33,18 +35,27 @@ class Level extends Scene {
     const pointer = new Pointer(this.global);
     this.foreground.addChild(pointer.marker);
 
-    pointer.onClick = (x, y) => {
-      const dist = tiles.raycast(x, y, 0, 1);
-      console.log({x, y, dist});
-    };
+    const rayTop = new Ray(0, -1);
+    const rayRight = new Ray(1, 0);
+    const rayBottom = new Ray(0, 1);
+    const rayLeft = new Ray(-1, 0);
 
-    //
+    pointer.onClick = (x, y) => {
+      // rayTop.cast(tiles, x, y);
+      rayRight.cast(tiles, x, y);
+      // rayBottom.cast(tiles, x, y);
+      // rayLeft.cast(tiles, x, y);
+
+      console.log({rayRight});
+
+      // console.log({rayTop, rayRight, rayBottom, rayLeft});
+    };
 
     // physics
     // this.physics.addBody(player);
     // this.physics.gravity(player, tiles, body => {
     //   body.gravity.applyTo(body.velocity);
-    //   body.sprite.rotation = vectorRotation(body.gravity);
+    //   // body.sprite.rotation = vectorRotation(body.gravity);
     // });
 
     // final

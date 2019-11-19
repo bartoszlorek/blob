@@ -58,10 +58,10 @@ class Tilemap {
     const oy = y - this.offset[1];
     const {minX, maxX, minY, maxY} = this.bounds;
 
-    // shift distance closer when the point is outside the map
-    const distX = dx > 0 ? minX - ox : dx < 0 ? maxX - ox : 0;
-    const distY = dy > 0 ? minY - oy : dy < 0 ? maxY - oy : 0;
-    let distance = Math.abs(distX + distY);
+    // shift length when the point is outside the map
+    const lenX = dx > 0 ? minX - ox : dx < 0 ? maxX - ox : 0;
+    const lenY = dy > 0 ? minY - oy : dy < 0 ? maxY - oy : 0;
+    let length = Math.abs(lenX + lenY);
 
     // limit amount of steps from one side to the other of the map
     const limitX = dx > 0 ? maxX - ox : dx < 0 ? ox - minX : 0;
@@ -69,18 +69,18 @@ class Tilemap {
     let limit = limitX + limitY;
 
     // initial index and index shift between steps
-    const ix = ox + distX;
-    const iy = oy + distY;
+    const ix = ox + lenX;
+    const iy = oy + lenY;
 
     let currentIndex = this.getIndex(ix, iy);
     const indexShift = this.getIndex(ix + dx, iy + dy) - currentIndex;
 
     while (0 <= limit--) {
       if (this.values[currentIndex] > 0) {
-        return distance;
+        return length;
       }
       currentIndex += indexShift;
-      distance += 1;
+      length += 1;
     }
     return -1;
   }

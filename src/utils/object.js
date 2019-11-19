@@ -10,7 +10,7 @@ export function objectForEach(object, iteratee) {
   }
 }
 
-export function createPool(initial) {
+export function createObjectPool(initial) {
   const pool = [];
 
   return function(index) {
