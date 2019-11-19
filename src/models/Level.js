@@ -2,10 +2,9 @@ import {baseSize} from '@app/consts';
 import Scene from '@models/Scene';
 import Spritesheet from '@models/Spritesheet';
 import {vectorRotation} from '@utils/physics';
-import Tileset from '@models/Tileset';
 import Pointer from '@models/Pointer';
 
-import {createPlayer} from '@layers';
+import {createPlayer, createTiles} from '@layers';
 
 class Level extends Scene {
   constructor({global, specs}) {
@@ -16,17 +15,16 @@ class Level extends Scene {
   }
 
   create() {
-    this.sheet = this.createSpritesheet();
-
     const props = {
+      global: this.global,
       sheet: this.sheet,
-      specs: this.specs.sprites,
+      specs: this.specs,
     };
 
-    const tiles = new Tileset(this.specs.tiles);
-    tiles.fromSpritesheet(this.sheet);
+    this.sheet = this.createSpritesheet();
 
-    const [player, cleanupPlayer] = createPlayer(props);
+    const [tiles] = createTiles(props);
+    const [player] = createPlayer(props);
 
     this.foreground.addChild(tiles.graphics);
     this.foreground.addChild(player.sprite);

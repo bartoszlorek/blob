@@ -64,8 +64,8 @@ class Tilemap {
     let distance = Math.abs(distX + distY);
 
     // limit amount of steps from one side to the other of the map
-    const limitX = dx < 0 ? ox - minX : dx > 0 ? maxX - ox : 0;
-    const limitY = dy < 0 ? oy - minY : dy > 0 ? maxY - oy : 0;
+    const limitX = dx > 0 ? maxX - ox : dx < 0 ? ox - minX : 0;
+    const limitY = dy > 0 ? maxY - oy : dy < 0 ? oy - minY : 0;
     let limit = limitX + limitY;
 
     // initial index and index shift between steps
