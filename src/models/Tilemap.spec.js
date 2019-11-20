@@ -201,7 +201,27 @@ describe('Tilemap()', () => {
       ${'left'}  | ${[2, 3]}   | ${dir.left}  | ${-1}
       ${'right'} | ${[-1, -1]} | ${dir.right} | ${-1}
     `(
-      'should return -1 for rays that will MISS map going $name',
+      'should return $result for rays that will miss map going $name',
+      ({xy: [x, y], dxy: [dx, dy], result}) => {
+        const map = new Tilemap(uValues, 3);
+        expect(map.raycast(x, y, dx, dy)).toBe(result);
+      }
+    );
+
+    //      ↑
+    //   1, 0, 3
+    // ← 4  0  6 →
+    //   7  8  9
+    //      ↓
+
+    test.each`
+      name       | xy         | dxy          | result
+      ${'up'}    | ${[1, -1]} | ${dir.up}    | ${-1}
+      ${'down'}  | ${[1, 3]}  | ${dir.down}  | ${-1}
+      ${'left'}  | ${[-1, 1]} | ${dir.left}  | ${-1}
+      ${'right'} | ${[3, 1]}  | ${dir.right} | ${-1}
+    `(
+      'should return $result for rays going $name out-out map',
       ({xy: [x, y], dxy: [dx, dy], result}) => {
         const map = new Tilemap(uValues, 3);
         expect(map.raycast(x, y, dx, dy)).toBe(result);
@@ -228,7 +248,7 @@ describe('Tilemap()', () => {
       ${'left'}  | ${[3, 1]}  | ${dir.left}  | ${2}
       ${'right'} | ${[-1, 1]} | ${dir.right} | ${2}
     `(
-      'should return length of rays going $name OUT-IN map',
+      'should return $result for rays going $name out-in map',
       ({xy: [x, y], dxy: [dx, dy], result}) => {
         const map = new Tilemap(xValues, 3);
         expect(map.raycast(x, y, dx, dy)).toBe(result);
@@ -255,7 +275,7 @@ describe('Tilemap()', () => {
       ${'left'}  | ${[3, 1]}  | ${dir.left}  | ${-1}
       ${'right'} | ${[-1, 1]} | ${dir.right} | ${-1}
     `(
-      'should return -1 for rays going $name and THROUGH map',
+      'should return $result for rays going $name and through map',
       ({xy: [x, y], dxy: [dx, dy], result}) => {
         const map = new Tilemap(throughValues, 3);
         expect(map.raycast(x, y, dx, dy)).toBe(result);
@@ -284,7 +304,7 @@ describe('Tilemap()', () => {
       ${'left'}  | ${[4, 3]} | ${dir.left}  | ${2}
       ${'right'} | ${[0, 1]} | ${dir.right} | ${2}
     `(
-      'should return length of rays going $name INSIDE map',
+      'should return $result for rays going $name inside map',
       ({xy: [x, y], dxy: [dx, dy], result}) => {
         const map = new Tilemap(plusValues, 5);
         expect(map.raycast(x, y, dx, dy)).toBe(result);
@@ -304,7 +324,7 @@ describe('Tilemap()', () => {
       ${'left'}  | ${[0, 1]} | ${dir.left}  | ${-1}
       ${'right'} | ${[4, 3]} | ${dir.right} | ${-1}
     `(
-      'should return length of rays going $name IN-OUT map',
+      'should return $result for rays going $name in-out map',
       ({xy: [x, y], dxy: [dx, dy], result}) => {
         const map = new Tilemap(plusValues, 5);
         expect(map.raycast(x, y, dx, dy)).toBe(result);
