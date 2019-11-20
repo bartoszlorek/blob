@@ -54,20 +54,18 @@ class Tilemap {
   }
 
   raycast(x, y, dx, dy) {
-    const ox = x - this.offset[0];
-    const oy = y - this.offset[1];
     const {minX, maxX, minY, maxY} = this.bounds;
 
     // ignore rays that for sure will miss the map
-    if (dx !== 0 ? minY > oy || maxY < oy : minX > ox || maxX < ox) {
+    if (dx !== 0 ? minY > y || maxY < y : minX > x || maxX < x) {
       return -1;
     }
 
     // shift origin point closer to the map before casting ray
-    const shiftX = dx > 0 ? minX - ox : dx < 0 ? maxX - ox : 0;
-    const shiftY = dy > 0 ? minY - oy : dy < 0 ? maxY - oy : 0;
-    const startX = ox + shiftX;
-    const startY = oy + shiftY;
+    const shiftX = dx > 0 ? minX - x : dx < 0 ? maxX - x : 0;
+    const shiftY = dy > 0 ? minY - y : dy < 0 ? maxY - y : 0;
+    const startX = x + shiftX - this.offset[0];
+    const startY = y + shiftY - this.offset[1];
 
     let length = Math.abs(shiftX + shiftY);
     let currentIndex = this.getIndex(startX, startY);

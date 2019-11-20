@@ -1,5 +1,12 @@
 import Tilemap from './Tilemap';
 
+const dir = {
+  up: [0, -1],
+  down: [0, 1],
+  left: [-1, 0],
+  right: [1, 0],
+};
+
 describe('Tilemap()', () => {
   it('should create from array of values', () => {
     const map = new Tilemap([1, 0, 1], 3);
@@ -48,6 +55,10 @@ describe('Tilemap()', () => {
       7, 8, 9
     ];
 
+    // 1. 2  3
+    // 4  5  6
+    // 7  8  9
+
     // prettier-ignore
     test.each([
       [
@@ -92,7 +103,6 @@ describe('Tilemap()', () => {
           0, 0, 0,
           0, 0, 0 ]
       ],
-      
       [
         'bottom-left-corner', [0, 2],
         [ 0, 4, 5,
@@ -173,14 +183,57 @@ describe('Tilemap()', () => {
     });
   });
 
-  describe('raycast()', () => {
-    const dir = {
-      up: [0, -1],
-      down: [0, 1],
-      left: [-1, 0],
-      right: [1, 0],
-    };
+  describe('closest() + offset', () => {
+    // prettier-ignore
+    const values3 = [
+      1, 2, 3,
+      4, 5, 6,
+      7, 8, 9
+    ];
 
+    // 1  2  3
+    // 4  5. 6
+    // 7  8  9
+
+    // prettier-ignore
+    test.each([
+      [
+        'middle', [0, 0],
+        [ 1, 2, 3,
+          4, 5, 6,
+          7, 8, 9 ]
+      ],
+      [
+        'top-left-corner', [-1, -1],
+        [ 0, 0, 0,
+          0, 1, 2,
+          0, 4, 5 ]
+      ],
+      [
+        'top-right-corner', [1, -1],
+        [ 0, 0, 0,
+          2, 3, 0,
+          5, 6, 0 ]
+      ],
+      [
+        'bottom-right-corner', [1, 1],
+        [ 5, 6, 0,
+          8, 9, 0,
+          0, 0, 0 ]
+      ],
+      [
+        'bottom-left-corner', [-1, 1],
+        [ 0, 4, 5,
+          0, 7, 8,
+          0, 0, 0 ]
+      ],
+    ])('return closest values from 3x3 for %s', (name, [x, y], result) => {
+      const map = new Tilemap(values3, 3, [-1, -1]);
+      expect(map.closest(x, y)).toEqual(result);
+    });
+  });
+
+  describe('raycast()', () => {
     // prettier-ignore
     const uValues = [
       1, 0, 3,
@@ -188,8 +241,10 @@ describe('Tilemap()', () => {
       7, 8, 9
     ];
 
+    // [dot] refers to the origin
+
     // →
-    //   1  0  3 ↓
+    //   1. 0  3 ↓
     //   4  0  6
     //   7  8  9
     // ↑       ←
@@ -209,7 +264,7 @@ describe('Tilemap()', () => {
     );
 
     //      ↑
-    //   1, 0, 3
+    //   1. 0  3
     // ← 4  0  6 →
     //   7  8  9
     //      ↓
@@ -236,7 +291,7 @@ describe('Tilemap()', () => {
     ];
 
     //      ↓
-    //   1  0  3
+    //   1. 0  3
     // → 0  5  0 ←
     //   7  0  9
     //      ↑
@@ -263,7 +318,7 @@ describe('Tilemap()', () => {
     ];
 
     //      ↓
-    //   1  0  3
+    //   1. 0  3
     // → 0  0  0 ←
     //   7  0  9
     //      ↑
@@ -291,7 +346,7 @@ describe('Tilemap()', () => {
       0, 0, 9, 0, 0
     ];
 
-    // 0  ↓  1  0  0
+    // 0. ↓  1  0  0
     // →  0  2  0  0
     // 3  4  5  6  7
     // 0  0  8  0  ←
@@ -311,7 +366,7 @@ describe('Tilemap()', () => {
       }
     );
 
-    // 0  0  1  0  0
+    // 0. 0  1  0  0
     // ←  ↑  2  0  0
     // 3  4  5  6  7
     // 0  0  8  ↓  →
@@ -327,6 +382,33 @@ describe('Tilemap()', () => {
       'should return $result for rays going $name in-out map',
       ({xy: [x, y], dxy: [dx, dy], result}) => {
         const map = new Tilemap(plusValues, 5);
+        expect(map.raycast(x, y, dx, dy)).toBe(result);
+      }
+    );
+  });
+
+  describe('raycast() + offset', () => {
+    // prettier-ignore
+    const values = [
+      1, 2, 3,
+      4, 5, 6,
+    ];
+
+    //         ↓
+    //   1  2  3 ←
+    // → 4  5. 6
+    //   ↑
+
+    test.each`
+      name       | xy         | dxy          | result
+      ${'up'}    | ${[-1, 1]} | ${dir.up}    | ${1}
+      ${'down'}  | ${[1, -2]} | ${dir.down}  | ${1}
+      ${'left'}  | ${[2, -1]} | ${dir.left}  | ${1}
+      ${'right'} | ${[-2, 0]} | ${dir.right} | ${1}
+    `(
+      'should return $result for rays going $name out-in map',
+      ({xy: [x, y], dxy: [dx, dy], result}) => {
+        const map = new Tilemap(values, 3, [-1, -1]);
         expect(map.raycast(x, y, dx, dy)).toBe(result);
       }
     );
