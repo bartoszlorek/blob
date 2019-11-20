@@ -49,14 +49,6 @@ describe('Tilemap()', () => {
     ];
 
     // prettier-ignore
-    const values4 = [
-      1, 2, 3, 4,
-      5, 6, 7, 8,
-      9, 1, 2, 3,
-      4, 5, 6, 7
-    ];
-
-    // prettier-ignore
     test.each([
       [
         'middle', [1, 1],
@@ -125,6 +117,14 @@ describe('Tilemap()', () => {
     });
 
     // prettier-ignore
+    const values4 = [
+      1, 2, 3, 4,
+      5, 6, 7, 8,
+      9, 1, 2, 3,
+      4, 5, 6, 7
+    ];
+
+    // prettier-ignore
     test.each([
       [
         'top-left-corner', [1, 1],
@@ -174,82 +174,139 @@ describe('Tilemap()', () => {
   });
 
   describe('raycast()', () => {
+    const dir = {
+      up: [0, -1],
+      down: [0, 1],
+      left: [-1, 0],
+      right: [1, 0],
+    };
+
     // prettier-ignore
-    const valuesVase = [
+    const uValues = [
       1, 0, 3,
       4, 0, 6,
       7, 8, 9
     ];
 
+    // →
+    //   1  0  3 ↓
+    //   4  0  6
+    //   7  8  9
+    // ↑       ←
+
+    test.each`
+      name       | xy          | dxy          | result
+      ${'up'}    | ${[-1, 3]}  | ${dir.up}    | ${-1}
+      ${'down'}  | ${[3, 0]}   | ${dir.down}  | ${-1}
+      ${'left'}  | ${[2, 3]}   | ${dir.left}  | ${-1}
+      ${'right'} | ${[-1, -1]} | ${dir.right} | ${-1}
+    `(
+      'should return -1 for rays that will MISS map going $name',
+      ({xy: [x, y], dxy: [dx, dy], result}) => {
+        const map = new Tilemap(uValues, 3);
+        expect(map.raycast(x, y, dx, dy)).toBe(result);
+      }
+    );
+
     // prettier-ignore
-    const valuesThrough = [
+    const xValues = [
+      1, 0, 3,
+      0, 5, 0,
+      7, 0, 9
+    ];
+
+    //      ↓
+    //   1  0  3
+    // → 0  5  0 ←
+    //   7  0  9
+    //      ↑
+
+    test.each`
+      name       | xy         | dxy          | result
+      ${'up'}    | ${[1, 3]}  | ${dir.up}    | ${2}
+      ${'down'}  | ${[1, -1]} | ${dir.down}  | ${2}
+      ${'left'}  | ${[3, 1]}  | ${dir.left}  | ${2}
+      ${'right'} | ${[-1, 1]} | ${dir.right} | ${2}
+    `(
+      'should return length of rays going $name OUT-IN map',
+      ({xy: [x, y], dxy: [dx, dy], result}) => {
+        const map = new Tilemap(xValues, 3);
+        expect(map.raycast(x, y, dx, dy)).toBe(result);
+      }
+    );
+
+    // prettier-ignore
+    const throughValues = [
       1, 0, 3,
       0, 0, 0,
       7, 0, 9
     ];
 
+    //      ↓
+    //   1  0  3
+    // → 0  0  0 ←
+    //   7  0  9
+    //      ↑
+
     test.each`
-      name       | xy        | dxy        | result
-      ${'up'}    | ${[1, 1]} | ${[0, -1]} | ${-1}
-      ${'down'}  | ${[1, 1]} | ${[0, 1]}  | ${1}
-      ${'left'}  | ${[1, 1]} | ${[-1, 0]} | ${1}
-      ${'right'} | ${[1, 1]} | ${[1, 0]}  | ${1}
+      name       | xy         | dxy          | result
+      ${'up'}    | ${[1, 3]}  | ${dir.up}    | ${-1}
+      ${'down'}  | ${[1, -1]} | ${dir.down}  | ${-1}
+      ${'left'}  | ${[3, 1]}  | ${dir.left}  | ${-1}
+      ${'right'} | ${[-1, 1]} | ${dir.right} | ${-1}
     `(
-      'returns length of ray in `vase` shape for $name',
+      'should return -1 for rays going $name and THROUGH map',
       ({xy: [x, y], dxy: [dx, dy], result}) => {
-        const map = new Tilemap(valuesVase, 3);
+        const map = new Tilemap(throughValues, 3);
         expect(map.raycast(x, y, dx, dy)).toBe(result);
       }
     );
 
+    // prettier-ignore
+    const plusValues = [
+      0, 0, 1, 0, 0,
+      0, 0, 2, 0, 0,
+      3, 4, 5, 6, 7,
+      0, 0, 8, 0, 0,
+      0, 0, 9, 0, 0
+    ];
+
+    // 0  ↓  1  0  0
+    // →  0  2  0  0
+    // 3  4  5  6  7
+    // 0  0  8  0  ←
+    // 0  0  9  ↑  0
+
     test.each`
-      name       | xy         | dxy        | result
-      ${'up'}    | ${[1, 4]}  | ${[0, -1]} | ${2}
-      ${'down'}  | ${[1, -2]} | ${[0, 1]}  | ${4}
-      ${'left'}  | ${[4, 1]}  | ${[-1, 0]} | ${2}
-      ${'right'} | ${[-2, 1]} | ${[1, 0]}  | ${2}
+      name       | xy        | dxy          | result
+      ${'up'}    | ${[3, 4]} | ${dir.up}    | ${2}
+      ${'down'}  | ${[1, 0]} | ${dir.down}  | ${2}
+      ${'left'}  | ${[4, 3]} | ${dir.left}  | ${2}
+      ${'right'} | ${[0, 1]} | ${dir.right} | ${2}
     `(
-      'returns length of ray outside `vase` shape for $name',
+      'should return length of rays going $name INSIDE map',
       ({xy: [x, y], dxy: [dx, dy], result}) => {
-        const map = new Tilemap(valuesVase, 3);
+        const map = new Tilemap(plusValues, 5);
         expect(map.raycast(x, y, dx, dy)).toBe(result);
       }
     );
 
-    test.each`
-      name       | xy        | dxy        | result
-      ${'up'}    | ${[1, 1]} | ${[0, -1]} | ${-1}
-      ${'down'}  | ${[1, 1]} | ${[0, 1]}  | ${-1}
-      ${'left'}  | ${[1, 1]} | ${[-1, 0]} | ${-1}
-      ${'right'} | ${[1, 1]} | ${[1, 0]}  | ${-1}
-    `(
-      'returns length of ray `through` shape for $name',
-      ({xy: [x, y], dxy: [dx, dy], result}) => {
-        const map = new Tilemap(valuesThrough, 3);
-        expect(map.raycast(x, y, dx, dy)).toBe(result);
-      }
-    );
-
-    // x1
-    //    1, 0, 3 x2
-    //    0, 0, 0
-    // x3 7, 0, 9
-    //            x4
+    // 0  0  1  0  0
+    // ←  ↑  2  0  0
+    // 3  4  5  6  7
+    // 0  0  8  ↓  →
+    // 0  0  9  0  0
 
     test.each`
-      name          | xy          | dxy        | result
-      ${'up-x3'}    | ${[-1, 2]}  | ${[0, -1]} | ${-1}
-      ${'up-x4'}    | ${[3, 3]}   | ${[0, -1]} | ${-1}
-      ${'down-x1'}  | ${[-1, -1]} | ${[0, 1]}  | ${-1}
-      ${'down-x2'}  | ${[3, 0]}   | ${[0, 1]}  | ${-1}
-      ${'left-x3'}  | ${[-1, 2]}  | ${[-1, 0]} | ${-1}
-      ${'left-x4'}  | ${[3, 3]}   | ${[-1, 0]} | ${-1}
-      ${'right-x1'} | ${[-1, -1]} | ${[1, 0]}  | ${-1}
-      ${'right-x2'} | ${[3, 0]}   | ${[1, 0]}  | ${-1}
+      name       | xy        | dxy          | result
+      ${'up'}    | ${[1, 1]} | ${dir.up}    | ${-1}
+      ${'down'}  | ${[3, 3]} | ${dir.down}  | ${-1}
+      ${'left'}  | ${[0, 1]} | ${dir.left}  | ${-1}
+      ${'right'} | ${[4, 3]} | ${dir.right} | ${-1}
     `(
-      'returns length of ray `missing outside` for $name',
+      'should return length of rays going $name IN-OUT map',
       ({xy: [x, y], dxy: [dx, dy], result}) => {
-        const map = new Tilemap(valuesVase, 3);
+        const map = new Tilemap(plusValues, 5);
         expect(map.raycast(x, y, dx, dy)).toBe(result);
       }
     );

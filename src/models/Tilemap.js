@@ -58,24 +58,26 @@ class Tilemap {
     const oy = y - this.offset[1];
     const {minX, maxX, minY, maxY} = this.bounds;
 
-    // shift length when the point is outside the map
-    const lenX = dx > 0 ? minX - ox : dx < 0 ? maxX - ox : 0;
-    const lenY = dy > 0 ? minY - oy : dy < 0 ? maxY - oy : 0;
-    let length = Math.abs(lenX + lenY);
+    // ignore rays that for sure will miss the map
+    if (dx !== 0 ? minY > oy || maxY < oy : minX > ox || maxX < ox) {
+      return -1;
+    }
 
-    // limit amount of steps from one side to the other of the map
-    const limitX = dx > 0 ? maxX - ox : dx < 0 ? ox - minX : 0;
-    const limitY = dy > 0 ? maxY - oy : dy < 0 ? oy - minY : 0;
-    let limit = limitX + limitY;
+    // shift origin point closer to the map before casting ray
+    const shiftX = dx > 0 ? minX - ox : dx < 0 ? maxX - ox : 0;
+    const shiftY = dy > 0 ? minY - oy : dy < 0 ? maxY - oy : 0;
+    const startX = ox + shiftX;
+    const startY = oy + shiftY;
 
-    // initial index and index shift between steps
-    const ix = ox + lenX;
-    const iy = oy + lenY;
+    let length = Math.abs(shiftX + shiftY);
+    let currentIndex = this.getIndex(startX, startY);
+    const indexShift = this.getIndex(startX + dx, startY + dy) - currentIndex;
 
-    let currentIndex = this.getIndex(ix, iy);
-    const indexShift = this.getIndex(ix + dx, iy + dy) - currentIndex;
+    // the amount of steps should not be greater than distance
+    // between point to the edge on map in current direction
+    let limitSteps = (dx !== 0 ? maxX - minX : maxY - minY) - length;
 
-    while (0 <= limit--) {
+    while (0 <= limitSteps--) {
       if (this.values[currentIndex] > 0) {
         return length;
       }
