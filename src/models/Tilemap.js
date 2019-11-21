@@ -55,25 +55,42 @@ class Tilemap {
 
   raycast(x, y, dx, dy) {
     const {minX, maxX, minY, maxY} = this.bounds;
+    const horizontal = dx !== 0;
 
-    // ignore rays that for sure will miss the map
-    if (dx !== 0 ? minY > y || maxY < y : minX > x || maxX < x) {
+    // ignore ray that for sure will miss the map
+    if (horizontal ? minY > y || maxY < y : minX > x || maxX < x) {
       return -1;
     }
 
-    // shift origin point closer to the map before casting ray
-    const shiftX = dx > 0 ? minX - x : dx < 0 ? maxX - x : 0;
-    const shiftY = dy > 0 ? minY - y : dy < 0 ? maxY - y : 0;
+    const fromMin = horizontal ? x - minX : y - minY;
+    const fromMax = horizontal ? maxX - x : maxY - y;
+    const toMin = dx < 0 || dy < 0;
+    const toMax = dx > 0 || dy > 0;
+
+    // ignore ray in the opposite direction
+    if ((toMin && fromMin <= 0) || (toMax && fromMax <= 0)) {
+      return -1;
+    }
+
+    let shiftX = 0;
+    let shiftY = 0;
+    let length = 0;
+
+    // shift ray origin point closer to the map before casting ray
+    if ((toMin && fromMax < 0) || (toMax && fromMin < 0)) {
+      shiftX = dx > 0 ? minX - x : dx < 0 ? maxX - x : 0;
+      shiftY = dy > 0 ? minY - y : dy < 0 ? maxY - y : 0;
+      length = Math.abs(shiftX + shiftY);
+    }
+
     const startX = x + shiftX - this.offset[0];
     const startY = y + shiftY - this.offset[1];
-
-    let length = Math.abs(shiftX + shiftY);
     let currentIndex = this.getIndex(startX, startY);
     const indexShift = this.getIndex(startX + dx, startY + dy) - currentIndex;
 
     // the amount of steps should not be greater than distance
     // between point to the edge on map in current direction
-    let limitSteps = (dx !== 0 ? maxX - minX : maxY - minY) - length;
+    let limitSteps = fromMin + fromMax;
 
     while (0 <= limitSteps--) {
       if (this.values[currentIndex] > 0) {

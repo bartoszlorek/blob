@@ -412,5 +412,57 @@ describe('Tilemap()', () => {
         expect(map.raycast(x, y, dx, dy)).toBe(result);
       }
     );
+
+    // prettier-ignore
+    const sValues = [
+      0, 1, 1,
+      1, 0, 0,
+      1, 1, 1,
+      0, 0, 1,
+      1, 1, 0
+    ];
+
+    // ↓  1  1
+    // 1  0  ←
+    // 1  1. 1
+    // →  0  1
+    // 1  1  ↑
+
+    test.each`
+      name       | xy          | dxy          | result
+      ${'up'}    | ${[1, 2]}   | ${dir.up}    | ${1}
+      ${'down'}  | ${[-1, -2]} | ${dir.down}  | ${1}
+      ${'left'}  | ${[1, -1]}  | ${dir.left}  | ${2}
+      ${'right'} | ${[-1, 1]}  | ${dir.right} | ${2}
+    `(
+      'should return $result for rays going $name on s-shape',
+      ({xy: [x, y], dxy: [dx, dy], result}) => {
+        const map = new Tilemap(sValues, 3, [-1, -2]);
+        expect(map.raycast(x, y, dx, dy)).toBe(result);
+      }
+    );
+
+    // prettier-ignore
+    const platformValues = [
+      1, 1, 0, 5, 0, 4, 0, 1, 5,
+      0, 1, 1, 5, 0, 4, 1, 1, 5
+    ];
+
+    // 4  1  →  5  0. 4  ↓  1  5
+    // ↑  1  1  5  ←  4  1  1  5
+
+    test.each`
+      name       | xy         | dxy          | result
+      ${'up'}    | ${[-4, 1]} | ${dir.up}    | ${1}
+      ${'down'}  | ${[2, 0]}  | ${dir.down}  | ${1}
+      ${'left'}  | ${[0, 1]}  | ${dir.left}  | ${1}
+      ${'right'} | ${[-2, 0]} | ${dir.right} | ${1}
+    `(
+      'should return $result for rays going $name on platform',
+      ({xy: [x, y], dxy: [dx, dy], result}) => {
+        const map = new Tilemap(platformValues, 9, [-4, 0]);
+        expect(map.raycast(x, y, dx, dy)).toBe(result);
+      }
+    );
   });
 });
