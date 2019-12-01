@@ -46,6 +46,7 @@ describe('resolveTileCollision()', () => {
     ${'downLeft'}         | ${{x: 0, y: 0}}    | ${{x: 0.25, y: -0.25}}
     ${'downLeft-corner'}  | ${{x: 0, y: -2}}   | ${{x: 0, y: -0.25}}
     ${'downRight'}        | ${{x: 0, y: 0}}    | ${{x: 0, y: -0.25}}
+    ${'downRight-wall'}   | ${{x: 1, y: 0}}    | ${{x: -0.25, y: -0.25}}
     ${'downRight-corner'} | ${{x: 1, y: -1}}   | ${{x: 0, y: -0.25}}
     ${'left'}             | ${{x: 0, y: -1}}   | ${{x: 0.25, y: 0}}
     ${'left-out'}         | ${{x: 1, y: 0}}    | ${{x: 0, y: 0}}
