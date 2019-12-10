@@ -1,4 +1,5 @@
 import {baseSize} from '@app/consts';
+import BoundingBox from '@models/BoundingBox';
 import {
   resolveTileCollision,
   resolveTileCollisionLegacy,
@@ -24,25 +25,21 @@ const _velocity = {
 function collideCollider(collider, deltaTime) {
   const {object1, object2, callback} = collider;
 
-  const minX = object1.minX / baseSize;
-  const minY = object1.minY / baseSize;
+  // extract before own implementation
+  const {velocity, minX, minY} = object1;
 
-  _bbox.minX = minX;
-  _bbox.minY = minY;
-  _bbox.maxX = minX + 1;
-  _bbox.maxY = minY + 1;
+  const bbox = new BoundingBox([minX, minY], [baseSize, baseSize]);
+  const vec2 = [velocity.x * deltaTime, velocity.y * deltaTime];
 
-  _velocity.x = object1.velocity.x * deltaTime;
-  _velocity.y = object1.velocity.y * deltaTime;
+  const newBBox = resolveTileCollisionLegacy(object2, bbox, vec2);
 
-  const {x, y} = resolveTileCollisionLegacy(_out, object2, _bbox, _velocity);
-
-  if (x !== 0) {
-    object1.minX += x * baseSize;
+  if (object1.minX !== newBBox.min[0]) {
+    object1.minX = newBBox.min[0];
     object1.velocity.x = 0;
   }
-  if (y !== 0) {
-    object1.minY += y * baseSize;
+
+  if (object1.minY !== newBBox.min[1]) {
+    object1.minY = newBBox.min[1];
     object1.velocity.y = 0;
   }
 }

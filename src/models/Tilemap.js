@@ -1,13 +1,14 @@
-import Bounds from '@models/Bounds';
+import BoundingBox from '@models/BoundingBox';
 
 class Tilemap {
-  constructor(values = [], width = 8, offset = [0, 0]) {
+  constructor(values = [], tilesize = 32, dimension = 8, offset = [0, 0]) {
     this.values = values;
-    this.width = width;
+    this.tilesize = tilesize;
+    this.dimension = dimension;
     this.offset = offset;
 
-    this._shouldBoundsUpdate = true;
-    this._bounds = new Bounds();
+    this._shouldUpdateBoundingBox = true;
+    this._boundingBox = new BoundingBox();
 
     // prettier-ignore
     this._closestArray = [
@@ -18,7 +19,7 @@ class Tilemap {
   }
 
   getIndex(x, y) {
-    return y * this.width + x;
+    return x + y * this.dimension;
   }
 
   closest(x, y) {
@@ -104,28 +105,57 @@ class Tilemap {
 
   removeByIndex(index) {
     this.values[index] = 0;
-    this._shouldBoundsUpdate = true;
+    this._shouldUpdateBoundingBox = true;
   }
 
-  get bounds() {
-    if (this._shouldBoundsUpdate) {
-      this._calculateBounds();
+  get boundingBox() {
+    if (this._shouldUpdateBoundingBox) {
+      this._calculateBoundingBox();
     }
-    return this._bounds;
+    return this._boundingBox;
   }
 
-  _calculateBounds() {
-    this._bounds.clear();
-    this._shouldUpdateBounds = false;
-    const [ox, oy] = this.offset;
+  _calculateBoundingBox() {
+    let x = 0;
+    let y = 0;
+
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
 
     for (let index = 0; index < this.values.length; index++) {
-      if (this.values[index] > 0) {
-        const x = index % this.width;
-        const y = Math.floor(index / this.width);
-        this._bounds.add(x + ox, y + oy);
+      if (x === this.dimension) {
+        x = 0;
+        y += 1;
       }
+
+      if (this.values[index] > 0) {
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+
+      x += 1;
     }
+
+    const bbox = this._boundingBox;
+    bbox.min[0] = minX + this.offset[0];
+    bbox.min[1] = minY + this.offset[1];
+    bbox.max[0] = maxX + this.offset[0] + 1;
+    bbox.max[1] = maxY + this.offset[1] + 1;
+    bbox.dimension[0] = bbox.max[0] - bbox.min[0];
+    bbox.dimension[1] = bbox.max[1] - bbox.min[1];
+
+    // bbox.min[0] = (minX + this.offset[0]) * this.tilesize;
+    // bbox.min[1] = (minY + this.offset[1]) * this.tilesize;
+    // bbox.max[0] = (maxX + this.offset[0] + 1) * this.tilesize;
+    // bbox.max[1] = (maxY + this.offset[1] + 1) * this.tilesize;
+    // bbox.dimension[0] = bbox.max[0] - bbox.min[0];
+    // bbox.dimension[1] = bbox.max[1] - bbox.min[1];
+
+    this._shouldUpdateBoundingBox = false;
   }
 }
 

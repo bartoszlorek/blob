@@ -25,25 +25,47 @@ describe('Tilemap()', () => {
   });
 
   it('should calculate bounds', () => {
-    const map = new Tilemap([1, 0, 1, 1], 4);
+    // prettier-ignore
+    const map = new Tilemap([
+      1, 0, 1, 1,
+      1, 1, 1, 1
+    ], 8, 4);
 
-    expect(map.bounds).toEqual({
-      minX: 0,
-      maxX: 3,
-      minY: 0,
-      maxY: 0,
+    expect(map.boundingBox).toEqual({
+      min: [0, 0],
+      max: [32, 16],
+      vec2: [32, 16],
+    });
+  });
+
+  it('should calculate bounds with offset', () => {
+    // prettier-ignore
+    const map = new Tilemap([
+      1, 0, 1, 1,
+      1, 1, 1, 1
+    ], 8, 4, [-2, -1]);
+
+    expect(map.boundingBox).toEqual({
+      min: [-16, -8],
+      max: [16, 8],
+      vec2: [32, 16],
     });
   });
 
   it('should re-calculate bounds', () => {
-    const map = new Tilemap([1, 0, 1, 1], 4);
+    // prettier-ignore
+    const map = new Tilemap([
+      1, 0, 1, 1,
+      1, 1, 1, 1
+    ], 8, 4);
 
     map.removeByIndex(0);
-    expect(map.bounds).toEqual({
-      minX: 2,
-      maxX: 3,
-      minY: 0,
-      maxY: 0,
+    map.removeByIndex(4);
+
+    expect(map.boundingBox).toEqual({
+      min: [8, 0],
+      max: [32, 16],
+      vec2: [24, 16],
     });
   });
 

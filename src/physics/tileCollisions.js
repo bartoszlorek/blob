@@ -1,151 +1,85 @@
-const _bbox = {
-  minX: 0,
-  maxX: 0,
-  minY: 0,
-  maxY: 0,
-};
+import BoundingBox from '@models/BoundingBox';
 
-function applyCollision(axis, bbox, tilemap, velocity) {
-  const {bounds, offset} = tilemap;
-  const minX = Math.floor(bbox.minX);
-  const minY = Math.floor(bbox.minY);
-  const maxX = Math.ceil(bbox.maxX);
-  const maxY = Math.ceil(bbox.maxY);
+const _bbox = new BoundingBox();
+const _vec2 = [0, 0];
 
-  for (let y = minY; y < maxY; y++) {
-    if (y < bounds.minY || y > bounds.maxY) {
+// todo: cleanup legacy
+export {resolveTileCollisionLegacy} from './tileCollisionsLegacy';
+
+export function resolveTileCollision(tilemap, bbox, velocity) {
+  // we should assume that velocity was already applied to
+  // the bbox and before detecting collision we have to shift
+  // to the initial position.
+
+  _bbox.copy(bbox);
+  _bbox.translateX(-velocity[0]);
+  _bbox.translateY(-velocity[1]);
+
+  const aaxis = velocity[0] > velocity[1] ? 0 : 1;
+  const baxis = +!aaxis;
+
+  if (velocity[aaxis] !== 0) {
+    detectCollision(aaxis, tilemap, _bbox, velocity, handleCollision);
+
+    _vec2[aaxis] = velocity[aaxis];
+    _vec2[baxis] = 0;
+    _bbox.translate(_vec2);
+  }
+
+  if (velocity[baxis] !== 0) {
+    detectCollision(baxis, tilemap, _bbox, velocity, handleCollision);
+
+    _vec2[aaxis] = 0;
+    _vec2[baxis] = velocity[baxis];
+    _bbox.translate(_vec2);
+  }
+
+  return _bbox;
+}
+
+function handleCollision(value, index, diff, axis, velocity) {
+  velocity[axis] = diff;
+  return true;
+}
+
+function detectCollision(moveAxis, tilemap, box, velocity, onCollision) {
+  const {tilesize, boundingBox: tilebox, offset} = tilemap;
+
+  const positive = velocity[moveAxis] > 0;
+  const leading = box[positive ? 'max' : 'min'][moveAxis];
+
+  const direction = positive ? 1 : -1;
+  const moveStart = Math.floor(leading / tilesize);
+  const moveEnd = Math.floor((leading + velocity[moveAxis]) / tilesize);
+
+  const sideAxis = +!moveAxis;
+  const sideStart = Math.floor(box.min[sideAxis] / tilesize) | 0;
+  const sideEnd = Math.ceil(box.max[sideAxis] / tilesize) | 0;
+
+  for (let i = moveStart; i !== moveEnd + direction; i += direction) {
+    if (i < tilebox.min[moveAxis] || i >= tilebox.max[moveAxis]) {
       continue;
     }
-    for (let x = minX; x < maxX; x++) {
-      if (x < bounds.minX || x > bounds.maxX) {
+
+    for (let j = sideStart; j !== sideEnd; j += 1) {
+      if (j < tilebox.min[sideAxis] || j >= tilebox.max[sideAxis]) {
         continue;
       }
-      const index = tilemap.getIndex(x - offset[0], y - offset[1]);
 
-      if (tilemap.values[index] !== 0) {
-        const base = axis === 'X' ? x : y;
-        const edge = velocity > 0 ? base - 1 : base + 1;
-        bbox['min' + axis] = edge;
-        bbox['max' + axis] = edge + 1;
-      }
-    }
-  }
-}
+      _vec2[moveAxis] = i - offset[moveAxis];
+      _vec2[sideAxis] = j - offset[sideAxis];
 
-export function resolveTileCollision(out, tilemap, bbox, velocity) {
-  // we should assume that velocity was already applied to the bbox
-  // and before detecting collision on x-axis we have to shift y-axis
-  // to the initial position and then reapply it again.
+      const index = tilemap.getIndex.apply(tilemap, _vec2);
+      const value = tilemap.values[index];
 
-  const actualMinY = bbox.minY;
-  const actualMaxY = bbox.maxY;
+      if (value) {
+        const edge = (positive ? i : i + 1) * tilesize;
+        const diff = edge - leading;
 
-  _bbox.minX = bbox.minX;
-  _bbox.maxX = bbox.maxX;
-  _bbox.minY = bbox.minY - velocity.y;
-  _bbox.maxY = bbox.maxY - velocity.y;
-
-  if (velocity.x !== 0) {
-    applyCollision('X', _bbox, tilemap, velocity.x);
-  }
-
-  _bbox.minY = actualMinY;
-  _bbox.maxY = actualMaxY;
-
-  if (velocity.y !== 0) {
-    applyCollision('Y', _bbox, tilemap, velocity.y);
-  }
-
-  out.x = _bbox.minX - bbox.minX;
-  out.y = _bbox.minY - bbox.minY;
-  return out;
-}
-
-export function resolveTileCollisionLegacy(out, tilemap, bbox, velocity) {
-  const x = Math.round(bbox.minX);
-  const y = Math.round(bbox.minY);
-  const closest = tilemap.closest(x, y);
-
-  // we should assume that velocity was already applied to the bbox
-  // and before detecting collision on x-axis we have to shift y-axis
-  // to the initial position and then reapply it again.
-
-  const actualMinY = bbox.minY;
-  const actualMaxY = bbox.maxY;
-
-  _bbox.minX = bbox.minX;
-  _bbox.maxX = bbox.maxX;
-  _bbox.minY = bbox.minY - velocity.y;
-  _bbox.maxY = bbox.maxY - velocity.y;
-
-  let index = 0;
-
-  // x-axis
-  for (index = 0; index < 9; index++) {
-    if (!closest[index]) {
-      continue;
-    }
-    const tileMinX = x + ((index % 3) - 1);
-    const tileMinY = y + (Math.floor(index / 3) - 1);
-    const tileMaxX = tileMinX + 1;
-    const tileMaxY = tileMinY + 1;
-
-    const noIntersects =
-      _bbox.minX >= tileMaxX ||
-      _bbox.maxX <= tileMinX ||
-      _bbox.minY >= tileMaxY ||
-      _bbox.maxY <= tileMinY;
-
-    if (!noIntersects) {
-      if (velocity.x > 0) {
-        if (_bbox.maxX > tileMinX) {
-          _bbox.minX = tileMinX - 1;
-          _bbox.maxX = _bbox.minX + 1;
-        }
-      } else if (velocity.x < 0) {
-        if (_bbox.minX < tileMaxX) {
-          _bbox.minX = tileMaxX;
-          _bbox.maxX = _bbox.minX + 1;
+        if (onCollision(value, index, diff, moveAxis, velocity) === true) {
+          return;
         }
       }
     }
   }
-
-  _bbox.minY = actualMinY;
-  _bbox.maxY = actualMaxY;
-
-  // y-axis
-  for (index = 0; index < 9; index++) {
-    if (!closest[index]) {
-      continue;
-    }
-    const tileMinX = x + ((index % 3) - 1);
-    const tileMinY = y + (Math.floor(index / 3) - 1);
-    const tileMaxX = tileMinX + 1;
-    const tileMaxY = tileMinY + 1;
-
-    const noIntersects =
-      _bbox.minX >= tileMaxX ||
-      _bbox.maxX <= tileMinX ||
-      _bbox.minY >= tileMaxY ||
-      _bbox.maxY <= tileMinY;
-
-    if (!noIntersects) {
-      if (velocity.y > 0) {
-        if (_bbox.maxY > tileMinY) {
-          _bbox.minY = tileMinY - 1;
-          _bbox.maxY = _bbox.minY + 1;
-        }
-      } else if (velocity.y < 0) {
-        if (_bbox.minY < tileMaxY) {
-          _bbox.minY = tileMaxY;
-          _bbox.maxY = _bbox.minY + 1;
-        }
-      }
-    }
-  }
-
-  out.x = _bbox.minX - bbox.minX;
-  out.y = _bbox.minY - bbox.minY;
-  return out;
 }
