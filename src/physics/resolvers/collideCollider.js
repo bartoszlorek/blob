@@ -1,47 +1,35 @@
-import {baseSize} from '@app/consts';
 import BoundingBox from '@models/BoundingBox';
-import {
-  resolveTileCollision,
-  resolveTileCollisionLegacy,
-} from '../tileCollisions';
+import * as Vector from '@models/Vector';
 
-const _bbox = {
-  minX: 0,
-  maxX: 0,
-  minY: 0,
-  maxY: 0,
-};
+import {applyTileCollision} from '../tileCollisions';
 
-const _out = {
-  x: 0,
-  y: 0,
-};
+// temporary data
+const _bbox = new BoundingBox();
+const _vec2 = Vector.create();
 
-const _velocity = {
-  x: 0,
-  y: 0,
-};
+function resolveBodyTileCollider(collider, deltaTime) {
+  const {object1: body, object2: tilemap, callback} = collider;
+  const {bbox, velocity} = body;
 
-function collideCollider(collider, deltaTime) {
-  const {object1, object2, callback} = collider;
+  _bbox.copy(bbox);
 
-  // extract before own implementation
-  const {velocity, minX, minY} = object1;
+  Vector.copy(_vec2, velocity);
+  Vector.multiplyX(_vec2, deltaTime);
+  Vector.multiplyY(_vec2, deltaTime);
 
-  const bbox = new BoundingBox([minX, minY], [baseSize, baseSize]);
-  const vec2 = [velocity.x * deltaTime, velocity.y * deltaTime];
+  applyTileCollision(tilemap, _bbox, _vec2);
 
-  const newBBox = resolveTileCollisionLegacy(object2, bbox, vec2);
-
-  if (object1.minX !== newBBox.min[0]) {
-    object1.minX = newBBox.min[0];
-    object1.velocity.x = 0;
+  if (bbox.min[0] !== _bbox.min[0]) {
+    bbox.min[0] = _bbox.min[0];
+    bbox.max[0] = _bbox.max[0];
+    velocity[0] = 0; // optional?
   }
 
-  if (object1.minY !== newBBox.min[1]) {
-    object1.minY = newBBox.min[1];
-    object1.velocity.y = 0;
+  if (bbox.min[1] !== _bbox.min[1]) {
+    bbox.min[1] = _bbox.min[1];
+    bbox.max[1] = _bbox.max[1];
+    velocity[1] = 0; // optional?
   }
 }
 
-export default collideCollider;
+export default resolveBodyTileCollider;

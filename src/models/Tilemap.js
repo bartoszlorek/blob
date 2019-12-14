@@ -1,14 +1,15 @@
 import BoundingBox from '@models/BoundingBox';
 
 class Tilemap {
-  constructor(values = [], tilesize = 32, dimension = 8, offset = [0, 0]) {
+  constructor(values = [], dimension = 8, tilesize = 32, offset = [0, 0]) {
     this.values = values;
-    this.tilesize = tilesize;
     this.dimension = dimension;
+    this.tilesize = tilesize;
     this.offset = offset;
 
     this._shouldUpdateBoundingBox = true;
-    this._boundingBox = new BoundingBox();
+    this._coordBoundingBox = new BoundingBox();
+    this._localBoundingBox = new BoundingBox();
 
     // prettier-ignore
     this._closestArray = [
@@ -16,6 +17,11 @@ class Tilemap {
       0, 0, 0,
       0, 0, 0,
     ];
+  }
+
+  removeByIndex(index) {
+    this.values[index] = 0;
+    this._shouldUpdateBoundingBox = true;
   }
 
   getIndex(x, y) {
@@ -35,9 +41,9 @@ class Tilemap {
     const row1 = oy >= 0;
     const row2 = oy + 1 >= 0;
 
-    const col0 = !(ox - 1 < 0 || ox - 1 >= this.width);
-    const col1 = !(ox < 0 || ox >= this.width);
-    const col2 = !(ox + 1 < 0 || ox + 1 >= this.width);
+    const col0 = !(ox - 1 < 0 || ox - 1 >= this.dimension);
+    const col1 = !(ox < 0 || ox >= this.dimension);
+    const col2 = !(ox + 1 < 0 || ox + 1 >= this.dimension);
 
     arr[0] = row0 && col0 ? this.values[start0] || 0 : 0;
     arr[1] = row0 && col1 ? this.values[start0 + 1] || 0 : 0;
@@ -103,16 +109,18 @@ class Tilemap {
     return -1;
   }
 
-  removeByIndex(index) {
-    this.values[index] = 0;
-    this._shouldUpdateBoundingBox = true;
-  }
-
-  get boundingBox() {
+  get coordBoundingBox() {
     if (this._shouldUpdateBoundingBox) {
       this._calculateBoundingBox();
     }
-    return this._boundingBox;
+    return this._coordBoundingBox;
+  }
+
+  get localBoundingBox() {
+    if (this._shouldUpdateBoundingBox) {
+      this._calculateBoundingBox();
+    }
+    return this._localBoundingBox;
   }
 
   _calculateBoundingBox() {
@@ -140,20 +148,17 @@ class Tilemap {
       x += 1;
     }
 
-    const bbox = this._boundingBox;
-    bbox.min[0] = minX + this.offset[0];
-    bbox.min[1] = minY + this.offset[1];
-    bbox.max[0] = maxX + this.offset[0] + 1;
-    bbox.max[1] = maxY + this.offset[1] + 1;
-    bbox.dimension[0] = bbox.max[0] - bbox.min[0];
-    bbox.dimension[1] = bbox.max[1] - bbox.min[1];
+    const coord = this._coordBoundingBox;
+    coord.min[0] = minX + this.offset[0];
+    coord.min[1] = minY + this.offset[1];
+    coord.max[0] = maxX + this.offset[0] + 1;
+    coord.max[1] = maxY + this.offset[1] + 1;
 
-    // bbox.min[0] = (minX + this.offset[0]) * this.tilesize;
-    // bbox.min[1] = (minY + this.offset[1]) * this.tilesize;
-    // bbox.max[0] = (maxX + this.offset[0] + 1) * this.tilesize;
-    // bbox.max[1] = (maxY + this.offset[1] + 1) * this.tilesize;
-    // bbox.dimension[0] = bbox.max[0] - bbox.min[0];
-    // bbox.dimension[1] = bbox.max[1] - bbox.min[1];
+    const local = this._localBoundingBox;
+    local.min[0] = coord.min[0] * this.tilesize;
+    local.min[1] = coord.min[1] * this.tilesize;
+    local.max[0] = coord.max[0] * this.tilesize;
+    local.max[1] = coord.max[1] * this.tilesize;
 
     this._shouldUpdateBoundingBox = false;
   }

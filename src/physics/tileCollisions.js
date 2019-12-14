@@ -1,68 +1,56 @@
-import BoundingBox from '@models/BoundingBox';
-
-const _bbox = new BoundingBox();
+// temporary data
 const _vec2 = [0, 0];
 
-// todo: cleanup legacy
-export {resolveTileCollisionLegacy} from './tileCollisionsLegacy';
-
-export function resolveTileCollision(tilemap, bbox, velocity) {
+export function applyTileCollision(tilemap, bbox, velocity) {
   // we should assume that velocity was already applied to
   // the bbox and before detecting collision we have to shift
   // to the initial position.
 
-  _bbox.copy(bbox);
-  _bbox.translateX(-velocity[0]);
-  _bbox.translateY(-velocity[1]);
+  bbox.translateX(-velocity[0]);
+  bbox.translateY(-velocity[1]);
 
-  const aaxis = velocity[0] > velocity[1] ? 0 : 1;
-  const baxis = +!aaxis;
+  if (velocity[0] > velocity[1]) {
+    if (velocity[0] !== 0 && !applyAxisCollision(0, tilemap, bbox, velocity)) {
+      bbox.translateX(velocity[0]);
+    }
 
-  if (velocity[aaxis] !== 0) {
-    detectCollision(aaxis, tilemap, _bbox, velocity, handleCollision);
+    if (velocity[1] !== 0 && !applyAxisCollision(1, tilemap, bbox, velocity)) {
+      bbox.translateY(velocity[1]);
+    }
+  } else {
+    if (velocity[1] !== 0 && !applyAxisCollision(1, tilemap, bbox, velocity)) {
+      bbox.translateY(velocity[1]);
+    }
 
-    _vec2[aaxis] = velocity[aaxis];
-    _vec2[baxis] = 0;
-    _bbox.translate(_vec2);
+    if (velocity[0] !== 0 && !applyAxisCollision(0, tilemap, bbox, velocity)) {
+      bbox.translateX(velocity[0]);
+    }
   }
 
-  if (velocity[baxis] !== 0) {
-    detectCollision(baxis, tilemap, _bbox, velocity, handleCollision);
-
-    _vec2[aaxis] = 0;
-    _vec2[baxis] = velocity[baxis];
-    _bbox.translate(_vec2);
-  }
-
-  return _bbox;
+  return bbox;
 }
 
-function handleCollision(value, index, diff, axis, velocity) {
-  velocity[axis] = diff;
-  return true;
-}
-
-function detectCollision(moveAxis, tilemap, box, velocity, onCollision) {
-  const {tilesize, boundingBox: tilebox, offset} = tilemap;
+function applyAxisCollision(moveAxis, tilemap, bbox, velocity) {
+  const {coordBoundingBox: tilebbox, tilesize, offset} = tilemap;
 
   const positive = velocity[moveAxis] > 0;
-  const leading = box[positive ? 'max' : 'min'][moveAxis];
-
   const direction = positive ? 1 : -1;
+
+  const leading = bbox[positive ? 'max' : 'min'][moveAxis];
   const moveStart = Math.floor(leading / tilesize);
   const moveEnd = Math.floor((leading + velocity[moveAxis]) / tilesize);
 
   const sideAxis = +!moveAxis;
-  const sideStart = Math.floor(box.min[sideAxis] / tilesize) | 0;
-  const sideEnd = Math.ceil(box.max[sideAxis] / tilesize) | 0;
+  const sideStart = Math.floor(bbox.min[sideAxis] / tilesize);
+  const sideEnd = Math.ceil(bbox.max[sideAxis] / tilesize);
 
   for (let i = moveStart; i !== moveEnd + direction; i += direction) {
-    if (i < tilebox.min[moveAxis] || i >= tilebox.max[moveAxis]) {
+    if (i < tilebbox.min[moveAxis] || i >= tilebbox.max[moveAxis]) {
       continue;
     }
 
     for (let j = sideStart; j !== sideEnd; j += 1) {
-      if (j < tilebox.min[sideAxis] || j >= tilebox.max[sideAxis]) {
+      if (j < tilebbox.min[sideAxis] || j >= tilebbox.max[sideAxis]) {
         continue;
       }
 
@@ -73,13 +61,21 @@ function detectCollision(moveAxis, tilemap, box, velocity, onCollision) {
       const value = tilemap.values[index];
 
       if (value) {
-        const edge = (positive ? i : i + 1) * tilesize;
-        const diff = edge - leading;
+        const tileEdge = (positive ? i : i + 1) * tilesize;
+        const bboxSize = Math.round(bbox.max[moveAxis] - bbox.min[moveAxis]);
 
-        if (onCollision(value, index, diff, moveAxis, velocity) === true) {
-          return;
+        if (positive) {
+          bbox.min[moveAxis] = tileEdge - bboxSize;
+          bbox.max[moveAxis] = tileEdge;
+        } else {
+          bbox.min[moveAxis] = tileEdge;
+          bbox.max[moveAxis] = tileEdge + bboxSize;
         }
+
+        return true;
       }
     }
   }
+
+  return false;
 }

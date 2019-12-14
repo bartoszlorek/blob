@@ -1,58 +1,21 @@
-import {baseSize, localToGrid} from '@app/consts';
-import Vector from '@models/Vector';
+import BoundingBox from '@models/BoundingBox';
+import * as Vector from '@models/Vector';
+
+console.log();
 
 class Body {
-  constructor(sprite) {
+  constructor(sprite, x = 0, y = 0, size = 24) {
+    this.bbox = new BoundingBox([x, y], [x + size, y + size]);
+    this.velocity = Vector.create(0, 0);
+    this.size = size;
+
+    // pixijs
     this.sprite = sprite;
 
     // parameters
     this.traits = [];
     this.isAlive = true;
     this.isBody = true;
-
-    // physics
-    this.velocity = new Vector(0, 0);
-    this.gravity = null;
-  }
-
-  set minX(value) {
-    this.sprite.position.x = value;
-  }
-
-  set minY(value) {
-    this.sprite.position.y = value;
-  }
-
-  set maxX(value) {
-    this.sprite.position.x = value - baseSize;
-  }
-
-  set maxY(value) {
-    this.sprite.position.y = value - baseSize;
-  }
-
-  get minX() {
-    return this.sprite.position.x;
-  }
-
-  get minY() {
-    return this.sprite.position.y;
-  }
-
-  get maxX() {
-    return this.sprite.position.x + baseSize;
-  }
-
-  get maxY() {
-    return this.sprite.position.y + baseSize;
-  }
-
-  get tileX() {
-    return localToGrid(this.sprite.position.x);
-  }
-
-  get tileY() {
-    return localToGrid(this.sprite.position.y);
   }
 
   addTrait(trait) {
@@ -61,21 +24,18 @@ class Body {
   }
 
   update(deltaTime) {
+    // update sprite to the position from the previous frame
+    this.sprite.position.x = this.bbox.min[0];
+    this.sprite.position.y = this.bbox.min[1];
+
+    // traits phase
     for (let index = 0; index < this.traits.length; index++) {
       this.traits[index].update(this, deltaTime);
     }
 
-    this.sprite.position.x += this.velocity.x * deltaTime;
-    this.sprite.position.y += this.velocity.y * deltaTime;
-  }
-
-  intersection(other) {
-    return !(
-      other.minX >= this.maxX ||
-      other.maxX <= this.minX ||
-      other.minY >= this.maxY ||
-      other.maxY <= this.minY
-    );
+    // apply velocity from the current frame to the bbox
+    this.bbox.translateX(this.velocity[0] * deltaTime);
+    this.bbox.translateY(this.velocity[1] * deltaTime);
   }
 
   destroy() {
@@ -85,6 +45,7 @@ class Body {
   unsafeDestroy() {
     this.sprite.destroy();
     this.sprite = null;
+    this.bbox = null;
   }
 }
 
