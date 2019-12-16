@@ -20,14 +20,12 @@ class MouseMove extends Trait {
   }
 
   update(body, deltaTime) {
-    const {bbox, velocity} = body;
-
     const halfSize = baseSize / 2;
-    const desiredX = this.x - halfSize - bbox.min[0];
-    const desiredY = this.y - halfSize - bbox.min[1];
+    const desiredX = this.x - halfSize - body.min[0];
+    const desiredY = this.y - halfSize - body.min[1];
 
-    velocity[0] += desiredX * this.speed - velocity[0];
-    velocity[1] += desiredY * this.speed - velocity[1];
+    body.velocity[0] += desiredX * this.speed - body.velocity[0];
+    body.velocity[1] += desiredY * this.speed - body.velocity[1];
   }
 
   printLocalPosition() {

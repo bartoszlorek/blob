@@ -6,8 +6,6 @@ import Pointer from '@models/Pointer';
 
 import {createPlayer, createTiles} from '@layers';
 
-import Ray from '../physics/internal/Ray';
-
 class Level extends Scene {
   constructor({global, specs}) {
     super(global);
@@ -32,31 +30,18 @@ class Level extends Scene {
     this.foreground.addChild(player.sprite);
     this.refs.player = player;
 
-    const pointer = new Pointer(this.global);
-    this.foreground.addChild(pointer.marker);
-
-    const rayTop = new Ray(0, -1);
-    const rayRight = new Ray(1, 0);
-    const rayBottom = new Ray(0, 1);
-    const rayLeft = new Ray(-1, 0);
-
-    pointer.onClick = (x, y) => {
-      // rayTop.cast(tiles, x, y);
-      rayRight.cast(tiles, x, y);
-      // rayBottom.cast(tiles, x, y);
-      // rayLeft.cast(tiles, x, y);
-
-      console.log({rayRight});
-
-      // console.log({rayTop, rayRight, rayBottom, rayLeft});
-    };
+    // const pointer = new Pointer(this.global);
+    // this.foreground.addChild(pointer.marker);
+    // pointer.onClick = (x, y) => {};
 
     // physics
-    // this.physics.addBody(player);
-    // this.physics.gravity(player, tiles, body => {
-    //   body.gravity.applyTo(body.velocity);
-    //   // body.sprite.rotation = vectorRotation(body.gravity);
-    // });
+    this.physics.addChild(player);
+    this.physics.gravityBodyTiles(player, tiles);
+    this.physics.collideBodyTiles(player, tiles, (body, edge) => {
+      console.log({body, edge});
+      // body.jump.collide(body, tile, edge);
+      // body.move.collide(body, tile, edge);
+    });
 
     // final
     this.setupBackground();

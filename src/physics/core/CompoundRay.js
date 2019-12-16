@@ -1,4 +1,4 @@
-import {RAY_TYPE} from './Ray';
+import {RAY_TYPE} from '@physics/core/Ray';
 
 export const COMPOUND_TYPE = {
   SOLID_SOLID: 0,

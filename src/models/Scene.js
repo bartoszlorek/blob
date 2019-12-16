@@ -2,7 +2,7 @@ import {Container} from 'pixi.js';
 import {baseSize} from '@app/consts';
 import {lerp} from '@utils/math';
 
-import World from '@physics/World';
+import World from '@physics/core/World';
 import Background from '@models/Background';
 
 class Scene {

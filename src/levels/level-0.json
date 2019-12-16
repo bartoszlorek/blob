@@ -10,7 +10,7 @@
   },
   "sprites": {
     "player": {
-      "position": [[-2, -10]],
+      "position": [[-2, -6]],
       "id": 10
     },
     "prizes": {

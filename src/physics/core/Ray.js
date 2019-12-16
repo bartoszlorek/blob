@@ -40,13 +40,15 @@ class Ray {
   }
 
   static min(a, b) {
+    if (!a || !b) {
+      return a || b || null;
+    }
     if (a.length < b.length) {
       return a;
     }
     if (b.length < a.length) {
       return b;
     }
-    return null;
   }
 }
 

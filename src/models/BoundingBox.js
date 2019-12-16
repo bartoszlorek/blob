@@ -1,13 +1,7 @@
 class BoundingBox {
-  constructor(min = [0, 0], dimension = [0, 0]) {
+  constructor(min = [0, 0], max = [0, 0]) {
     this.min = min;
-    this.dimension = dimension;
-
-    // prettier-ignore
-    this.max = [
-      min[0] + dimension[0],
-      min[1] + dimension[1],
-    ];
+    this.max = max;
   }
 
   translate(vector) {
@@ -50,8 +44,6 @@ class BoundingBox {
     this.min[1] = bbox.min[1];
     this.max[0] = bbox.max[0];
     this.max[1] = bbox.max[1];
-    this.dimension[0] = bbox.dimension[0];
-    this.dimension[1] = bbox.dimension[1];
   }
 }
 

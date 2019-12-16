@@ -3,7 +3,7 @@ import {arrayForEach} from '@utils/array';
 import Animator from '@models/Animator';
 import Sprite from '@models/Sprite';
 import Group from '@models/Group';
-import Body from '@physics/Body';
+import Body from '@physics/core/Body';
 
 import Explosive from '@traits/Explosive';
 
@@ -27,7 +27,7 @@ function createMines({data, global, scene}) {
 
     scene.animations.add(mines);
     scene.animations.keyframes['blink'] = [
-      [50, sprite => (sprite.visible = !sprite.visible)]
+      [50, sprite => (sprite.visible = !sprite.visible)],
     ];
   } else {
     mines = null;

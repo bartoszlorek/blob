@@ -1,5 +1,11 @@
 import {modIndex} from '@utils/math';
-import {EDGE} from '@physics/World';
+
+const EDGE = {
+  TOP: Symbol('top'),
+  RIGHT: Symbol('right'),
+  BOTTOM: Symbol('bottom'),
+  LEFT: Symbol('left'),
+};
 
 const edgeValues = Object.values(EDGE);
 

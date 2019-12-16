@@ -4,10 +4,11 @@ const engine = new Application({
   //transparent: true,
   width: window.innerWidth,
   height: window.innerHeight,
-  backgroundColor: 0x01024e
+  backgroundColor: 0x01024e,
 });
 
 engine.ticker.stop();
+// engine.ticker.maxFPS = 12;
 
 // engine.view.className = 'view fade-steps';
 document.body.appendChild(engine.view);

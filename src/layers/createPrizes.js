@@ -4,7 +4,7 @@ import {GlowFilter} from '@pixi/filter-glow';
 import Sprite from '@models/Sprite';
 import Group from '@models/Group';
 import Animator from '@models/Animator';
-import Body from '@physics/Body';
+import Body from '@physics/core/Body';
 
 const glowDistance = 10;
 
@@ -32,7 +32,7 @@ function createPrizes({data, global, scene}) {
     scene.animations.add(prizes);
     scene.animations.keyframes['shine'] = [
       [600, sprite => sprite.scale.set(0.8)],
-      [1000, sprite => sprite.scale.set(1)]
+      [1000, sprite => sprite.scale.set(1)],
     ];
   } else {
     prizes = null;

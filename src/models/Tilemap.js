@@ -1,4 +1,7 @@
 import BoundingBox from '@models/BoundingBox';
+import Vector from '@models/Vector';
+
+const m_vector = Vector.create();
 
 class Tilemap {
   constructor(values = [], dimension = 8, tilesize = 32, offset = [0, 0]) {
@@ -25,7 +28,13 @@ class Tilemap {
   }
 
   getIndex(x, y) {
-    return x + y * this.dimension;
+    return x + this.dimension * y;
+  }
+
+  getCoordinates(index) {
+    m_vector[0] = (index % this.dimension) + this.offset[0];
+    m_vector[1] = Math.floor(index / this.dimension) + this.offset[1];
+    return m_vector;
   }
 
   closest(x, y) {

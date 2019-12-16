@@ -1,22 +1,26 @@
 import {Sprite} from 'pixi.js';
 import {baseSize} from '@app/consts';
 import Keyboard from '@models/Keyboard';
-import Body from '@physics/Body';
+import Body from '@physics/core/Body';
 
 import Jump from '@traits/Jump';
 import Move from '@traits/Move';
+import MouseMove from '@traits/MouseMove';
 
-function createPlayer({sheet, specs}) {
+function createPlayer({sheet, specs, global}) {
   const {id, position} = specs.sprites.player;
   const [x, y] = position[0];
 
-  const sprite = new Sprite(sheet.getById(id));
-  sprite.position.x = x * baseSize;
-  sprite.position.y = y * baseSize;
+  let player = new Body(
+    new Sprite(sheet.getById(id)),
+    x * baseSize,
+    y * baseSize,
+    baseSize
+  );
 
-  let player = new Body(sprite);
-  player.addTrait(new Jump());
-  player.addTrait(new Move());
+  // player.addTrait(new Jump());
+  // player.addTrait(new Move());
+  player.addTrait(new MouseMove(global));
 
   const input = new Keyboard();
   input.on('ArrowRight KeyD', pressed => {

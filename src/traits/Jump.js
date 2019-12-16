@@ -1,7 +1,7 @@
 import {rotateEdge, rotateVector} from '@utils/physics';
 import Trait from '@traits/Trait';
 
-import {EDGE} from '@physics/World';
+import {EDGE} from '@physics/consts';
 import Sound from '@models/Sound';
 import Force from '@models/Force';
 import Vector from '@models/Vector';
@@ -12,10 +12,10 @@ class Jump extends Trait {
 
     this.force = new Force(0, -1, {
       strength: 100,
-      dexterity: 0.6
+      dexterity: 0.6,
     });
 
-    this.ready = 0;
+    this.ready = 1;
     this.requestTime = 0;
     this.engageTime = 0;
 
@@ -59,7 +59,7 @@ class Jump extends Trait {
       this.engageTime -= deltaTime;
     }
 
-    this.ready -= 1;
+    // this.ready -= 1;
   }
 
   collide(body, tiles, edge) {

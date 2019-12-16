@@ -1,26 +1,19 @@
-import {lerp} from '@utils/math';
 import Vector from '@models/Vector';
 
-class Force extends Vector {
-  constructor(x, y, {strength = 1, dexterity = 0.5} = {}) {
-    super(x, y);
-    this.strength = strength;
-    this.dexterity = dexterity;
+class Force {
+  constructor(x, y, {str = 1, dex = 0.5} = {}) {
+    this.vector = Vector.create(x, y);
+    this.str = str;
+    this.dex = dex;
   }
 
-  set(x, y) {
-    this.x = x;
-    this.y = y;
-  }
-
-  apply(x, y) {
-    this.x = lerp(this.x, x, this.dexterity);
-    this.y = lerp(this.y, y, this.dexterity);
+  update(vector) {
+    this.vector = Vector.lerp(this.vector, vector, this.dex);
   }
 
   applyTo(vector) {
-    vector.x += this.x * this.strength;
-    vector.y += this.y * this.strength;
+    vector[0] += this.vector[0] * this.str;
+    vector[1] += this.vector[1] * this.str;
   }
 }
 
