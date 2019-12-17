@@ -7,6 +7,10 @@ const m_velocity = Vector.create();
 const bodyTilesCollisionResolver = constraint => deltaTime => {
   const {actorA: body, actorB: tilemap, effect} = constraint;
 
+  if (tilemap.intersects(body) === false) {
+    return;
+  }
+
   // delta time vector
   m_velocity[0] = body.velocity[0] * deltaTime;
   m_velocity[1] = body.velocity[1] * deltaTime;

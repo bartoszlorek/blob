@@ -3,16 +3,14 @@ import Vector from '@models/Vector';
 
 const m_vector = Vector.create();
 
-class Tilemap {
+class Tilemap extends BoundingBox {
   constructor(values = [], dimension = 8, tilesize = 32, offset = [0, 0]) {
+    super();
+
     this.values = values;
     this.dimension = dimension;
     this.tilesize = tilesize;
     this.offset = offset;
-
-    this._shouldUpdateBoundingBox = true;
-    this._coordBoundingBox = new BoundingBox();
-    this._localBoundingBox = new BoundingBox();
 
     // prettier-ignore
     this._closestArray = [
@@ -20,11 +18,14 @@ class Tilemap {
       0, 0, 0,
       0, 0, 0,
     ];
+
+    // initial calculation
+    this.calculateBoundingBox();
   }
 
   removeByIndex(index) {
     this.values[index] = 0;
-    this._shouldUpdateBoundingBox = true;
+    this.calculateBoundingBox();
   }
 
   getIndex(x, y) {
@@ -118,21 +119,15 @@ class Tilemap {
     return -1;
   }
 
-  get coordBoundingBox() {
-    if (this._shouldUpdateBoundingBox) {
-      this._calculateBoundingBox();
+  calculateBoundingBox() {
+    if (this.values.length === 0) {
+      this.min[0] = 0;
+      this.min[1] = 0;
+      this.max[0] = 0;
+      this.max[1] = 0;
+      return;
     }
-    return this._coordBoundingBox;
-  }
 
-  get localBoundingBox() {
-    if (this._shouldUpdateBoundingBox) {
-      this._calculateBoundingBox();
-    }
-    return this._localBoundingBox;
-  }
-
-  _calculateBoundingBox() {
     let x = 0;
     let y = 0;
 
@@ -157,19 +152,10 @@ class Tilemap {
       x += 1;
     }
 
-    const coord = this._coordBoundingBox;
-    coord.min[0] = minX + this.offset[0];
-    coord.min[1] = minY + this.offset[1];
-    coord.max[0] = maxX + this.offset[0] + 1;
-    coord.max[1] = maxY + this.offset[1] + 1;
-
-    const local = this._localBoundingBox;
-    local.min[0] = coord.min[0] * this.tilesize;
-    local.min[1] = coord.min[1] * this.tilesize;
-    local.max[0] = coord.max[0] * this.tilesize;
-    local.max[1] = coord.max[1] * this.tilesize;
-
-    this._shouldUpdateBoundingBox = false;
+    this.min[0] = (minX + this.offset[0]) * this.tilesize;
+    this.min[1] = (minY + this.offset[1]) * this.tilesize;
+    this.max[0] = (maxX + this.offset[0] + 1) * this.tilesize;
+    this.max[1] = (maxY + this.offset[1] + 1) * this.tilesize;
   }
 }
 

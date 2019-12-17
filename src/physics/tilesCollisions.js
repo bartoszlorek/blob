@@ -55,7 +55,7 @@ export function detectTilesCollision(
 
 // based on https://github.com/chrisdickinson/collide-2d-tilemap
 function detectAxisCollision(moveAxis, tilemap, bbox, velocity, onCollision) {
-  const {coordBoundingBox: tilebbox, tilesize, offset} = tilemap;
+  const {tilesize, offset} = tilemap;
 
   const positive = velocity[moveAxis] > 0;
   const direction = positive ? 1 : -1;
@@ -68,15 +68,16 @@ function detectAxisCollision(moveAxis, tilemap, bbox, velocity, onCollision) {
   const sideStart = Math.floor((bbox.min[sideAxis] + alignMargin) / tilesize);
   const sideEnd = Math.ceil((bbox.max[sideAxis] - alignMargin) / tilesize);
 
+  const moveMin = tilemap.min[moveAxis] / tilesize;
+  const moveMax = tilemap.max[moveAxis] / tilesize;
+  const sideMin = tilemap.min[sideAxis] / tilesize;
+  const sideMax = tilemap.max[sideAxis] / tilesize;
+
   for (let i = moveStart; i !== moveEnd + direction; i += direction) {
-    if (i < tilebbox.min[moveAxis] || i >= tilebbox.max[moveAxis]) {
-      continue;
-    }
+    if (i < moveMin || i >= moveMax) continue;
 
     for (let j = sideStart; j !== sideEnd; j += 1) {
-      if (j < tilebbox.min[sideAxis] || j >= tilebbox.max[sideAxis]) {
-        continue;
-      }
+      if (j < sideMin || j >= sideMax) continue;
 
       m_vector[moveAxis] = i - offset[moveAxis];
       m_vector[sideAxis] = j - offset[sideAxis];
