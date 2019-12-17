@@ -2,6 +2,7 @@ import BoundingBox from '@models/BoundingBox';
 import Vector from '@models/Vector';
 
 const alignMargin = 0.1;
+const subtractError = 0.0001;
 
 // mutable data
 const m_bbox = new BoundingBox();
@@ -45,6 +46,10 @@ export function detectTilesCollision(
 
   m_vector[0] = m_bbox.min[0] - bbox.min[0];
   m_vector[1] = m_bbox.min[1] - bbox.min[1];
+
+  // fix subtraction problem in javascript
+  if (Math.abs(m_vector[0]) <= subtractError) m_vector[0] = 0;
+  if (Math.abs(m_vector[1]) <= subtractError) m_vector[1] = 0;
   return m_vector;
 }
 
