@@ -36,12 +36,13 @@ class Level extends Scene {
 
     // physics
     this.physics.addChild(player);
-    this.physics.gravityBodyTiles(player, tiles);
+
     this.physics.collideBodyTiles(player, tiles, (body, edge) => {
-      console.log({body, edge});
       // body.jump.collide(body, tile, edge);
       // body.move.collide(body, tile, edge);
     });
+
+    this.physics.gravityBodyTiles(player, tiles);
 
     // final
     this.setupBackground();

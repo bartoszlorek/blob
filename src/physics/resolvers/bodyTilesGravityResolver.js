@@ -1,6 +1,6 @@
 import {calculateGravity} from '@physics/gravity';
 
-const bodyTilesGravityResolver = constraint => deltaTime => {
+function bodyTilesGravityResolver(constraint, deltaTime) {
   const {actorA: body, actorB: tilemap} = constraint;
   const shiftVector = calculateGravity(body, tilemap);
 
@@ -10,6 +10,6 @@ const bodyTilesGravityResolver = constraint => deltaTime => {
 
   body.gravity.applyTo(body.velocity);
   // body.sprite.rotation = vectorRotation(body.gravity);
-};
+}
 
 export default bodyTilesGravityResolver;

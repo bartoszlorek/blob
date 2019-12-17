@@ -8,12 +8,13 @@ class Force {
   }
 
   update(vector) {
-    this.vector = Vector.lerp(this.vector, vector, this.dex);
+    Vector.lerp(this.vector, vector, this.dex);
   }
 
   applyTo(vector) {
     vector[0] += this.vector[0] * this.str;
     vector[1] += this.vector[1] * this.str;
+    return vector;
   }
 }
 

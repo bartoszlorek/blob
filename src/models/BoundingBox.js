@@ -30,6 +30,15 @@ class BoundingBox {
     );
   }
 
+  intersectsMargin(bbox, margin) {
+    return !(
+      this.min[0] > bbox.max[0] + margin ||
+      this.min[1] > bbox.max[1] + margin ||
+      this.max[0] < bbox.min[0] - margin ||
+      this.max[1] < bbox.min[1] - margin
+    );
+  }
+
   contains(x, y) {
     return !(
       this.min[0] > x ||

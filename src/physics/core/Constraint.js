@@ -4,27 +4,31 @@ class Constraint {
     this.actorB = actorB;
 
     // methods
-    this.update = resolver(this);
+    this.resolver = resolver;
     this.effect = effect;
 
     // flags
     this.isActive = true;
   }
 
-  verificate(actor) {
+  update(deltaTime) {
+    this.resolver(this, deltaTime);
+  }
+
+  validate(actor) {
     if (this.actorA === actor || this.actorB === actor) {
       this.isActive = actor.isAlive;
     } else {
       if (this.actorA.isGroup) {
-        this.verificateGroup(this.actorA, actor);
+        this.validateGroup(this.actorA, actor);
       }
       if (this.actorB.isGroup) {
-        this.verificateGroup(this.actorB, actor);
+        this.validateGroup(this.actorB, actor);
       }
     }
   }
 
-  verificateGroup(group, actor) {
+  validateGroup(group, actor) {
     if (this.isActive) {
       // cleanup group's children
       if (group.contains(actor)) {

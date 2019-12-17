@@ -71,7 +71,12 @@ class Tilemap extends BoundingBox {
   }
 
   raycast(x, y, dx, dy) {
-    const {minX, maxX, minY, maxY} = this.bounds;
+    // todo: optimize raycast
+    const minX = this.min[0] / this.tilesize;
+    const maxX = this.max[0] / this.tilesize;
+    const minY = this.min[1] / this.tilesize;
+    const maxY = this.max[1] / this.tilesize;
+
     const horizontal = dx !== 0;
 
     // ignore ray that for sure will miss the map

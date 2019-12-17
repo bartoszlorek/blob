@@ -5,21 +5,29 @@ class MouseMove extends Trait {
   constructor(global) {
     super('mouse_move');
 
+    this.active = false;
     this.speed = 5;
     this.x = 0;
     this.y = 0;
 
     const {view} = global.engine.renderer;
-    const handleMousemove = event => {
+    const handleMouseDown = () => (this.active = true);
+    const handleMouseUp = () => (this.active = false);
+    const handleMouseMove = event => {
       this.x = global.globalToLocalX(event.offsetX);
       this.y = global.globalToLocalY(event.offsetY);
       // this.printTilesPosition();
     };
 
-    view.addEventListener('mousemove', handleMousemove);
+    view.addEventListener('mousedown', handleMouseDown);
+    view.addEventListener('mouseup', handleMouseUp);
+    view.addEventListener('mousemove', handleMouseMove);
   }
 
-  update(body, deltaTime) {
+  update(body) {
+    if (!this.active) {
+      return;
+    }
     const halfSize = baseSize / 2;
     const desiredX = this.x - halfSize - body.min[0];
     const desiredY = this.y - halfSize - body.min[1];

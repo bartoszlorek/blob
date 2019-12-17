@@ -1,104 +1,109 @@
 import Vector from '@models/Vector';
 import Ray from '@physics/core/Ray';
 import CompoundRay, {COMPOUND_TYPE as TYPE} from '@physics/core/CompoundRay';
-import {outsideVector, isCornerCase} from '@physics/helpers';
+import {
+  isCornerCase,
+  isOutsideOnCorner,
+  getOutsideVector,
+} from '@physics/gravityHelpers';
 
 const rayLeft = new Ray(-1, 0);
 const rayRight = new Ray(1, 0);
 const rayTop = new Ray(0, -1);
 const rayBottom = new Ray(0, 1);
 
-const x = new CompoundRay(rayLeft, rayRight);
-const y = new CompoundRay(rayTop, rayBottom);
+const compX = new CompoundRay(rayLeft, rayRight);
+const compY = new CompoundRay(rayTop, rayBottom);
 
 const m_vector = Vector.create();
 
 export function calculateGravity(body, tilemap) {
-  m_vector[0] = 0;
-  m_vector[1] = 1;
+  if (tilemap.intersectsMargin(body, -1) === false) {
+    // we should use last known gravity
+    // for corners outside bounding box
+    if (isOutsideOnCorner(body, tilemap)) {
+      return null;
+    }
 
-  return m_vector;
-
-  /*
-  const outside = outsideVector(body, tilemap);
-
-  if (outside) {
-    return outside;
+    return getOutsideVector(body, tilemap, m_vector);
   }
-  // corner case outside bounds
-  // should use last known gravity
-  if (outside === null) {
+
+  const coordX = Math.round(body.min[0] / tilemap.tilesize);
+  const coordY = Math.round(body.min[1] / tilemap.tilesize);
+  const closestTiles = tilemap.closest(coordX, coordY);
+
+  // corner case inside bounding box
+  if (isCornerCase(closestTiles)) {
     return null;
   }
 
-  const {tileX, tileY} = body;
-  const closest = tilemap.closest(tileX, tileY);
+  rayLeft.cast(tilemap, coordX, coordY);
+  rayRight.cast(tilemap, coordX, coordY);
+  rayTop.cast(tilemap, coordX, coordY);
+  rayBottom.cast(tilemap, coordX, coordY);
 
-  // corner case inside bounds
-  if (isCornerCase(closest)) {
-    return null;
-  }
-
-  rayLeft.cast(tilemap, tileX, tileY);
-  rayRight.cast(tilemap, tileX, tileY);
-  rayTop.cast(tilemap, tileX, tileY);
-  rayBottom.cast(tilemap, tileX, tileY);
-
-  x.sort();
-  y.sort();
+  compX.sort();
+  compY.sort();
 
   // artificial gravity in the cave
-  if (x.type === TYPE.SOLID_SOLID && y.type === TYPE.SOLID_SOLID) {
-    return new Vector(0, 1);
+  if (compX.type === TYPE.SOLID_SOLID && compY.type === TYPE.SOLID_SOLID) {
+    m_vector[0] = 0;
+    m_vector[1] = 1;
+    return m_vector;
   }
 
   // common cases
-  if (x.type === TYPE.SOLID_BORDER && y.type === TYPE.SOLID_BORDER) {
-    if (x.a.length < y.a.length) {
-      return x.a.vector;
+  if (compX.type === TYPE.SOLID_BORDER && compY.type === TYPE.SOLID_BORDER) {
+    if (compX.a.length < compY.a.length) {
+      return compX.a.vector;
     }
-    if (x.a.length > y.a.length) {
-      return y.a.vector;
+    if (compX.a.length > compY.a.length) {
+      return compY.a.vector;
     }
     return null;
   }
 
-  if (x.type === TYPE.SOLID_SOLID && y.type === TYPE.SOLID_BORDER) {
-    const closest = Ray.min(Ray.min(x.a, x.b), y.a);
-    return closest ? closest.vector : null;
+  if (compX.type === TYPE.SOLID_SOLID && compY.type === TYPE.SOLID_BORDER) {
+    const closestRay = Ray.min(Ray.min(compX.a, compX.b), compY.a);
+    return closestRay ? closestRay.vector : null;
   }
 
-  if (x.type === TYPE.SOLID_BORDER && y.type === TYPE.SOLID_SOLID) {
-    const closest = Ray.min(Ray.min(x.a, y.a), y.b);
-    return closest ? closest.vector : null;
+  if (compX.type === TYPE.SOLID_BORDER && compY.type === TYPE.SOLID_SOLID) {
+    const closestRay = Ray.min(Ray.min(compX.a, compY.a), compY.b);
+    return closestRay ? closestRay.vector : null;
   }
 
   // gap cases
-  if (x.type === TYPE.SOLID_BORDER && y.type === TYPE.BORDER_BORDER) {
-    return x.a.vector;
+  if (compX.type === TYPE.SOLID_BORDER && compY.type === TYPE.BORDER_BORDER) {
+    return compX.a.vector;
   }
 
-  if (x.type === TYPE.BORDER_BORDER && y.type === TYPE.SOLID_BORDER) {
-    return y.a.vector;
+  if (compX.type === TYPE.BORDER_BORDER && compY.type === TYPE.SOLID_BORDER) {
+    return compY.a.vector;
   }
 
-  if (x.type === TYPE.SOLID_SOLID && y.type === TYPE.BORDER_BORDER) {
-    if (x.a.length < x.b.length) {
-      return x.a.vector;
+  if (compX.type === TYPE.SOLID_SOLID && compY.type === TYPE.BORDER_BORDER) {
+    if (compX.a.length < compX.b.length) {
+      return compX.a.vector;
     }
-    if (x.a.length > x.b.length) {
-      return x.b.vector;
+    if (compX.a.length > compX.b.length) {
+      return compX.b.vector;
     }
-    return new Vector(-1, 0);
+    m_vector[0] = -1;
+    m_vector[1] = 0;
+    return m_vector;
   }
 
-  if (x.type === TYPE.BORDER_BORDER && y.type === TYPE.SOLID_SOLID) {
-    if (y.a.length < y.b.length) {
-      return y.a.vector;
+  if (compX.type === TYPE.BORDER_BORDER && compY.type === TYPE.SOLID_SOLID) {
+    if (compY.a.length < compY.b.length) {
+      return compY.a.vector;
     }
-    if (y.a.length > y.b.length) {
-      return y.b.vector;
+    if (compY.a.length > compY.b.length) {
+      return compY.b.vector;
     }
-    return new Vector(0, 1);
-  }*/
+  }
+
+  m_vector[0] = 0;
+  m_vector[1] = 1;
+  return m_vector;
 }

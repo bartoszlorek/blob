@@ -47,13 +47,13 @@ class World {
 
   _unsafeRemoveChild(child) {
     arrayRemove(this.children, child);
-    this._verificateConstraints(child);
+    this._checkConstraintsHealth(child);
     child.unsafeDestroy();
   }
 
-  _verificateConstraints(child) {
+  _checkConstraintsHealth(child) {
     for (let index = 0; index < this.constraints.length; index++) {
-      this.constraints[index].verificate(child);
+      this.constraints[index].validate(child);
     }
   }
 

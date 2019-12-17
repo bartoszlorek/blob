@@ -4,7 +4,7 @@ import {detectTilesCollision} from '@physics/tilesCollisions';
 // mutable data
 const m_velocity = Vector.create();
 
-const bodyTilesCollisionResolver = constraint => deltaTime => {
+function bodyTilesCollisionResolver(constraint, deltaTime) {
   const {actorA: body, actorB: tilemap, effect} = constraint;
 
   if (tilemap.intersects(body) === false) {
@@ -26,6 +26,6 @@ const bodyTilesCollisionResolver = constraint => deltaTime => {
     body.translateY(shiftVector[1]);
     body.velocity[1] = 0;
   }
-};
+}
 
 export default bodyTilesCollisionResolver;
