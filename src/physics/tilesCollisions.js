@@ -14,9 +14,15 @@ export function detectTilesCollision(
   deltaTimeVelocity,
   onCollision
 ) {
+  // persist initial position to compare after detection
+  // because original bbox can change during collision
+
+  const initialX = bbox.min[0];
+  const initialY = bbox.min[1];
+
   // we should assume that velocity was already applied to
   // the bbox and before detecting collision we have to shift
-  // to the initial position.
+  // to the initial position
 
   m_bbox.copy(bbox);
   m_bbox.translateX(-deltaTimeVelocity[0]);
@@ -44,8 +50,8 @@ export function detectTilesCollision(
     }
   }
 
-  m_vector[0] = m_bbox.min[0] - bbox.min[0];
-  m_vector[1] = m_bbox.min[1] - bbox.min[1];
+  m_vector[0] = m_bbox.min[0] - initialX;
+  m_vector[1] = m_bbox.min[1] - initialY;
 
   // fix subtraction problem in javascript
   if (Math.abs(m_vector[0]) <= subtractError) m_vector[0] = 0;

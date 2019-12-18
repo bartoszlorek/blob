@@ -21,6 +21,18 @@ class BoundingBox {
     this.max[1] += value;
   }
 
+  alignX(value) {
+    const width = this.max[0] - this.min[0];
+    this.min[0] = value;
+    this.max[0] = value + width;
+  }
+
+  alignY(value) {
+    const height = this.max[1] - this.min[1];
+    this.min[1] = value;
+    this.max[1] = value + height;
+  }
+
   intersects(bbox) {
     return !(
       this.min[0] > bbox.max[0] ||

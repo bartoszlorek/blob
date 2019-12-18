@@ -2,10 +2,10 @@ import {calculateGravity} from '@physics/gravity';
 
 function bodyTilesGravityResolver(constraint, deltaTime) {
   const {actorA: body, actorB: tilemap} = constraint;
-  const shiftVector = calculateGravity(body, tilemap);
+  const direction = calculateGravity(body, tilemap);
 
-  if (shiftVector) {
-    body.gravity.update(shiftVector);
+  if (direction) {
+    body.gravity.applyDirection(direction);
   }
 
   body.gravity.applyTo(body.velocity);

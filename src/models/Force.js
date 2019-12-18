@@ -7,7 +7,7 @@ class Force {
     this.dex = dex;
   }
 
-  update(vector) {
+  applyDirection(vector) {
     Vector.lerp(this.vector, vector, this.dex);
   }
 
