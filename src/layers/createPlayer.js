@@ -7,8 +7,8 @@ import Jump from '@actions/Jump';
 import Move from '@actions/Move';
 import MouseMove from '@actions/MouseMove';
 
-function createPlayer({sheet, specs, global}) {
-  const {id, position} = specs.sprites.player;
+function createPlayer({sheet, data}) {
+  const {id, position} = data.sprites.player;
   const [x, y] = position[0];
 
   let player = new Body(

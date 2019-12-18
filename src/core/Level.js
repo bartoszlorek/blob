@@ -5,11 +5,11 @@ import Spritesheet from '@core/Spritesheet';
 import {createPlayer, createTiles} from '@layers';
 
 class Level extends Scene {
-  constructor({global, specs}) {
+  constructor({global, data}) {
     super(global);
 
     //
-    this.specs = specs;
+    this.data = data;
   }
 
   create() {
@@ -18,7 +18,7 @@ class Level extends Scene {
     const props = {
       global: this.global,
       sheet: this.sheet,
-      specs: this.specs,
+      data: this.data,
     };
 
     const [tiles] = createTiles(props);
@@ -49,13 +49,13 @@ class Level extends Scene {
   }
 
   createSpritesheet() {
-    const {name} = this.specs.spritesheet;
+    const {name} = this.data.spritesheet;
     const {texture} = this.global.assets[name];
     return new Spritesheet({texture, size: baseSize});
   }
 
   setupBackground() {
-    const {name, breaks} = this.specs.background;
+    const {name, breaks} = this.data.background;
     this.background.set(this.global.assets[name].texture, breaks);
   }
 }

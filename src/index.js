@@ -4,7 +4,7 @@ import loader from '@app/loader';
 import Global from '@core/Global';
 import Level from '@core/Level';
 
-import levelSpecs from '@levels';
+import {level0Data} from '@data';
 
 loader.load(() => {
   const global = new Global({
@@ -14,7 +14,7 @@ loader.load(() => {
 
   const level = new Level({
     global,
-    specs: levelSpecs[0],
+    data: level0Data,
   });
 
   global.load(level);
