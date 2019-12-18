@@ -24,15 +24,15 @@ function createPlayer({sheet, specs, global}) {
 
   const input = new Keyboard();
   input.on('ArrowRight KeyD', pressed => {
-    player.move[pressed ? 'forward' : 'backward']();
+    player.action['move'][pressed ? 'forward' : 'backward']();
   });
 
   input.on('ArrowLeft KeyA', pressed => {
-    player.move[pressed ? 'backward' : 'forward']();
+    player.action['move'][pressed ? 'backward' : 'forward']();
   });
 
   input.on('Space', pressed => {
-    player.jump[pressed ? 'start' : 'cancel']();
+    player.action['jump'][pressed ? 'start' : 'cancel']();
   });
 
   function cleanup() {

@@ -21,6 +21,7 @@ module.exports = {
       '@utils': path.resolve(__dirname, 'src/utils/'),
     },
   },
+  devtool: 'source-map',
   module: {
     rules: [
       {
