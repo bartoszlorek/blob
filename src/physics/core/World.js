@@ -40,6 +40,12 @@ class World {
     this.children.push(child);
   }
 
+  addGroup(group) {
+    group.forEach(child => {
+      this.children.push(child);
+    });
+  }
+
   removeChild(child) {
     this.removeStack[this.removeIndex++] = child;
     child.destroy();

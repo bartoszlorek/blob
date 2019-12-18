@@ -17,10 +17,15 @@ class Tileset extends Tilemap {
   }
 
   removeByIndex(index) {
+    // remove value
     super.removeByIndex(index);
+
+    // remove graphics
     const child = this.children.get(index);
     this.children.delete(index);
     this.graphics.removeChild(child);
+
+    // cleanup
     this.updateCache();
   }
 
