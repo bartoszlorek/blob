@@ -1,4 +1,4 @@
-import Vector from '@models/Vector';
+import Vector from '@core/Vector';
 
 // mutable data
 const m_velocity = Vector.create();

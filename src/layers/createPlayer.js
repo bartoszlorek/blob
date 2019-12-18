@@ -1,6 +1,6 @@
 import {Sprite} from 'pixi.js';
 import {baseSize} from '@app/consts';
-import Keyboard from '@models/Keyboard';
+import Keyboard from '@core/Keyboard';
 import Body from '@physics/core/Body';
 
 import Jump from '@actions/Jump';

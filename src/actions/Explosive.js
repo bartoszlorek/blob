@@ -1,9 +1,9 @@
 import {baseSize} from '@app/consts';
 import {arrayForEach} from '@utils/array';
 
-import Animator from '@models/Animator';
-import Sprite from '@models/Sprite';
-import Action from '@models/Action';
+import Animator from '@core/Animator';
+import Sprite from '@core/Sprite';
+import Action from '@core/Action';
 
 class Explosive extends Action {
   constructor({global, scene}) {

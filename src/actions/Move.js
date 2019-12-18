@@ -1,8 +1,9 @@
 import {baseSize} from '@app/consts';
 import {rotateVector} from '@utils/physics';
 import {lerp} from '@utils/math';
-import Vector from '@models/Vector';
-import Action from '@models/Action';
+
+import Vector from '@core/Vector';
+import Action from '@core/Action';
 
 const alignmentMin = 0.65;
 const alignmentMax = 0.99;

@@ -1,4 +1,4 @@
-import Vector from '@models/Vector';
+import Vector from '@core/Vector';
 import Ray from '@physics/core/Ray';
 import CompoundRay, {COMPOUND_TYPE as TYPE} from '@physics/core/CompoundRay';
 

@@ -1,4 +1,4 @@
-import Action from '@models/Action';
+import Action from '@core/Action';
 import {EDGE} from '@physics/consts';
 
 class Watcher extends Action {

@@ -12,10 +12,10 @@ module.exports = {
     alias: {
       '@app': path.resolve(__dirname, 'src/'),
       '@actions': path.resolve(__dirname, 'src/actions/'),
+      '@core': path.resolve(__dirname, 'src/core/'),
       '@gui': path.resolve(__dirname, 'src/gui/'),
       '@layers': path.resolve(__dirname, 'src/layers/'),
       '@levels': path.resolve(__dirname, 'src/levels/'),
-      '@models': path.resolve(__dirname, 'src/models/'),
       '@physics': path.resolve(__dirname, 'src/physics/'),
       '@state': path.resolve(__dirname, 'src/state/'),
       '@utils': path.resolve(__dirname, 'src/utils/'),

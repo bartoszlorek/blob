@@ -1,4 +1,4 @@
-import Tileset from '@models/Tileset';
+import Tileset from '@core/Tileset';
 
 function createTiles({sheet, specs}) {
   const {tilemap, width, offset} = specs.tiles;

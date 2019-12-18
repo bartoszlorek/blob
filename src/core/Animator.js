@@ -1,4 +1,4 @@
-import Animation from '@models/Animation';
+import Animation from '@core/Animation';
 
 class Animator {
   constructor() {

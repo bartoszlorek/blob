@@ -1,4 +1,4 @@
-import Vector from '@models/Vector';
+import Vector from '@core/Vector';
 
 export const RAY_TYPE = {
   SOLID: 0,

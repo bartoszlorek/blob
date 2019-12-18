@@ -1,5 +1,5 @@
 import {localToGrid} from '@app/consts';
-import Events from '@models/Events';
+import Events from '@core/Events';
 
 class Global {
   constructor({engine, assets}) {

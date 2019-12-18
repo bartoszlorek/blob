@@ -1,4 +1,4 @@
-import Vector from '@models/Vector';
+import Vector from '@core/Vector';
 import {detectTilesCollision} from '@physics/tilesCollisions';
 
 // mutable data

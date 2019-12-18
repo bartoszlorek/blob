@@ -1,8 +1,8 @@
 import {arrayForEach} from '@utils/array';
 
-import Animator from '@models/Animator';
-import Sprite from '@models/Sprite';
-import Group from '@models/Group';
+import Animator from '@core/Animator';
+import Sprite from '@core/Sprite';
+import Group from '@core/Group';
 import Body from '@physics/core/Body';
 
 import Explosive from '@actions/Explosive';

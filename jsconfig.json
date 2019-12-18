@@ -6,10 +6,10 @@
     "paths": {
       "@app": ["./src/*"],
       "@actions": ["./src/actions/*"],
+      "@core": ["./src/core/*"],
       "@gui": ["./src/gui/*"],
       "@layers": ["./src/layers/*"],
       "@levels": ["./src/levels/*"],
-      "@models": ["./src/models/*"],
       "@physics": ["./src/physics/*"],
       "@state": ["./src/state/*"],
       "@utils": ["./src/utils/*"]

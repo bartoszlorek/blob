@@ -1,4 +1,4 @@
-import Action from '@models/Action';
+import Action from '@core/Action';
 import {blend} from '@utils/color';
 
 class Colorful extends Action {

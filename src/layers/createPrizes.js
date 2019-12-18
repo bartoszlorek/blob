@@ -1,9 +1,9 @@
 import {arrayForEach} from '@utils/array';
 import {GlowFilter} from '@pixi/filter-glow';
 
-import Sprite from '@models/Sprite';
-import Group from '@models/Group';
-import Animator from '@models/Animator';
+import Sprite from '@core/Sprite';
+import Group from '@core/Group';
+import Animator from '@core/Animator';
 import Body from '@physics/core/Body';
 
 const glowDistance = 10;

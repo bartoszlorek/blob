@@ -1,8 +1,8 @@
 import engine from '@app/engine';
 import loader from '@app/loader';
 
-import Global from '@models/Global';
-import Level from '@models/Level';
+import Global from '@core/Global';
+import Level from '@core/Level';
 
 import levelSpecs from '@levels';
 

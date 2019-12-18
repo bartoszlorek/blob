@@ -1,7 +1,7 @@
 import {arrayRemove} from '@utils/array';
 import {EDGE_BY_AXIS} from '@physics/consts';
 import Constraint from '@physics/core/Constraint';
-import Force from '@models/Force';
+import Force from '@core/Force';
 
 import {
   bodyBodyOverlapResolver,

@@ -1,4 +1,4 @@
-import VirtualButton from '@models/VirtualButton';
+import VirtualButton from '@core/VirtualButton';
 
 class Button extends VirtualButton {
   constructor(code) {

@@ -1,5 +1,5 @@
 import {fromEvent} from 'rxjs';
-import PubSub from '@models/PubSub';
+import PubSub from '@core/PubSub';
 
 class Events extends PubSub {
   constructor() {

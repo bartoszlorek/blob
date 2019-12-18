@@ -1,5 +1,5 @@
-import BoundingBox from '@models/BoundingBox';
-import Vector from '@models/Vector';
+import BoundingBox from '@core/BoundingBox';
+import Vector from '@core/Vector';
 
 const alignMargin = 0.1;
 const subtractError = 0.0001;

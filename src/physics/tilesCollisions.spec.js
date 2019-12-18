@@ -1,5 +1,5 @@
-import Tilemap from '@models/Tilemap';
-import BoundingBox from '@models/BoundingBox';
+import Tilemap from '@core/Tilemap';
+import BoundingBox from '@core/BoundingBox';
 import {
   resolveTileCollision,
   resolveTileCollisionLegacy,

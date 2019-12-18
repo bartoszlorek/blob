@@ -1,6 +1,6 @@
 import {arrayForEach} from '@utils/array';
-import Sprite from '@models/Sprite';
-import Group from '@models/Group';
+import Sprite from '@core/Sprite';
+import Group from '@core/Group';
 import Body from '@physics/core/Body';
 
 import Watcher from '@actions/Watcher';
