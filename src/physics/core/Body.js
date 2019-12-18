@@ -10,6 +10,7 @@ class Body extends BoundingBox {
 
     // pixijs
     this.sprite = sprite;
+    this.sprite.anchor.set(0.5);
 
     // parameters
     this.traits = [];
@@ -19,8 +20,8 @@ class Body extends BoundingBox {
 
   update(deltaTime) {
     // update sprite to the position from the previous frame
-    this.sprite.position.x = this.min[0];
-    this.sprite.position.y = this.min[1];
+    this.sprite.position.x = this.min[0] + this.size / 2;
+    this.sprite.position.y = this.min[1] + this.size / 2;
 
     // traits phase
     for (let index = 0; index < this.traits.length; index++) {

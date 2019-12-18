@@ -33,7 +33,7 @@ class Move extends Trait {
     m_vector[0] = this.direction;
     m_vector[1] = 0;
 
-    const {velocity, gravity} = body;
+    const {velocity, gravity, sprite} = body;
     const axis = +Vector.isHorizontal(gravity.vector);
     const actualDirection = rotateVector(gravity.vector, m_vector)[axis];
 
@@ -41,7 +41,7 @@ class Move extends Trait {
       velocity[axis] += this.acceleration * actualDirection * deltaTime;
 
       // rotate sprite horizontally
-      // sprite.scale.x = this.direction;
+      sprite.scale.x = this.direction;
     } else if (velocity[axis] !== 0) {
       // prettier-ignore
       const dec = Math.min(Math.abs(velocity[axis]), this.deceleration * deltaTime);

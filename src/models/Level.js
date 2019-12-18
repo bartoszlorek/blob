@@ -1,7 +1,6 @@
 import {baseSize} from '@app/consts';
 import Scene from '@models/Scene';
 import Spritesheet from '@models/Spritesheet';
-import {vectorRotation} from '@utils/physics';
 import Pointer from '@models/Pointer';
 
 import {createPlayer, createTiles} from '@layers';

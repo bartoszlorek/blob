@@ -1,11 +1,12 @@
 import Vector from '@models/Vector';
 import Ray from '@physics/core/Ray';
 import CompoundRay, {COMPOUND_TYPE as TYPE} from '@physics/core/CompoundRay';
+
 import {
   isCornerCase,
   isOutsideOnCorner,
   getOutsideVector,
-} from '@physics/gravityHelpers';
+} from '@physics/tilesGravityHelpers';
 
 const rayLeft = new Ray(-1, 0);
 const rayRight = new Ray(1, 0);
@@ -17,7 +18,7 @@ const compY = new CompoundRay(rayTop, rayBottom);
 
 const m_vector = Vector.create();
 
-export function calculateGravity(body, tilemap) {
+export function calculateGravityDirection(body, tilemap) {
   if (tilemap.intersectsMargin(body, -1) === false) {
     // we should use last known gravity
     // for corners outside bounding box
