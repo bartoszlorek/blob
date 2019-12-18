@@ -3,9 +3,9 @@ import {arrayForEach} from '@utils/array';
 
 import Animator from '@models/Animator';
 import Sprite from '@models/Sprite';
-import Trait from '@traits/Trait';
+import Action from '@models/Action';
 
-class Explosive extends Trait {
+class Explosive extends Action {
   constructor({global, scene}) {
     super('explosive');
     this.global = global;

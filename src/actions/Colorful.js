@@ -1,7 +1,7 @@
-import Trait from '@traits/Trait';
+import Action from '@models/Action';
 import {blend} from '@utils/color';
 
-class Colorful extends Trait {
+class Colorful extends Action {
   constructor() {
     super('colorful');
     this.color = null;

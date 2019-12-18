@@ -1,7 +1,7 @@
-import Trait from '@traits/Trait';
+import Action from '@models/Action';
 import {EDGE} from '@physics/consts';
 
-class Watcher extends Trait {
+class Watcher extends Action {
   constructor({scene, direction = 1, speed}) {
     super('watcher');
     this.scene = scene;

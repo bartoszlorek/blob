@@ -5,7 +5,7 @@ import Sprite from '@models/Sprite';
 import Group from '@models/Group';
 import Body from '@physics/core/Body';
 
-import Explosive from '@traits/Explosive';
+import Explosive from '@actions/Explosive';
 
 function createMines({data, global, scene}) {
   let {texture} = global.assets['mines'];
@@ -19,9 +19,9 @@ function createMines({data, global, scene}) {
       sprite.animator = new Animator();
       sprite.animator.add('blink', [sprite]);
 
-      // group and traits
+      // group and actions
       const mine = new Body(sprite);
-      mine.addTrait(new Explosive({global, scene}));
+      mine.addAction(new Explosive({global, scene}));
       mines.add(mine);
     });
 

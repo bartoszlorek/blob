@@ -5,13 +5,13 @@
     "allowSyntheticDefaultImports": false,
     "paths": {
       "@app": ["./src/*"],
+      "@actions": ["./src/actions/*"],
       "@gui": ["./src/gui/*"],
       "@layers": ["./src/layers/*"],
       "@levels": ["./src/levels/*"],
       "@models": ["./src/models/*"],
       "@physics": ["./src/physics/*"],
       "@state": ["./src/state/*"],
-      "@traits": ["./src/traits/*"],
       "@utils": ["./src/utils/*"]
     }
   },

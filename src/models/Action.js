@@ -1,4 +1,4 @@
-class Trait {
+class Action {
   constructor(name) {
     this.name = name;
   }
@@ -8,4 +8,4 @@ class Trait {
   collide() {}
 }
 
-export default Trait;
+export default Action;

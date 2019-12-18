@@ -1,7 +1,6 @@
 import {baseSize} from '@app/consts';
 import Scene from '@models/Scene';
 import Spritesheet from '@models/Spritesheet';
-import Pointer from '@models/Pointer';
 
 import {createPlayer, createTiles} from '@layers';
 
@@ -29,14 +28,10 @@ class Level extends Scene {
     this.foreground.addChild(player.sprite);
     this.refs.player = player;
 
-    // const pointer = new Pointer(this.global);
-    // this.foreground.addChild(pointer.marker);
-    // pointer.onClick = (x, y) => {};
-
     // physics
     this.physics.addChild(player);
 
-    this.physics.collideBodyTiles(player, tiles, (body, edge) => {
+    this.physics.collideBodyTiles(player, tiles, function(body, edge) {
       body.jump.collide(body, edge);
       body.move.collide(body, edge);
     });

@@ -3,9 +3,9 @@ import {baseSize} from '@app/consts';
 import Keyboard from '@models/Keyboard';
 import Body from '@physics/core/Body';
 
-import Jump from '@traits/Jump';
-import Move from '@traits/Move';
-import MouseMove from '@traits/MouseMove';
+import Jump from '@actions/Jump';
+import Move from '@actions/Move';
+import MouseMove from '@actions/MouseMove';
 
 function createPlayer({sheet, specs, global}) {
   const {id, position} = specs.sprites.player;
@@ -18,9 +18,9 @@ function createPlayer({sheet, specs, global}) {
     baseSize
   );
 
-  player.addTrait(new Jump());
-  player.addTrait(new Move());
-  // player.addTrait(new MouseMove(global));
+  player.addAction(new Jump());
+  player.addAction(new Move());
+  // player.addAction(new MouseMove(global));
 
   const input = new Keyboard();
   input.on('ArrowRight KeyD', pressed => {

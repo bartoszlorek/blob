@@ -1,7 +1,7 @@
 import {baseSize} from '@app/consts';
-import Trait from '@traits/Trait';
+import Action from '@models/Action';
 
-class MouseMove extends Trait {
+class MouseMove extends Action {
   constructor(global) {
     super('mouse_move');
 

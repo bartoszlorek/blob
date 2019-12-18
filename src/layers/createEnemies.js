@@ -3,7 +3,7 @@ import Sprite from '@models/Sprite';
 import Group from '@models/Group';
 import Body from '@physics/core/Body';
 
-import Watcher from '@traits/Watcher';
+import Watcher from '@actions/Watcher';
 
 function createEnemies({data, global, scene}) {
   let {texture} = global.assets['enemies'];
@@ -12,7 +12,7 @@ function createEnemies({data, global, scene}) {
   if (data.bodies.enemies) {
     arrayForEach(data.bodies.enemies, ([x, y]) => {
       const enemy = new Body(new Sprite(texture, x, y));
-      enemy.addTrait(new Watcher({scene, speed: 60}));
+      enemy.addAction(new Watcher({scene, speed: 60}));
       enemies.add(enemy);
     });
   } else {

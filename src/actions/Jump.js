@@ -1,5 +1,5 @@
 import {rotateEdge, rotateVector} from '@utils/physics';
-import Trait from '@traits/Trait';
+import Action from '@models/Action';
 
 import {EDGE} from '@physics/consts';
 import Sound from '@models/Sound';
@@ -8,7 +8,7 @@ import Vector from '@models/Vector';
 
 const m_vector = Vector.create();
 
-class Jump extends Trait {
+class Jump extends Action {
   constructor() {
     super('jump');
 
