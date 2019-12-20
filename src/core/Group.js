@@ -11,27 +11,25 @@ class Group {
   }
 
   remove(child) {
-    const {length} = this.children;
-
-    for (let index = 0; index < length; index++) {
+    for (let index = 0; index < this.children.length; index++) {
       const elem = this.children[index];
 
       if (elem === child) {
         utils.removeItems(this.children, index, 1);
-        return;
+        return true;
       }
-      if (elem.isGroup && elem.contains(child)) {
-        elem.remove(child);
-        return;
+
+      // handle nested group
+      if (elem.isGroup && elem.remove(child)) {
+        return true;
       }
     }
+    return false;
   }
 
   contains(child) {
-    let index = this.children.length;
-
-    while (index > 0) {
-      const elem = this.children[--index];
+    for (let index = 0; index < this.children.length; index++) {
+      const elem = this.children[index];
 
       if (elem === child || (elem.isGroup && elem.contains(child))) {
         return true;
@@ -40,27 +38,8 @@ class Group {
     return false;
   }
 
-  isEmpty() {
-    let index = this.children.length;
-
-    while (index > 0) {
-      const child = this.children[--index];
-
-      if (child.isGroup) {
-        if (!child.isEmpty()) {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    }
-    return true;
-  }
-
   forEach(iteratee, index = 0) {
-    const {length} = this.children;
-
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
 
       if (child.isGroup) {
@@ -69,6 +48,17 @@ class Group {
         return;
       }
     }
+  }
+
+  isEmpty() {
+    for (let index = 0; index < this.children.length; index++) {
+      const child = this.children[index];
+
+      if (!(child.isGroup && child.isEmpty())) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

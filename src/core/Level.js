@@ -2,7 +2,7 @@ import {baseSize} from '@app/consts';
 import Scene from '@core/Scene';
 import Spritesheet from '@core/Spritesheet';
 
-import {createPlayer, createTiles} from '@layers';
+import {createPlayer, createTiles, createPrizes} from '@layers';
 
 class Level extends Scene {
   constructor({global, data}) {
@@ -23,15 +23,22 @@ class Level extends Scene {
 
     const [tiles] = createTiles(props);
     const [player] = createPlayer(props);
+    const [prizes] = createPrizes(props);
 
-    this.foreground.addChild(tiles.graphics);
-    this.foreground.addChild(player.sprite);
+    // renderer
+    this.renderChild(tiles);
+    this.renderChild(player);
+    this.renderChild(prizes);
     this.refs.player = player;
 
     // physics
-    this.physics.addChild(player);
+    this.physics.processChild(player);
 
-    this.physics.collideBodyTiles(player, tiles, function(body, edge) {
+    this.physics.overlapBodyBody(player, prizes, function(player, prize, edge) {
+      console.log(edge);
+    });
+
+    this.physics.collideBodyTiles(player, tiles, function(body, tiles, edge) {
       body.action['jump'].collide(body, edge);
       body.action['move'].collide(body, edge);
     });

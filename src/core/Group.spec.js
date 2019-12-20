@@ -92,7 +92,7 @@ describe('Group()', () => {
 
     expect(callback.mock.calls).toEqual([
       [child1, 0, master],
-      [child2, 1, group2]
+      [child2, 1, group2],
     ]);
   });
 
@@ -125,5 +125,26 @@ describe('Group()', () => {
     group.add(child);
     master.add(group);
     expect(master.isEmpty()).toBe(false);
+  });
+
+  it('returns false when group with children is not only first', () => {
+    const master = new Group();
+    const groupA = new Group();
+    const groupB = new Group();
+
+    groupB.add('value');
+    master.add(groupA);
+    master.add(groupB);
+    expect(master.isEmpty()).toBe(false);
+  });
+
+  it('returns true when all children groups are empty', () => {
+    const master = new Group();
+    const groupA = new Group();
+    const groupB = new Group();
+
+    master.add(groupA);
+    master.add(groupB);
+    expect(master.isEmpty()).toBe(true);
   });
 });

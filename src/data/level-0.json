@@ -13,9 +13,9 @@
       "position": [[-2, -6]],
       "id": 10
     },
-    "prizes": {
-      "position": [[5, 0]],
-      "id": 3
+    "prizes":{
+      "position": [[3, -5]],
+      "id": 8
     }
   },
   "tiles": {

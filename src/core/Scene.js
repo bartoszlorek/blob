@@ -44,22 +44,15 @@ class Scene {
     // call in subclass
   }
 
-  add(elem) {
-    if (!elem) {
-      return;
-    }
-    // prettier-ignore
-    if (elem.isBody) {
-      this.foreground.addChild(elem.sprite);
-
-    } else if (elem.isGroup) {
-      elem.children.forEach(child => this.add(child));
-
-    } else if (elem.isTilemap) {
-      this.foreground.addChild(elem.graphics);
-
+  renderChild(child) {
+    if (child.isBody) {
+      this.foreground.addChild(child.sprite);
+    } else if (child.isTileset) {
+      this.foreground.addChild(child.graphics);
+    } else if (child.isGroup) {
+      child.forEach(a => this.renderChild(a));
     } else {
-      this.foreground.addChild(elem);
+      this.foreground.addChild(child);
     }
   }
 

@@ -1,33 +1,18 @@
-import {Sprite} from 'pixi.js';
+import {arrayForEach} from '@utils/array';
 import {GlowFilter} from '@pixi/filter-glow';
-import {baseSize} from '@app/consts';
 
+import Sprite from '@core/Sprite';
 import Group from '@core/Group';
 import Animator from '@core/Animator';
 import Body from '@physics/core/Body';
 
 const glowDistance = 10;
 
-function createPrizes({global, sheet, data}) {
-  const {id, position} = data.sprites.prizes;
-
-  let prizes = new Group();
-  let filters = [];
-
-  position.forEach(([x, y]) => {
-    const prize = new Body(
-      new Sprite(sheet.getById(id)),
-      x * baseSize,
-      y * baseSize,
-      baseSize
-    );
-
-    prizes.add(prize);
-  });
-
-  /*
+function createPrizes({data, global, scene}) {
   let {texture} = global.assets['prizes'];
-   [new GlowFilter(glowDistance, 1, 0, 0xf2dc30)];
+  let prizes = new Group();
+
+  let filters = [new GlowFilter(glowDistance, 1, 0, 0xf2dc30)];
   filters[0].padding = glowDistance;
 
   if (data.static.prizes) {
@@ -51,11 +36,12 @@ function createPrizes({global, sheet, data}) {
     ];
   } else {
     prizes = null;
-  }*/
+  }
 
   function cleanup() {
-    prizes = null;
+    texture = null;
     filters = null;
+    prizes = null;
   }
 
   return [prizes, cleanup];

@@ -19,13 +19,13 @@ class Body extends BoundingBox {
     this.isAlive = true;
     this.isBody = true;
 
-    console.log(this);
+    // process
+    this.updateSprite();
   }
 
   update(deltaTime) {
     // update sprite to the position from the previous frame
-    this.sprite.position.x = this.min[0] + this.size / 2;
-    this.sprite.position.y = this.min[1] + this.size / 2;
+    this.updateSprite();
 
     // actions phase
     for (let index = 0; index < this.actions.length; index++) {
@@ -35,6 +35,11 @@ class Body extends BoundingBox {
     // apply velocity from the current frame to the bbox
     this.translateX(this.velocity[0] * deltaTime);
     this.translateY(this.velocity[1] * deltaTime);
+  }
+
+  updateSprite() {
+    this.sprite.position.x = this.min[0] + this.size / 2;
+    this.sprite.position.y = this.min[1] + this.size / 2;
   }
 
   addAction(action) {

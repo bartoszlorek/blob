@@ -36,14 +36,12 @@ class World {
     }
   }
 
-  addChild(child) {
-    this.children.push(child);
-  }
-
-  addGroup(group) {
-    group.forEach(child => {
+  processChild(child) {
+    if (child.isBody) {
       this.children.push(child);
-    });
+    } else if (child.isGroup) {
+      child.forEach(a => this.processChild(a));
+    }
   }
 
   removeChild(child) {
@@ -73,7 +71,7 @@ class World {
       const difference = body.min[axis] < tileCoords[axis] * tiles.tilesize;
 
       velocity[axis] = shift; // todo: use actual velocity
-      callback(body, EDGE_BY_AXIS[axis][+difference]);
+      callback(body, tiles, EDGE_BY_AXIS[axis][+difference]);
       return true;
     };
 
@@ -106,7 +104,7 @@ class World {
     const rule = new Constraint({
       actorA: bodyA,
       actorB: bodyB,
-      // resolver: bodyBodyOverlapResolver,
+      resolver: bodyBodyOverlapResolver,
       effect: callback,
     });
 
