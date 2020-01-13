@@ -1,10 +1,14 @@
-import {Application} from 'pixi.js';
+import PIXI, {Application} from 'pixi.js';
+
+// disable interpolation when scaling, will make texture be pixelated
+PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 const engine = new Application({
   //transparent: true,
   width: window.innerWidth,
   height: window.innerHeight,
   backgroundColor: 0x01024e,
+  antialias: false,
 });
 
 engine.ticker.stop();

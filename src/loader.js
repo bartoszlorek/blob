@@ -11,7 +11,7 @@ loader.add([
   {name: 'jump_01', url: 'assets/jump_01.mp3'},
   {name: 'jump_02', url: 'assets/jump_02.mp3'},
   {name: 'jump_03', url: 'assets/jump_03.mp3'},
-  {name: 'jump_04', url: 'assets/jump_04.mp3'}
+  {name: 'jump_04', url: 'assets/jump_04.mp3'},
 ]);
 
 loader.on('complete', (loader, assets) => {

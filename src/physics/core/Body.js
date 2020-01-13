@@ -2,7 +2,7 @@ import BoundingBox from '@core/BoundingBox';
 import Vector from '@core/Vector';
 
 class Body extends BoundingBox {
-  constructor(sprite, x = 0, y = 0, size = 24) {
+  constructor(sprite, x = 0, y = 0, size = 32) {
     super([x, y], [x + size, y + size]);
 
     // pixijs
