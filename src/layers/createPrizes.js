@@ -12,7 +12,8 @@ function createPrizes({global, sheet, data}) {
   const {id, position} = data.sprites.prizes;
 
   let prizes = new Group();
-  let filters = [];
+  let filters = [new GlowFilter(glowDistance, 1, 0, 0xf2dc30)];
+  filters[0].padding = glowDistance;
 
   position.forEach(([x, y]) => {
     const prize = new Body(
@@ -22,36 +23,9 @@ function createPrizes({global, sheet, data}) {
       baseSize
     );
 
+    prize.sprite.filters = filters;
     prizes.add(prize);
   });
-
-  /*
-  let {texture} = global.assets['prizes'];
-   [new GlowFilter(glowDistance, 1, 0, 0xf2dc30)];
-  filters[0].padding = glowDistance;
-
-  if (data.static.prizes) {
-    arrayForEach(data.static.prizes, ([x, y]) => {
-      const sprite = new Sprite(texture, x, y);
-      sprite.filters = filters;
-
-      // animation
-      sprite.animator = new Animator();
-      sprite.animator.add('shine', [sprite]);
-      sprite.animator.shine.play();
-
-      // group
-      prizes.add(new Body(sprite));
-    });
-
-    scene.animations.add(prizes);
-    scene.animations.keyframes['shine'] = [
-      [600, sprite => sprite.scale.set(0.8)],
-      [1000, sprite => sprite.scale.set(1)],
-    ];
-  } else {
-    prizes = null;
-  }*/
 
   function cleanup() {
     prizes = null;
