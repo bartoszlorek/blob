@@ -1,40 +1,28 @@
-import {arrayForEach} from '@utils/array';
+import {Sprite} from 'pixi.js';
+import {baseSize} from '@app/consts';
 
-import Animator from '@core/Animator';
-import Sprite from '@core/Sprite';
 import Group from '@core/Group';
 import Body from '@physics/core/Body';
-
 import Explosive from '@actions/Explosive';
 
-function createMines({data, global, scene}) {
-  let {texture} = global.assets['mines'];
+function createMines({global, sheet, data}) {
+  const {id, position} = data.sprites.mines;
+
   let mines = new Group();
 
-  if (data.static.mines) {
-    arrayForEach(data.static.mines, ([x, y]) => {
-      const sprite = new Sprite(texture, x, y);
+  position.forEach(([x, y]) => {
+    const mine = new Body(
+      new Sprite(sheet.getById(id)),
+      x * baseSize,
+      y * baseSize,
+      baseSize
+    );
 
-      // animation
-      sprite.animator = new Animator();
-      sprite.animator.add('blink', [sprite]);
-
-      // group and actions
-      const mine = new Body(sprite);
-      mine.addAction(new Explosive({global, scene}));
-      mines.add(mine);
-    });
-
-    scene.animations.add(mines);
-    scene.animations.keyframes['blink'] = [
-      [50, sprite => (sprite.visible = !sprite.visible)],
-    ];
-  } else {
-    mines = null;
-  }
+    // mine.addAction(new Explosive({global}));
+    mines.add(mine);
+  });
 
   function cleanup() {
-    texture = null;
     mines = null;
   }
 

@@ -2,7 +2,7 @@ import {baseSize} from '@app/consts';
 import Scene from '@core/Scene';
 import Spritesheet from '@core/Spritesheet';
 
-import {createPlayer, createTiles, createPrizes} from '@layers';
+import {createPlayer, createTiles, createPrizes, createMines} from '@layers';
 
 class Level extends Scene {
   constructor({global, data}) {
@@ -24,11 +24,13 @@ class Level extends Scene {
     const [tiles] = createTiles(props);
     const [player] = createPlayer(props);
     const [prizes] = createPrizes(props);
+    const [mines] = createMines(props);
 
     // renderer
     this.renderChild(tiles);
     this.renderChild(player);
     this.renderChild(prizes);
+    this.renderChild(mines);
     this.refs.player = player;
 
     // physics
