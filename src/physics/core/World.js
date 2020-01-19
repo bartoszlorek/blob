@@ -65,7 +65,7 @@ class World {
   // Defined Common Constraints
   // --------------------------
 
-  collideBodyTiles(body, tiles, callback) {
+  collideTile(body, tiles, callback) {
     const effect = (value, index, axis, shift, velocity) => {
       const tileCoords = tiles.getCoordinates(index);
       const difference = body.min[axis] < tileCoords[axis] * tiles.tilesize;
@@ -85,7 +85,7 @@ class World {
     this.constraints.push(rule);
   }
 
-  gravityBodyTiles(body, tiles) {
+  gravityTile(body, tiles) {
     body.gravity = new Force(0, 1, {
       str: 25,
       dex: 0.6,
@@ -100,7 +100,7 @@ class World {
     this.constraints.push(rule);
   }
 
-  overlapBodyBody(bodyA, bodyB, callback) {
+  overlapBody(bodyA, bodyB, callback) {
     const rule = new Constraint({
       actorA: bodyA,
       actorB: bodyB,

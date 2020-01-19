@@ -1,4 +1,5 @@
 import Tilemap from './Tilemap';
+import BoundingBox from './BoundingBox';
 
 const dir = {
   up: [0, -1],
@@ -8,64 +9,71 @@ const dir = {
 };
 
 describe('Tilemap()', () => {
-  it('should create from array of values', () => {
-    const map = new Tilemap([1, 0, 1], 3);
-    expect(map.values).toEqual([1, 0, 1]);
-  });
+  describe('basic', () => {
+    it('should create from array of values', () => {
+      const map = new Tilemap([1, 0, 1], 3);
+      expect(map.values).toEqual([1, 0, 1]);
+    });
 
-  it('should return index', () => {
-    const map = new Tilemap([1, 0, 1, 1], 2);
-    expect(map.getIndex(1, 1)).toBe(3);
-  });
+    it('should return index', () => {
+      const map = new Tilemap([1, 0, 1, 1], 2);
+      expect(map.getIndex(1, 1)).toBe(3);
+    });
 
-  it('should remove value by index', () => {
-    const map = new Tilemap([1, 0, 1], 3);
-    map.removeByIndex(2);
-    expect(map.values).toEqual([1, 0, 0]);
-  });
-
-  it('should calculate bounds', () => {
-    // prettier-ignore
-    const map = new Tilemap([
-      1, 0, 1, 1,
-      1, 1, 1, 1
-    ], 8, 4);
-
-    expect(map.boundingBox).toEqual({
-      min: [0, 0],
-      max: [32, 16],
-      vec2: [32, 16],
+    it('should remove value by index', () => {
+      const map = new Tilemap([1, 0, 1], 3);
+      map.removeByIndex(2);
+      expect(map.values).toEqual([1, 0, 0]);
     });
   });
 
-  it('should calculate bounds with offset', () => {
-    // prettier-ignore
-    const map = new Tilemap([
-      1, 0, 1, 1,
-      1, 1, 1, 1
-    ], 8, 4, [-2, -1]);
+  describe('boundingBox', () => {
+    it('should calculate bounds', () => {
+      // prettier-ignore
+      const map = new Tilemap([
+        1, 0, 1, 1,
+        1, 1, 1, 1
+      ], 4);
 
-    expect(map.boundingBox).toEqual({
-      min: [-16, -8],
-      max: [16, 8],
-      vec2: [32, 16],
+      expect(map).toEqual(
+        expect.objectContaining({
+          min: [0, 0],
+          max: [128, 64],
+        })
+      );
     });
-  });
 
-  it('should re-calculate bounds', () => {
-    // prettier-ignore
-    const map = new Tilemap([
-      1, 0, 1, 1,
-      1, 1, 1, 1
-    ], 8, 4);
+    it('should calculate bounds with offset', () => {
+      // prettier-ignore
+      const map = new Tilemap([
+        1, 0, 1, 1,
+        1, 1, 1, 1
+      ], 4, 32, [-2, -1]);
 
-    map.removeByIndex(0);
-    map.removeByIndex(4);
+      expect(map).toEqual(
+        expect.objectContaining({
+          min: [-64, -32],
+          max: [64, 32],
+        })
+      );
+    });
 
-    expect(map.boundingBox).toEqual({
-      min: [8, 0],
-      max: [32, 16],
-      vec2: [24, 16],
+    it('should re-calculate bounds', () => {
+      // prettier-ignore
+      const map = new Tilemap([
+        1, 0, 1, 1,
+        1, 1, 1, 1
+      ], 4, 32);
+
+      map.removeByIndex(0);
+      map.removeByIndex(4);
+
+      expect(map).toEqual(
+        expect.objectContaining({
+          min: [32, 0],
+          max: [128, 64],
+        })
+      );
     });
   });
 
@@ -486,5 +494,56 @@ describe('Tilemap()', () => {
         expect(map.raycast(x, y, dx, dy)).toBe(result);
       }
     );
+  });
+
+  fdescribe('search()', () => {
+    it('should loop over values inside bbox', () => {
+      // prettier-ignore
+      const values = [
+        1, 1, 1,
+        1, 0, 1,
+        1, 1, 1
+      ];
+
+      const map = new Tilemap(values, 3, 32);
+      const bbox = new BoundingBox([0, 0], [96, 96]);
+      const iteratee = jest.fn();
+
+      map.search(bbox, iteratee);
+      expect(iteratee).toHaveBeenCalledTimes(8);
+    });
+
+    it('should loop over values close to the edge', () => {
+      // prettier-ignore
+      const values = [
+        1, 1, 1,
+        1, 0, 1,
+        1, 1, 1
+      ];
+
+      const map = new Tilemap(values, 3, 32);
+      const bbox = new BoundingBox([0, 0], [64, 64]);
+      const iteratee = jest.fn();
+
+      map.search(bbox, iteratee);
+      expect(iteratee).toHaveBeenCalledTimes(3);
+    });
+
+    it('should stop and return value', () => {
+      // prettier-ignore
+      const values = [
+        1, 1, 1,
+        1, 0, 1,
+        1, 1, 1
+      ];
+
+      const map = new Tilemap(values, 3, 32);
+      const bbox = new BoundingBox([0, 0], [64, 64]);
+      const iteratee = jest.fn(() => true);
+
+      const result = map.search(bbox, iteratee);
+      expect(iteratee).toHaveBeenCalledTimes(1);
+      expect(result).toBe(true);
+    });
   });
 });

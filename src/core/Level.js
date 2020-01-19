@@ -36,16 +36,16 @@ class Level extends Scene {
     // physics
     this.physics.processChild(player);
 
-    this.physics.overlapBodyBody(player, prizes, function(player, prize, edge) {
+    this.physics.overlapBody(player, prizes, function(player, prize, edge) {
       console.log(edge);
     });
 
-    this.physics.collideBodyTiles(player, tiles, function(body, tiles, edge) {
+    this.physics.collideTile(player, tiles, function(body, tiles, edge) {
       body.action['jump'].collide(body, edge);
       body.action['move'].collide(body, edge);
     });
 
-    this.physics.gravityBodyTiles(player, tiles);
+    this.physics.gravityTile(player, tiles);
 
     // final
     this.setupBackground();

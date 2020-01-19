@@ -38,6 +38,37 @@ class Tilemap extends BoundingBox {
     return m_vector;
   }
 
+  search(bbox, iteratee) {
+    const startX = Math.floor(bbox.min[0] / this.tilesize) - this.offset[0];
+    const startY = Math.floor(bbox.min[1] / this.tilesize) - this.offset[1];
+    const endX = Math.floor(bbox.max[0] / this.tilesize) - this.offset[0];
+    const endY = Math.floor(bbox.max[1] / this.tilesize) - this.offset[1];
+
+    const minX = this.min[0] / this.tilesize;
+    const maxX = this.max[0] / this.tilesize;
+    const minY = this.min[1] / this.tilesize;
+    const maxY = this.max[1] / this.tilesize;
+
+    for (let y = startY; y < endY; y += 1) {
+      if (y < minY || y >= maxY) continue;
+
+      for (let x = startX; x < endX; x += 1) {
+        if (x < minX || x >= maxX) continue;
+
+        const index = this.getIndex(x, y);
+        const value = this.values[index];
+
+        if (value > 0) {
+          const result = iteratee(value, x, y, index, this);
+
+          if (result !== undefined) {
+            return result;
+          }
+        }
+      }
+    }
+  }
+
   closest(x, y) {
     const ox = x - this.offset[0];
     const oy = y - this.offset[1];
