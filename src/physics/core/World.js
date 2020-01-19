@@ -39,6 +39,7 @@ class World {
   processChild(child) {
     if (child.isBody) {
       this.children.push(child);
+      child.parent = this;
     } else if (child.isGroup) {
       child.forEach(a => this.processChild(a));
     }
@@ -46,18 +47,17 @@ class World {
 
   removeChild(child) {
     this.removeStack[this.removeIndex++] = child;
-    child.destroy();
   }
 
   _unsafeRemoveChild(child) {
     arrayRemove(this.children, child);
-    this._checkConstraintsHealth(child);
+    this._updateConstraintActors(child);
     child.unsafeDestroy();
   }
 
-  _checkConstraintsHealth(child) {
+  _updateConstraintActors(child) {
     for (let index = 0; index < this.constraints.length; index++) {
-      this.constraints[index].validate(child);
+      this.constraints[index].removeActor(child);
     }
   }
 

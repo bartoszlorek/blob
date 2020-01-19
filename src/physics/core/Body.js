@@ -14,9 +14,9 @@ class Body extends BoundingBox {
     this.velocity = Vector.create(0, 0);
     this.actions = [];
     this.action = {};
+    this.parent = null;
 
     // flags
-    this.isAlive = true;
     this.isBody = true;
 
     // process
@@ -48,12 +48,13 @@ class Body extends BoundingBox {
   }
 
   destroy() {
-    this.isAlive = false;
+    this.parent.removeChild(this);
   }
 
   unsafeDestroy() {
     this.sprite.destroy();
     this.sprite = null;
+    this.parent = null;
   }
 }
 

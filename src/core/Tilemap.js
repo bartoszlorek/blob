@@ -44,10 +44,10 @@ class Tilemap extends BoundingBox {
     const endX = Math.floor(bbox.max[0] / this.tilesize) - this.offset[0];
     const endY = Math.floor(bbox.max[1] / this.tilesize) - this.offset[1];
 
-    const minX = this.min[0] / this.tilesize;
-    const maxX = this.max[0] / this.tilesize;
-    const minY = this.min[1] / this.tilesize;
-    const maxY = this.max[1] / this.tilesize;
+    const minX = this.min[0] / this.tilesize - this.offset[0];
+    const maxX = this.max[0] / this.tilesize - this.offset[0];
+    const minY = this.min[1] / this.tilesize - this.offset[1];
+    const maxY = this.max[1] / this.tilesize - this.offset[1];
 
     for (let y = startY; y < endY; y += 1) {
       if (y < minY || y >= maxY) continue;
@@ -59,8 +59,7 @@ class Tilemap extends BoundingBox {
         const value = this.values[index];
 
         if (value > 0) {
-          const result = iteratee(value, x, y, index, this);
-
+          const result = iteratee(value, index, this);
           if (result !== undefined) {
             return result;
           }

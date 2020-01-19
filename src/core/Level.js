@@ -21,31 +21,37 @@ class Level extends Scene {
       data: this.data,
     };
 
-    const [tiles] = createTiles(props);
+    const [ground] = createTiles(props);
     const [player] = createPlayer(props);
     const [prizes] = createPrizes(props);
     const [mines] = createMines(props);
 
     // renderer
-    this.renderChild(tiles);
+    this.renderChild(ground);
     this.renderChild(player);
     this.renderChild(prizes);
     this.renderChild(mines);
     this.refs.player = player;
+    this.refs.ground = ground;
 
     // physics
     this.physics.processChild(player);
+    this.physics.processChild(mines);
 
-    this.physics.overlapBody(player, prizes, function(player, prize, edge) {
-      console.log(edge);
+    this.physics.overlapBody(player, prizes, function() {
+      // console.log(edge);
     });
 
-    this.physics.collideTile(player, tiles, function(body, tiles, edge) {
+    this.physics.overlapBody(player, mines, function(player, mine) {
+      mine.action['explosive'].ignite();
+    });
+
+    this.physics.collideTile(player, ground, function(body, ground, edge) {
       body.action['jump'].collide(body, edge);
       body.action['move'].collide(body, edge);
     });
 
-    this.physics.gravityTile(player, tiles);
+    this.physics.gravityTile(player, ground);
 
     // final
     this.setupBackground();

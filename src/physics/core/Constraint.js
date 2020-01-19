@@ -12,12 +12,14 @@ class Constraint {
   }
 
   update(deltaTime) {
-    this.resolver(this, deltaTime);
+    if (this.isActive === true) {
+      this.resolver(this, deltaTime);
+    }
   }
 
-  validate(actor) {
+  removeActor(actor) {
     if (this.actorA === actor || this.actorB === actor) {
-      this.isActive = actor.isAlive;
+      this.isActive = false;
     } else {
       if (this.actorA.isGroup) {
         this.validateGroup(this.actorA, actor);

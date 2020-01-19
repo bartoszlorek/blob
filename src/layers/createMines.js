@@ -18,7 +18,7 @@ function createMines({global, sheet, data}) {
       baseSize
     );
 
-    // mine.addAction(new Explosive({global}));
+    mine.addAction(new Explosive(global));
     mines.add(mine);
   });
 

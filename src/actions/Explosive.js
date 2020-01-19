@@ -1,97 +1,56 @@
 import {baseSize} from '@app/consts';
-import {arrayForEach} from '@utils/array';
-
-import Animator from '@core/Animator';
-import Sprite from '@core/Sprite';
+import BoundingBox from '@core/BoundingBox';
 import Action from '@core/Action';
 
+const destoryTilemap = (value, index, tilemap) => {
+  tilemap.removeByIndex(index);
+};
+
 class Explosive extends Action {
-  constructor({global, scene}) {
+  constructor(global, range = baseSize) {
     super('explosive');
     this.global = global;
-    this.scene = scene;
     this.active = false;
 
-    // parameters
-    this.range = 1;
-    this.delay = 0.3;
+    const size = range * 2 + baseSize;
+    this.area = new BoundingBox([0, 0], [size, size]);
+    this.range = range;
     this.timer = 0;
 
-    // object pools
-    this._blastArea = {};
+    // parameters
+    this.delay = 0.3;
   }
 
   ignite() {
-    if (!this.active) {
-      this.active = true;
-    }
+    this.active = true;
   }
 
-  update(entity, deltaTime) {
-    if (!this.active) {
+  update(bomb, deltaTime) {
+    if (this.active === false) {
       return;
     }
 
     if (this.timer === 0) {
-      entity.sprite.animator.blink.play();
+      // todo: start animation
     }
 
     if (this.timer >= this.delay) {
-      const {player, ground} = this.scene.refs;
-      this.scene.add(this._createBlastFrom(entity));
+      const {player, ground} = this.global.scene.refs;
 
-      // destroy everything in range
-      this._updateBlastArea(entity);
-      this._destroyTilemap(entity, ground);
-      this._destroyBodies(player);
-      entity.destroy();
+      this.area.alignX(bomb.min[0] - this.range);
+      this.area.alignY(bomb.min[1] - this.range);
 
-      if (!player.isAlive) {
+      // todo: add blast sprite
+      ground.search(this.area, destoryTilemap);
+      bomb.destroy();
+
+      if (this.area.intersects(player)) {
         this.global.events.publish('player_dead');
+        player.destroy();
       }
     }
 
     this.timer += deltaTime;
-  }
-
-  _destroyTilemap(entity, tilemap) {
-    const closest = tilemap.closest(entity.gridX, entity.gridY);
-    arrayForEach(closest, tile => tile && tile.destroy());
-  }
-
-  _destroyBodies(elem) {
-    const closest = this.scene.physics.treeSearch(this._blastArea);
-    arrayForEach(closest, body => {
-      if (elem === body || (elem.isGroup && elem.contains(child))) {
-        body.destroy();
-      }
-    });
-  }
-
-  _updateBlastArea(entity) {
-    const offset = baseSize * this.range;
-    this._blastArea.minX = entity.minX - offset;
-    this._blastArea.maxX = entity.maxX + offset;
-    this._blastArea.minY = entity.minY - offset;
-    this._blastArea.maxY = entity.maxY + offset;
-  }
-
-  _createBlastFrom(entity) {
-    const {texture} = this.global.assets['blast'];
-    const sprite = new Sprite(texture, entity.gridX, entity.gridY);
-
-    // todo: put this in sprite
-    sprite.anchor.set(0.5);
-    sprite.x += baseSize / 2;
-    sprite.y += baseSize / 2;
-
-    // animation
-    sprite.animator = new Animator();
-    sprite.animator.add('blast', [sprite, this.range]);
-    sprite.animator.blast.play();
-
-    this.scene.animations.add(sprite);
-    return sprite;
   }
 }
 
