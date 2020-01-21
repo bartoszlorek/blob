@@ -1,8 +1,6 @@
 import BoundingBox from '@core/BoundingBox';
 import Vector from '@core/Vector';
 
-const m_vector = Vector.create();
-
 class Tilemap extends BoundingBox {
   constructor(values = [], dimension = 8, tilesize = 32, offset = [0, 0]) {
     super();
@@ -12,12 +10,8 @@ class Tilemap extends BoundingBox {
     this.tilesize = tilesize;
     this.offset = offset;
 
-    // prettier-ignore
-    this._closestArray = [
-      0, 0, 0,
-      0, 0, 0,
-      0, 0, 0,
-    ];
+    this._closestArray = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this._point = Vector.create();
 
     // initial calculation
     this.calculateBoundingBox();
@@ -32,10 +26,10 @@ class Tilemap extends BoundingBox {
     return x + this.dimension * y;
   }
 
-  getCoordinates(index) {
-    m_vector[0] = (index % this.dimension) + this.offset[0];
-    m_vector[1] = Math.floor(index / this.dimension) + this.offset[1];
-    return m_vector;
+  getPoint(index) {
+    this._point[0] = (index % this.dimension) + this.offset[0];
+    this._point[1] = Math.floor(index / this.dimension) + this.offset[1];
+    return this._point;
   }
 
   search(bbox, iteratee) {
@@ -60,6 +54,7 @@ class Tilemap extends BoundingBox {
 
         if (value > 0) {
           const result = iteratee(value, index, this);
+
           if (result !== undefined) {
             return result;
           }

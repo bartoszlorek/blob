@@ -67,11 +67,12 @@ class World {
 
   collideTile(body, tiles, callback) {
     const effect = (value, index, axis, shift, velocity) => {
-      const tileCoords = tiles.getCoordinates(index);
-      const difference = body.min[axis] < tileCoords[axis] * tiles.tilesize;
+      const point = tiles.getPoint(index);
+      const side = body.min[axis] < point[axis] * tiles.tilesize;
+      const edge = EDGE_BY_AXIS[axis][+side];
 
       velocity[axis] = shift; // todo: use actual velocity
-      callback(body, tiles, EDGE_BY_AXIS[axis][+difference]);
+      callback(body, tiles, edge);
       return true;
     };
 
