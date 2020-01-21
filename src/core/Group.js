@@ -38,14 +38,34 @@ class Group {
     return false;
   }
 
-  forEach(iteratee, index = 0) {
-    for (let i = 0; i < this.children.length; i++) {
-      const child = this.children[i];
+  forEach(iteratee) {
+    for (let index = 0; index < this.children.length; index++) {
+      const child = this.children[index];
+      let result;
 
       if (child.isGroup) {
-        child.forEach(iteratee, index);
-      } else if (iteratee(child, index++, this) === false) {
-        return;
+        result = child.forEach(iteratee);
+      } else {
+        result = iteratee(child, index, this);
+      }
+      if (result === false) {
+        return false;
+      }
+    }
+  }
+
+  search(bbox, iteratee) {
+    for (let index = 0; index < this.children.length; index++) {
+      const child = this.children[index];
+      let result;
+
+      if (child.isGroup) {
+        result = child.search(bbox, iteratee);
+      } else if (bbox.intersects(child)) {
+        result = iteratee(child, index, this);
+      }
+      if (result !== undefined) {
+        return result;
       }
     }
   }
