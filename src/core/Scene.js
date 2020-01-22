@@ -23,7 +23,7 @@ class Scene {
 
     // events
     this.resize = this.resize.bind(this);
-    this.global.events.onResize(this.resize);
+    this.global.events.on('resize', this.resize);
 
     // parameters
     this.offsetX = 0;
@@ -91,7 +91,7 @@ class Scene {
 
   destroy() {
     this.cleanup();
-    this.global.events.unsubscribe('resize', this.resize);
+    this.global.events.off('resize', this.resize);
     this.global = null;
     this.refs = null;
   }

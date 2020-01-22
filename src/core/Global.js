@@ -1,5 +1,6 @@
+import {fromEvent} from 'rxjs';
 import {localToGrid} from '@app/consts';
-import Events from '@core/Events';
+import EventEmitter from '@core/EventEmitter';
 
 class Global {
   constructor({engine, assets}) {
@@ -10,9 +11,14 @@ class Global {
     // parameters
     this.time = 1 / 60;
 
-    this.events = new Events();
-    this.events.onResize(() => this.resize());
+    // global events
+    this.events = new EventEmitter();
     this.resize();
+
+    fromEvent(window, 'resize').subscribe(() => {
+      this.events.emit('resize');
+      this.resize();
+    });
 
     this.engine.ticker.add(deltaFrame => {
       const deltaTime = deltaFrame * this.time;
@@ -32,13 +38,13 @@ class Global {
     this.scene.create();
 
     this.engine.stage.addChild(scene.graphics);
-    this.events.publish('load_scene', this);
+    this.events.emit('load_scene', this);
     this.engine.ticker.start();
   }
 
   unload() {
     this.engine.ticker.stop();
-    this.events.publish('before_unload_scene', this);
+    this.events.emit('before_unload_scene', this);
     this.engine.stage.removeChild(this.scene.graphics);
 
     this.scene.destroy();
