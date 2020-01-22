@@ -1,5 +1,5 @@
+import {Sprite} from 'pixi.js';
 import {arrayForEach} from '@utils/array';
-import Sprite from '@core/Sprite';
 import Group from '@core/Group';
 import Body from '@physics/core/Body';
 
