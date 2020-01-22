@@ -1,6 +1,6 @@
 import {Container, Sprite} from 'pixi.js';
-import {baseSize} from '@app/consts';
-import Tilemap from '@core/Tilemap';
+import {baseSize} from '@app/constants';
+import Tilemap from '@core/structure/Tilemap';
 
 class Tileset extends Tilemap {
   constructor(values, dimension, offset) {

@@ -1,5 +1,5 @@
 import BoundingBox from '@core/BoundingBox';
-import Vector from '@core/Vector';
+import Vector from '@core/physics/Vector';
 
 class Tilemap extends BoundingBox {
   constructor(values = [], dimension = 8, tilesize = 32, offset = [0, 0]) {

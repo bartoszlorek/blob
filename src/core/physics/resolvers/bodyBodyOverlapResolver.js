@@ -1,6 +1,6 @@
-import {EDGE} from '@physics/consts';
+import {EDGE} from '../constants';
 
-function bodyBodyCollisionResolver(constraint, deltaTime) {
+function bodyBodyOverlapResolver(constraint, deltaTime) {
   const {actorA: bodyA, actorB: bodyB, effect} = constraint;
 
   if (bodyB.isGroup) {
@@ -30,4 +30,4 @@ function getOverlapingEdge(bodyA, bodyB) {
   }
 }
 
-export default bodyBodyCollisionResolver;
+export default bodyBodyOverlapResolver;

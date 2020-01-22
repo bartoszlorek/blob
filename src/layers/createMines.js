@@ -1,8 +1,8 @@
 import {Sprite} from 'pixi.js';
-import {baseSize} from '@app/consts';
+import {baseSize} from '@app/constants';
 
-import Group from '@core/Group';
-import Body from '@physics/core/Body';
+import Group from '@core/structure/Group';
+import Body from '@core/physics/Body';
 import Explosive from '@actions/Explosive';
 
 function createMines({global, sheet, data}) {

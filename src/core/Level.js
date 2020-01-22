@@ -1,6 +1,6 @@
-import {baseSize} from '@app/consts';
+import {baseSize} from '@app/constants';
 import Scene from '@core/Scene';
-import Spritesheet from '@core/Spritesheet';
+import Spritesheet from '@core/structure/Spritesheet';
 
 import {createPlayer, createTiles, createPrizes, createMines} from '@layers';
 

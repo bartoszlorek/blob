@@ -1,4 +1,4 @@
-import Vector from '@core/Vector';
+import Vector from '@core/physics/Vector';
 
 class Force {
   constructor(x, y, {str = 1, dex = 0.5} = {}) {

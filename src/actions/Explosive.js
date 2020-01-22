@@ -1,6 +1,6 @@
-import {baseSize} from '@app/consts';
+import {baseSize} from '@app/constants';
 import BoundingBox from '@core/BoundingBox';
-import Action from '@core/Action';
+import Action from '@core/interaction/Action';
 
 const destoryTilemap = (value, index, tilemap) => {
   tilemap.removeByIndex(index);

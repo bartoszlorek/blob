@@ -1,5 +1,5 @@
 import BoundingBox from '@core/BoundingBox';
-import Vector from '@core/Vector';
+import Vector from '@core/physics/Vector';
 
 class Body extends BoundingBox {
   constructor(sprite, x = 0, y = 0, size = 32) {

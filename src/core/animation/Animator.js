@@ -1,4 +1,4 @@
-import Animation from '@core/Animation';
+import Animation from '@core/animation/Animation';
 
 class Animator {
   constructor() {

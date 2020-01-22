@@ -1,12 +1,12 @@
-import Vector from '@core/Vector';
-import Ray from '@physics/core/Ray';
-import CompoundRay, {COMPOUND_TYPE as TYPE} from '@physics/core/CompoundRay';
+import Vector from '../Vector';
+import CompoundRay, {COMPOUND_TYPE as TYPE} from '../CompoundRay';
+import Ray from '../Ray';
 
 import {
   isCornerCase,
   isOutsideOnCorner,
   getOutsideVector,
-} from '@physics/tilesGravityHelpers';
+} from './tilesGravityHelpers';
 
 const rayLeft = new Ray(-1, 0);
 const rayRight = new Ray(1, 0);

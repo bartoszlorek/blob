@@ -1,5 +1,5 @@
-import Action from '@core/Action';
-import {EDGE} from '@physics/consts';
+import Action from '@core/interaction/Action';
+import {EDGE} from '@core/physics/constants';
 
 class Watcher extends Action {
   constructor({scene, direction = 1, speed}) {

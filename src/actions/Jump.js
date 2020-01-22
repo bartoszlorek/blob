@@ -1,10 +1,9 @@
 import {rotateEdge, rotateVector} from '@utils/physics';
-import Sound from '@core/Sound';
-import Force from '@core/Force';
-import Action from '@core/Action';
-import Vector from '@core/Vector';
-
-import {EDGE} from '@physics/consts';
+import Sound from '@core/sound/Sound';
+import Action from '@core/interaction/Action';
+import Vector from '@core/physics/Vector';
+import Force from '@core/physics/Force';
+import {EDGE} from '@core/physics/constants';
 
 const m_vector = Vector.create();
 

@@ -1,10 +1,10 @@
 import {Sprite} from 'pixi.js';
 import {GlowFilter} from '@pixi/filter-glow';
-import {baseSize} from '@app/consts';
+import {baseSize} from '@app/constants';
 
-import Group from '@core/Group';
-import Animator from '@core/Animator';
-import Body from '@physics/core/Body';
+import Group from '@core/structure/Group';
+import Animator from '@core/animation/Animator';
+import Body from '@core/physics/Body';
 
 const glowDistance = 10;
 

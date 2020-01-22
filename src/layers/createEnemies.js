@@ -1,7 +1,7 @@
 import {Sprite} from 'pixi.js';
 import {arrayForEach} from '@utils/array';
-import Group from '@core/Group';
-import Body from '@physics/core/Body';
+import Group from '@core/structure/Group';
+import Body from '@core/physics/Body';
 
 import Watcher from '@actions/Watcher';
 

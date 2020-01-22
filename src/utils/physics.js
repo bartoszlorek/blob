@@ -1,4 +1,4 @@
-import {EDGE_CYCLE} from '@physics/consts';
+import {EDGE_CYCLE} from '@core/physics/constants';
 import {modIndex} from '@utils/math';
 
 export function rotateEdge(origin, edge) {

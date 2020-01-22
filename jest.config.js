@@ -9,7 +9,6 @@ module.exports = {
     '^@data(.*)$': '<rootDir>/src/data$1',
     '^@gui(.*)$': '<rootDir>/src/gui$1',
     '^@layers(.*)$': '<rootDir>/src/layers$1',
-    '^@physics(.*)$': '<rootDir>/src/physics$1',
     '^@state(.*)$': '<rootDir>/src/state$1',
     '^@utils(.*)$': '<rootDir>/src/utils$1',
   },

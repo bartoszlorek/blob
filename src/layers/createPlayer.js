@@ -1,7 +1,7 @@
 import {Sprite} from 'pixi.js';
-import {baseSize} from '@app/consts';
-import Keyboard from '@core/Keyboard';
-import Body from '@physics/core/Body';
+import {baseSize} from '@app/constants';
+import Keyboard from '@core/interaction/Keyboard';
+import Body from '@core/physics/Body';
 
 import Jump from '@actions/Jump';
 import Move from '@actions/Move';

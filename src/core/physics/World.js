@@ -1,13 +1,13 @@
 import {arrayRemove} from '@utils/array';
-import {EDGE_BY_AXIS} from '@physics/consts';
-import Constraint from '@physics/core/Constraint';
-import Force from '@core/Force';
+import {EDGE_BY_AXIS} from '@core/physics/constants';
+import Constraint from '@core/physics/Constraint';
+import Force from '@core/physics/Force';
 
 import {
   bodyBodyOverlapResolver,
   bodyTilesCollisionResolver,
   bodyTilesGravityResolver,
-} from '@physics/resolvers';
+} from '@core/physics/resolvers';
 
 class World {
   constructor() {

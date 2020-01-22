@@ -1,9 +1,8 @@
 import {Container} from 'pixi.js';
-import {baseSize} from '@app/consts';
+import {baseSize} from '@app/constants';
 import {lerp} from '@utils/math';
 import Background from '@core/Background';
-
-import World from '@physics/core/World';
+import World from '@core/physics/World';
 
 class Scene {
   constructor(global) {

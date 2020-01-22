@@ -10,7 +10,6 @@
       "@data": ["./src/data/*"],
       "@gui": ["./src/gui/*"],
       "@layers": ["./src/layers/*"],
-      "@physics": ["./src/physics/*"],
       "@state": ["./src/state/*"],
       "@utils": ["./src/utils/*"]
     }

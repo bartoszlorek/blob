@@ -1,4 +1,4 @@
-import Tilemap from '@core/Tilemap';
+import Tilemap from '@core/structure/Tilemap';
 import BoundingBox from '@core/BoundingBox';
 import {
   resolveTileCollision,

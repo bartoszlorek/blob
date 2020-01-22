@@ -16,7 +16,6 @@ module.exports = {
       '@data': path.resolve(__dirname, 'src/data/'),
       '@gui': path.resolve(__dirname, 'src/gui/'),
       '@layers': path.resolve(__dirname, 'src/layers/'),
-      '@physics': path.resolve(__dirname, 'src/physics/'),
       '@state': path.resolve(__dirname, 'src/state/'),
       '@utils': path.resolve(__dirname, 'src/utils/'),
     },
