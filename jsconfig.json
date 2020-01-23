@@ -8,9 +8,7 @@
       "@actions": ["./src/actions/*"],
       "@core": ["./src/core/*"],
       "@data": ["./src/data/*"],
-      "@gui": ["./src/gui/*"],
       "@layers": ["./src/layers/*"],
-      "@state": ["./src/state/*"],
       "@utils": ["./src/utils/*"]
     }
   },

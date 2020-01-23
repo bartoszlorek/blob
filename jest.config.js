@@ -7,9 +7,7 @@ module.exports = {
     '^@actions(.*)$': '<rootDir>/src/actions$1',
     '^@core(.*)$': '<rootDir>/src/core$1',
     '^@data(.*)$': '<rootDir>/src/data$1',
-    '^@gui(.*)$': '<rootDir>/src/gui$1',
     '^@layers(.*)$': '<rootDir>/src/layers$1',
-    '^@state(.*)$': '<rootDir>/src/state$1',
     '^@utils(.*)$': '<rootDir>/src/utils$1',
   },
 };
