@@ -1,6 +1,6 @@
 import {isTouchDevice} from '@utils/device';
-import Button from '@gui/Button';
-import Text from '@gui/Text';
+import Button from '@core/gui/Button';
+import Text from '@core/gui/Text';
 
 export default function render() {
   const landing = document.querySelector('.landing');
@@ -35,6 +35,6 @@ export default function render() {
     landing,
     start,
     time,
-    score
+    score,
   };
 }

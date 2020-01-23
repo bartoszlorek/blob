@@ -1,6 +1,6 @@
 import {rotateEdge, rotateVector} from '@utils/physics';
-import Sound from '@core/sound/Sound';
-import Action from '@core/interaction/Action';
+import Sound from '@core/Sound';
+import Action from '@core/Action';
 import Vector from '@core/physics/Vector';
 import Force from '@core/physics/Force';
 import {EDGE} from '@core/physics/constants';

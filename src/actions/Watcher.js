@@ -1,4 +1,4 @@
-import Action from '@core/interaction/Action';
+import Action from '@core/Action';
 import {EDGE} from '@core/physics/constants';
 
 class Watcher extends Action {

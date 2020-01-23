@@ -1,6 +1,6 @@
 import {fromEvent} from 'rxjs';
 import {localToGrid} from '@app/constants';
-import EventEmitter from '@core/interaction/EventEmitter';
+import EventEmitter from '@core/EventEmitter';
 
 class Global {
   constructor({engine, assets}) {

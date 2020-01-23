@@ -1,5 +1,5 @@
 import {baseSize} from '@app/constants';
-import Action from '@core/interaction/Action';
+import Action from '@core/Action';
 
 class MouseMove extends Action {
   constructor(global) {

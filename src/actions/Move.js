@@ -3,7 +3,7 @@ import {rotateVector} from '@utils/physics';
 import {lerp} from '@utils/math';
 
 import Vector from '@core/physics/Vector';
-import Action from '@core/interaction/Action';
+import Action from '@core/Action';
 
 const alignmentMin = 0.65;
 const alignmentMax = 0.99;

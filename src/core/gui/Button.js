@@ -1,4 +1,4 @@
-import VirtualButton from '@gui/VirtualButton';
+import VirtualButton from './VirtualButton';
 
 class Button extends VirtualButton {
   constructor(code) {
