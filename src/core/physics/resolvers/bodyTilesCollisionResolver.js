@@ -1,5 +1,5 @@
 import Vector from '../Vector';
-import {detectTilesCollision} from '../methods/tilesCollisions';
+import {detectTilesCollision} from '../collisions/tilesCollisions';
 
 // mutable data
 const m_velocity = Vector.create();

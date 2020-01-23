@@ -1,6 +1,6 @@
-import Vector from '../Vector';
-import CompoundRay, {COMPOUND_TYPE as TYPE} from '../CompoundRay';
-import Ray from '../Ray';
+import Vector from '@core/physics/Vector';
+import CompoundRay, {COMPOUND_TYPE as TYPE} from './CompoundRay';
+import Ray from './Ray';
 
 import {
   isCornerCase,

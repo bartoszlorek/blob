@@ -1,5 +1,5 @@
 import {vectorRotation} from '@utils/physics';
-import {calculateGravityDirection} from '../methods/tilesGravity';
+import {calculateGravityDirection} from '../gravity/tilesGravity';
 
 function bodyTilesGravityResolver(constraint, deltaTime) {
   const {actorA: body, actorB: tilemap} = constraint;
