@@ -1,18 +1,14 @@
 import {arrayRemove} from '@utils/array';
-import {EDGE_BY_AXIS} from '@core/physics/constants';
-import Constraint from '@core/physics/Constraint';
-import Force from '@core/physics/Force';
-
 import {
-  bodyBodyOverlapResolver,
-  bodyTilesCollisionResolver,
-  bodyTilesGravityResolver,
-} from '@core/physics/resolvers';
+  BodyOverlap,
+  TileCollision,
+  TileGravity,
+} from '@core/physics/components';
 
 class World {
   constructor() {
     this.children = [];
-    this.constraints = [];
+    this.components = [];
 
     // processing
     this.removeStack = [];
@@ -27,12 +23,13 @@ class World {
 
     // cleanup phase
     while (this.removeIndex > 0) {
-      this._unsafeRemoveChild(this.removeStack[--this.removeIndex]);
+      this.unsafeRemoveChild(this.removeStack[--this.removeIndex]);
     }
 
     // physics phase
-    for (let index = 0; index < this.constraints.length; index++) {
-      this.constraints[index].update(deltaTime);
+    for (let index = 0; index < this.components.length; index++) {
+      const component = this.components[index];
+      if (component.isActive) component.validate(deltaTime);
     }
   }
 
@@ -49,67 +46,32 @@ class World {
     this.removeStack[this.removeIndex++] = child;
   }
 
-  _unsafeRemoveChild(child) {
+  unsafeRemoveChild(child) {
+    this.updateComponents(child);
     arrayRemove(this.children, child);
-    this._updateConstraintActors(child);
     child.unsafeDestroy();
   }
 
-  _updateConstraintActors(child) {
-    for (let index = 0; index < this.constraints.length; index++) {
-      this.constraints[index].removeActor(child);
+  updateComponents(child) {
+    for (let index = 0; index < this.components.length; index++) {
+      this.components[index].removeActor(child);
     }
   }
 
   // --------------------------
-  // Defined Common Constraints
+  // Defined Common Components
   // --------------------------
 
   collideTile(body, tiles, callback) {
-    const effect = (value, index, axis, shift, velocity) => {
-      const point = tiles.getPoint(index);
-      const side = body.min[axis] < point[axis] * tiles.tilesize;
-      const edge = EDGE_BY_AXIS[axis][+side];
-
-      velocity[axis] = shift; // todo: use actual velocity
-      callback(body, tiles, edge);
-      return true;
-    };
-
-    const rule = new Constraint({
-      actorA: body,
-      actorB: tiles,
-      resolver: bodyTilesCollisionResolver,
-      effect,
-    });
-
-    this.constraints.push(rule);
+    this.components.push(new TileCollision({body, tiles, callback}));
   }
 
   gravityTile(body, tiles) {
-    body.gravity = new Force(0, 1, {
-      str: 25,
-      dex: 0.6,
-    });
-
-    const rule = new Constraint({
-      actorA: body,
-      actorB: tiles,
-      resolver: bodyTilesGravityResolver,
-    });
-
-    this.constraints.push(rule);
+    this.components.push(new TileGravity({body, tiles}));
   }
 
   overlapBody(bodyA, bodyB, callback) {
-    const rule = new Constraint({
-      actorA: bodyA,
-      actorB: bodyB,
-      resolver: bodyBodyOverlapResolver,
-      effect: callback,
-    });
-
-    this.constraints.push(rule);
+    this.components.push(new BodyOverlap({bodyA, bodyB, callback}));
   }
 }
 

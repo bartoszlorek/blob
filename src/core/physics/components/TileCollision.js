@@ -1,0 +1,57 @@
+import Component from '@core/physics/Component';
+import Vector from '@core/physics/Vector';
+import {EDGE_BY_AXIS} from '@core/physics/constants';
+import {detectTilesCollision} from '@core/physics/collisions/tilesCollisions';
+
+class TileCollision extends Component {
+  constructor(props) {
+    super(props);
+
+    // mutable data
+    this.m_velocity = Vector.create();
+
+    // handlers
+    this.handleCollision = (value, index, axis, shift, velocity) => {
+      const {body, tiles, callback} = this.props;
+      const point = tiles.getPoint(index);
+
+      const side = body.min[axis] < point[axis] * tiles.tilesize;
+      const edge = EDGE_BY_AXIS[axis][+side];
+
+      velocity[axis] = shift; // todo: use actual velocity
+      callback(body, tiles, edge);
+      return true;
+    };
+  }
+
+  update(deltaTime) {
+    const {body, tiles} = this.props;
+
+    if (!tiles.intersects(body)) {
+      return;
+    }
+
+    // delta time vector
+    this.m_velocity[0] = body.velocity[0] * deltaTime;
+    this.m_velocity[1] = body.velocity[1] * deltaTime;
+
+    const shiftVector = detectTilesCollision(
+      tiles,
+      body,
+      this.m_velocity,
+      this.handleCollision
+    );
+
+    if (shiftVector[0] !== 0) {
+      body.translateX(shiftVector[0]);
+      body.velocity[0] = 0;
+    }
+
+    if (shiftVector[1] !== 0) {
+      body.translateY(shiftVector[1]);
+      body.velocity[1] = 0;
+    }
+  }
+}
+
+export default TileCollision;
