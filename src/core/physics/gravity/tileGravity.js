@@ -6,7 +6,7 @@ import {
   isCornerCase,
   isOutsideOnCorner,
   getOutsideVector,
-} from './tilesGravityHelpers';
+} from './tileGravityHelpers';
 
 const rayLeft = new Ray(-1, 0);
 const rayRight = new Ray(1, 0);

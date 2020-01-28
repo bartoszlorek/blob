@@ -8,7 +8,7 @@ const subtractError = 0.0001;
 const m_bbox = new BoundingBox();
 const m_vector = Vector.create();
 
-export function detectTilesCollision(
+export function detectTileCollision(
   tilemap,
   bbox,
   deltaTimeVelocity,

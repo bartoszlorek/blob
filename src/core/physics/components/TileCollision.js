@@ -1,7 +1,7 @@
 import Component from '@core/physics/Component';
 import Vector from '@core/physics/Vector';
 import {EDGE_BY_AXIS} from '@core/physics/constants';
-import {detectTilesCollision} from '@core/physics/collisions/tilesCollisions';
+import {detectTileCollision} from '@core/physics/collisions/tileCollisions';
 
 class TileCollision extends Component {
   constructor(props) {
@@ -35,7 +35,7 @@ class TileCollision extends Component {
     this.m_velocity[0] = body.velocity[0] * deltaTime;
     this.m_velocity[1] = body.velocity[1] * deltaTime;
 
-    const shiftVector = detectTilesCollision(
+    const shiftVector = detectTileCollision(
       tiles,
       body,
       this.m_velocity,

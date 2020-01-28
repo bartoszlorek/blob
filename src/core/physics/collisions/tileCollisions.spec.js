@@ -3,7 +3,7 @@ import BoundingBox from '@core/BoundingBox';
 import {
   resolveTileCollision,
   resolveTileCollisionLegacy,
-} from './tilesCollisions';
+} from './tileCollisions';
 
 // prettier-ignore
 const velocity = {

@@ -2,7 +2,7 @@ import {vectorRotation} from '@utils/physics';
 import Component from '@core/physics/Component';
 import Force from '@core/physics/Force';
 
-import {calculateGravityDirection} from '../gravity/tilesGravity';
+import {calculateGravityDirection} from '../gravity/tileGravity';
 
 class TileGravity extends Component {
   constructor(props) {
