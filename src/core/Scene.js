@@ -32,15 +32,15 @@ class Scene {
   }
 
   create() {
-    // call in subclass
+    // fill in subclass
   }
 
   update() {
-    // call in subclass
+    // fill in subclass
   }
 
   cleanup() {
-    // call in subclass
+    // fill in subclass
   }
 
   renderChild(child) {

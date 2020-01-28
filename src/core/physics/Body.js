@@ -18,6 +18,7 @@ class Body extends BoundingBox {
 
     // flags
     this.isBody = true;
+    this.isAlive = true;
 
     // process
     this.updateSprite();

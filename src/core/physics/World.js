@@ -29,7 +29,7 @@ class World {
     // physics phase
     for (let index = 0; index < this.components.length; index++) {
       const component = this.components[index];
-      if (component.isActive) component.validate(deltaTime);
+      if (component.isActive) component.update(deltaTime);
     }
   }
 
@@ -44,17 +44,18 @@ class World {
 
   removeChild(child) {
     this.removeStack[this.removeIndex++] = child;
+    child.isAlive = false;
   }
 
   unsafeRemoveChild(child) {
-    this.updateComponents(child);
+    this.validateComponents(child);
     arrayRemove(this.children, child);
     child.unsafeDestroy();
   }
 
-  updateComponents(child) {
+  validateComponents(child) {
     for (let index = 0; index < this.components.length; index++) {
-      this.components[index].removeActor(child);
+      this.components[index].validate(child);
     }
   }
 

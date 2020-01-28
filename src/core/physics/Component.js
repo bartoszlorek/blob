@@ -1,36 +1,41 @@
 class Component {
   constructor(props) {
+    this.props = props;
+    this.children = [];
+
+    // flags
     this.isActive = true;
 
-    this.props = props;
-    this.names = [];
-
+    // get children from props
     Object.keys(props).forEach(name => {
-      if (props[name].isBody || props[name].isGroup) {
-        this.names.push(name);
+      const child = props[name];
+
+      if (child.isBody || child.isGroup) {
+        this.children.push(child);
       }
     });
   }
 
-  update(deltaTime) {}
+  update(deltaTime) {
+    // fill in subclass
+  }
 
-  // todo: update instead of remove only
-  validate(actor) {
-    for (let i = 0; i < this.names.length; i++) {
-      const elem = this.props[this.names[i]];
+  validate(body) {
+    for (let i = 0; i < this.children.length; i++) {
+      const child = this.children[i];
 
-      if (elem.isGroup) {
-        this.validateGroup(elem, actor);
-      } else if (elem === actor) {
-        this.isActive = false;
+      if (child.isGroup) {
+        this.validateGroup(child, body);
+      } else if (child === body) {
+        this.isActive = !!body.isAlive;
       }
     }
   }
 
-  validateGroup(group, actor) {
+  validateGroup(group, body) {
     if (this.isActive) {
       // disable component with empty group
-      if (group.remove(actor) && group.isEmpty()) {
+      if (group.remove(body) && group.isEmpty()) {
         this.isActive = false;
       }
     } else {
@@ -39,6 +44,11 @@ class Component {
         this.isActive = true;
       }
     }
+  }
+
+  destroy() {
+    this.props = null;
+    this.isActive = false;
   }
 }
 
