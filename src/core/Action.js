@@ -3,9 +3,13 @@ class Action {
     this.name = name;
   }
 
-  update() {}
+  update(deltaTime) {
+    // fill in subclass
+  }
 
-  collide() {}
+  collide() {
+    // fill in subclass
+  }
 }
 
 export default Action;

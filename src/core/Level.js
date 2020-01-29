@@ -1,50 +1,41 @@
-import {baseSize} from '@app/constants';
 import Scene from '@core/Scene';
-import Spritesheet from '@core/structure/Spritesheet';
-
-import {createPlayer, createTiles, createPrizes, createMines} from '@layers';
+import {createPlayer, createGround, createPrizes, createMines} from '@layers';
 
 class Level extends Scene {
-  constructor({global, data}) {
+  constructor(global, spriteset) {
     super(global);
 
-    //
-    this.data = data;
+    this.spriteset = spriteset;
   }
 
   create() {
-    this.sheet = this.createSpritesheet();
-
     const props = {
       global: this.global,
-      sheet: this.sheet,
-      data: this.data,
+      spriteset: this.spriteset,
     };
 
-    const [ground] = createTiles(props);
+    const [ground] = createGround(props);
     const [player] = createPlayer(props);
-    const [prizes] = createPrizes(props);
-    const [mines] = createMines(props);
+    // const [prizes] = createPrizes(props);
+    // const [mines] = createMines(props);
 
     // renderer
     this.renderChild(ground);
     this.renderChild(player);
-    this.renderChild(prizes);
-    this.renderChild(mines);
+    // this.renderChild(prizes);
+    // this.renderChild(mines);
     this.refs.player = player;
     this.refs.ground = ground;
 
     // physics
     this.physics.processChild(player);
-    this.physics.processChild(mines);
+    // this.physics.processChild(mines);
 
-    this.physics.overlapBody(player, prizes, function() {
-      // console.log(edge);
-    });
+    // this.physics.overlapBody(player, prizes, function() {});
 
-    this.physics.overlapBody(player, mines, function(player, mine) {
-      mine.action['explosive'].ignite();
-    });
+    // this.physics.overlapBody(player, mines, function(player, mine) {
+    //   mine.action['explosive'].ignite();
+    // });
 
     this.physics.collideTile(player, ground, function(body, ground, edge) {
       body.action['jump'].collide(body, edge);
@@ -54,19 +45,13 @@ class Level extends Scene {
     this.physics.gravityTile(player, ground);
 
     // final
-    this.setupBackground();
+    // this.setupBackground();
     this.resize();
   }
 
   update(deltaTime) {
     this.physics.update(deltaTime);
     // this.follow(this.refs.player);
-  }
-
-  createSpritesheet() {
-    const {name} = this.data.spritesheet;
-    const {texture} = this.global.assets[name];
-    return new Spritesheet({texture, size: baseSize});
   }
 
   setupBackground() {

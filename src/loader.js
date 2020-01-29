@@ -6,6 +6,7 @@ loader.add([
   // graphics
   {name: 'gradient', url: 'assets/gradient.png'},
   {name: 'spritesheet', url: 'assets/spritesheet.png'},
+  {name: 'world', url: 'assets/world.png'},
 
   // sounds
   {name: 'jump_01', url: 'assets/jump_01.mp3'},
