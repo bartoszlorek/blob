@@ -1,6 +1,6 @@
 import Tileset from '@core/structure/Tileset';
 
-function createGround({spriteset}) {
+function createGround({global, spriteset}) {
   const {tilemap, width, offset} = spriteset.layers['ground'];
   const ground = new Tileset(tilemap, width, offset);
 

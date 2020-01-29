@@ -7,7 +7,7 @@ import Move from '@actions/Move';
 import MouseMove from '@actions/MouseMove';
 
 function createPlayer({global, spriteset}) {
-  const {sprites} = spriteset.layers['player'].sprites[0];
+  const {sprites} = spriteset.layers['player'];
   const {id, position} = sprites[0]; // singleplayer
 
   let player = new Body(
