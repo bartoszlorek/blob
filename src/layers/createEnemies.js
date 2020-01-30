@@ -1,26 +1,27 @@
 import {Sprite} from 'pixi.js';
-import {arrayForEach} from '@utils/array';
 import Group from '@core/structure/Group';
 import Body from '@core/physics/Body';
 
 import Watcher from '@actions/Watcher';
 
-function createEnemies({data, global, scene}) {
-  let {texture} = global.assets['enemies'];
+function createEnemies({global, spriteset}) {
+  const {sprites} = spriteset.layers['enemies'];
   let enemies = new Group();
 
-  if (data.bodies.enemies) {
-    arrayForEach(data.bodies.enemies, ([x, y]) => {
-      const enemy = new Body(new Sprite(texture, x, y));
-      enemy.addAction(new Watcher({scene, speed: 60}));
-      enemies.add(enemy);
-    });
-  } else {
-    enemies = null;
-  }
+  sprites.forEach(sprite => {
+    const {id, position} = sprite;
+    const enemy = new Body(
+      new Sprite(spriteset.spritesheet.getById(id)),
+      position[0] * spriteset.tilesize,
+      position[1] * spriteset.tilesize,
+      spriteset.tilesize
+    );
+
+    enemy.addAction(new Watcher({scene, speed: 60}));
+    enemies.add(enemy);
+  });
 
   function cleanup() {
-    texture = null;
     enemies = null;
   }
 

@@ -7,7 +7,7 @@ const engine = new Application({
   //transparent: true,
   width: window.innerWidth,
   height: window.innerHeight,
-  backgroundColor: 0x01024e,
+  backgroundColor: 0x5010a3,
   antialias: false,
 });
 

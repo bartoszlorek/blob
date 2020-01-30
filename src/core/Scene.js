@@ -5,8 +5,9 @@ import Background from '@core/Background';
 import World from '@core/physics/World';
 
 class Scene {
-  constructor(global) {
+  constructor(global, spriteset) {
     this.global = global;
+    this.spriteset = spriteset;
     this.refs = {};
 
     // physics
@@ -56,12 +57,19 @@ class Scene {
   }
 
   resize() {
-    this.foreground.x = this.global.rootX + this.offsetX;
-    this.foreground.y = this.global.rootY + this.offsetY;
+    const {width, height, tilesize} = this.spriteset;
+    const left = this.global.rootX - (width / 2) * tilesize;
+    const top = this.global.rootY - (height / 2) * tilesize;
+
+    this.foreground.x = left + this.offsetX;
+    this.foreground.y = top + this.offsetY;
     this.background.resize();
   }
 
   focus(body) {
+    if (!body.isAlive) {
+      return;
+    }
     const {x, y} = body.sprite;
     this.offsetX = -x;
     this.offsetY = -y;
@@ -70,7 +78,7 @@ class Scene {
   }
 
   follow(body) {
-    if (!body) {
+    if (!body.isAlive) {
       return;
     }
     const {x, y} = body.sprite;

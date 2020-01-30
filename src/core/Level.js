@@ -1,11 +1,18 @@
 import Scene from '@core/Scene';
-import {createPlayer, createGround, createPrizes, createMines} from '@layers';
+
+import {
+  createBack,
+  createEnemies,
+  createFront,
+  createGems,
+  createGround,
+  createMines,
+  createPlayer,
+} from '@layers';
 
 class Level extends Scene {
   constructor(global, spriteset) {
-    super(global);
-
-    this.spriteset = spriteset;
+    super(global, spriteset);
   }
 
   create() {
@@ -15,26 +22,38 @@ class Level extends Scene {
     };
 
     const [ground] = createGround(props);
+    const [back] = createBack(props);
+    const [gems] = createGems(props);
+    const [mines] = createMines(props);
+    const [enemies] = createEnemies(props);
     const [player] = createPlayer(props);
-    // const [prizes] = createPrizes(props);
-    // const [mines] = createMines(props);
+    const [front] = createFront(props);
 
     // renderer
     this.renderChild(ground);
+    this.renderChild(back);
+    this.renderChild(gems);
+    this.renderChild(mines);
+    this.renderChild(enemies);
     this.renderChild(player);
-    // this.renderChild(prizes);
-    // this.renderChild(mines);
+    this.renderChild(front);
+
     this.refs.player = player;
     this.refs.ground = ground;
 
     // physics
     this.physics.processChild(player);
-    // this.physics.processChild(mines);
+    this.physics.processChild(mines);
 
-    // this.physics.overlapBody(player, prizes, function() {});
+    this.physics.overlapBody(player, gems, function() {});
 
-    // this.physics.overlapBody(player, mines, function(player, mine) {
-    //   mine.action['explosive'].ignite();
+    this.physics.overlapBody(player, mines, function(player, mine) {
+      mine.action['explosive'].ignite();
+    });
+
+    // this.physics.collideBody(player, mines, function(body, mines, edge) {
+    //   body.action['jump'].collide(body, edge);
+    //   body.action['move'].collide(body, edge);
     // });
 
     this.physics.collideTile(player, ground, function(body, ground, edge) {
@@ -44,14 +63,18 @@ class Level extends Scene {
 
     this.physics.gravityTile(player, ground);
 
-    // final
+    // events
+    this.global.events.on('player_dead', () => this.global.stop());
+
+    // window
     // this.setupBackground();
     this.resize();
+    this.focus(player);
   }
 
   update(deltaTime) {
     this.physics.update(deltaTime);
-    // this.follow(this.refs.player);
+    this.follow(this.refs.player);
   }
 
   setupBackground() {

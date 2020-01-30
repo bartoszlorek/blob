@@ -1,21 +1,20 @@
 import {Sprite} from 'pixi.js';
-import {baseSize} from '@app/constants';
 
 import Group from '@core/structure/Group';
 import Body from '@core/physics/Body';
 import Explosive from '@actions/Explosive';
 
-function createMines({global, sheet, data}) {
-  const {id, position} = data.sprites.mines;
-
+function createMines({global, spriteset}) {
+  const {sprites} = spriteset.layers['mines'];
   let mines = new Group();
 
-  position.forEach(([x, y]) => {
+  sprites.forEach(sprite => {
+    const {id, position} = sprite;
     const mine = new Body(
-      new Sprite(sheet.getById(id)),
-      x * baseSize,
-      y * baseSize,
-      baseSize
+      new Sprite(spriteset.spritesheet.getById(id)),
+      position[0] * spriteset.tilesize,
+      position[1] * spriteset.tilesize,
+      spriteset.tilesize
     );
 
     mine.addAction(new Explosive(global));

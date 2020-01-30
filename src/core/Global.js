@@ -30,6 +30,14 @@ class Global {
     // todo
   }
 
+  stop() {
+    this.engine.ticker.stop();
+  }
+
+  start() {
+    this.engine.ticker.start();
+  }
+
   load(scene) {
     if (this.scene !== null) {
       this.unload();
@@ -39,11 +47,11 @@ class Global {
 
     this.engine.stage.addChild(scene.graphics);
     this.events.emit('load_scene', this);
-    this.engine.ticker.start();
+    this.start();
   }
 
   unload() {
-    this.engine.ticker.stop();
+    this.stop();
     this.events.emit('before_unload_scene', this);
     this.engine.stage.removeChild(this.scene.graphics);
 
