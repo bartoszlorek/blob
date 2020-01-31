@@ -22,7 +22,7 @@ function createGems({global, spriteset}) {
       spriteset.tilesize
     );
 
-    gem.sprite.filters = filters;
+    // gem.sprite.filters = filters;
     gems.add(gem);
   });
 

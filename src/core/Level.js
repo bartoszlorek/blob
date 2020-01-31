@@ -66,8 +66,6 @@ class Level extends Scene {
     // events
     this.global.events.on('player_dead', () => this.global.stop());
 
-    // window
-    // this.setupBackground();
     this.resize();
     this.focus(player);
   }
@@ -75,11 +73,6 @@ class Level extends Scene {
   update(deltaTime) {
     this.physics.update(deltaTime);
     this.follow(this.refs.player);
-  }
-
-  setupBackground() {
-    const {name, breaks} = this.data.background;
-    this.background.set(this.global.assets[name].texture, breaks);
   }
 }
 

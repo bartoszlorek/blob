@@ -1,72 +1,71 @@
 import {Container, TilingSprite} from 'pixi.js';
-import {arrayForEach} from '@utils/array';
 
 class Background {
-  constructor() {
-    this.sprite = new Container();
-    this.layers = [];
-    this.texHeight = 0;
+  constructor({tilesize, background}) {
+    this.tilesize = tilesize;
+    this.container = new Container();
+    this.fragments = [];
+    this.initialize(background.edges, background.texture);
   }
 
-  set(texture, breaks = []) {
-    this.texHeight = texture.height;
-    this.sprite.removeChildren();
+  initialize(edges, texture) {
+    this.fragments = [0, ...edges].map((topEdge, index, edges) => {
+      const base = new TilingSprite(texture);
+      const fill = new TilingSprite(texture);
+      this.container.addChild(base);
+      this.container.addChild(fill);
 
-    this.layers = [0, ...breaks].map((position, index, points) => {
-      const tile = new TilingSprite(texture);
-      const height = (points[index + 1] || this.texHeight) - position;
-      const percent = height / this.texHeight;
-
-      this.sprite.addChild(tile);
+      const top = topEdge * texture.height;
+      const bottomEdge = edges[index + 1] || 1;
+      const bottom = bottomEdge * texture.height;
 
       return {
-        tile,
-        height,
-        position,
-        percent
+        base,
+        fill,
+        top,
+        topEdge,
+        bottom,
+        bottomEdge,
+        height: bottom - top,
       };
     });
   }
 
   resize() {
-    if (!this.layers.length) {
-      return;
-    }
     const {innerWidth, innerHeight} = window;
-    const difference = this.texHeight - innerHeight;
+    const tilesize = this.tilesize;
 
-    let offset = 0;
+    for (let i = 0; i < this.fragments.length; i++) {
+      const {
+        base,
+        fill,
+        topEdge,
+        top,
+        bottomEdge,
+        bottom,
+        height,
+      } = this.fragments[i];
 
-    if (difference > 0) {
-      // accordion layers distribution
-      arrayForEach(this.layers, layer => {
-        const {tile, position, height, percent} = layer;
+      const curr = Math.round((topEdge * innerHeight) / tilesize) * tilesize;
+      const next = Math.round((bottomEdge * innerHeight) / tilesize) * tilesize;
+      const diff = next - curr;
 
-        tile.visible = true;
-        tile.width = innerWidth;
-        tile.height = height;
+      base.width = innerWidth;
+      base.height = height;
+      base.tilePosition.y = -top;
+      base.y = curr;
 
-        tile.position.y = position + offset;
-        tile.tilePosition.y = -position;
-        tile.tileScale.y = 1;
+      if (diff > height) {
+        const fillHeight = diff - height;
 
-        offset -= difference * percent;
-      });
-    } else {
-      // just scale to fit first layer and hide other
-      arrayForEach(this.layers, ({tile}, index) => {
-        if (index === 0) {
-          tile.visible = true;
-          tile.width = innerWidth;
-          tile.height = innerHeight;
-
-          tile.position.y = 0;
-          tile.tilePosition.y = 0;
-          tile.tileScale.y = innerHeight / this.texHeight;
-        } else {
-          tile.visible = false;
-        }
-      });
+        fill.visible = true;
+        fill.width = innerWidth;
+        fill.height = fillHeight;
+        fill.tilePosition.y = -(bottom - fillHeight);
+        fill.y = next - fillHeight;
+      } else {
+        fill.visible = false;
+      }
     }
   }
 }

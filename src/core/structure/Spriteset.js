@@ -6,6 +6,16 @@ class Spriteset {
     this.height = json.height;
     this.tilesize = json.tilewidth;
 
+    const props = this.parseProperties(json.properties, {
+      backgroundEdges: value => stringToIntArray(value),
+    });
+
+    this.background = this.parseBackground(
+      props.backgroundEdges,
+      json.tilewidth,
+      resources
+    );
+
     this.layers = this.parseLayers(json.layers);
     this.spritesheet = this.parseSpritesheet(
       json.tilesets,
@@ -64,6 +74,26 @@ class Spriteset {
     return new Spritesheet(resources[name].texture, tilesize);
   }
 
+  parseBackground(edges = [], tilesize, resources) {
+    const {texture} = resources['background'];
+    const tileheight = texture.height / tilesize;
+
+    return {
+      edges: edges.map(value => value / tileheight),
+      texture,
+    };
+  }
+
+  parseProperties(props, filter = {}) {
+    const result = {};
+
+    props.forEach(prop => {
+      const {name, value} = prop;
+      result[name] = filter[name] ? filter[name](value) : value;
+    });
+    return result;
+  }
+
   isTypeSprite(props) {
     return !!props && props.some(prop => prop.name === 'sprite' && prop.value);
   }
@@ -75,6 +105,13 @@ class Spriteset {
   destroy() {
     this.spritesheet.destroy();
   }
+}
+
+function stringToIntArray(string) {
+  return string
+    .split(',')
+    .filter(a => a !== ',')
+    .map(a => parseInt(a));
 }
 
 export default Spriteset;

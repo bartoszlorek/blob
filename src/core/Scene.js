@@ -14,11 +14,11 @@ class Scene {
     this.physics = new World();
 
     // pixijs layers di
-    this.background = new Background();
+    this.background = new Background(spriteset);
     this.foreground = new Container();
 
     this.graphics = new Container();
-    this.graphics.addChild(this.background.sprite);
+    this.graphics.addChild(this.background.container);
     this.graphics.addChild(this.foreground);
 
     // events
