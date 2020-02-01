@@ -11,7 +11,6 @@ const engine = new Application({
   antialias: false,
 });
 
-engine.ticker.stop();
 // engine.ticker.maxFPS = 12;
 
 // engine.view.className = 'view fade-steps';

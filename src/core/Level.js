@@ -64,15 +64,13 @@ class Level extends Scene {
     this.physics.gravityTile(player, ground);
 
     // events
-    this.global.events.on('player_dead', () => this.global.stop());
-
-    this.resize();
-    this.focus(player);
+    this.global.events.on('player/dead', () => this.global.stop());
+    // this.focus(player);
   }
 
   update(deltaTime) {
     this.physics.update(deltaTime);
-    this.follow(this.refs.player);
+    // this.follow(this.refs.player);
   }
 }
 

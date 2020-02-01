@@ -1,11 +1,9 @@
 import {fromEvent} from 'rxjs';
-import {localToGrid} from '@app/constants';
 import EventEmitter from '@core/EventEmitter';
 
 class Global {
-  constructor({engine, assets}) {
+  constructor(engine) {
     this.engine = engine;
-    this.assets = assets;
     this.scene = null;
 
     // parameters
@@ -13,10 +11,9 @@ class Global {
 
     // global events
     this.events = new EventEmitter();
-    this.resize();
 
     fromEvent(window, 'resize').subscribe(() => {
-      this.events.emit('resize');
+      this.events.emit('global/resize');
       this.resize();
     });
 
@@ -24,10 +21,9 @@ class Global {
       const deltaTime = deltaFrame * this.time;
       this.scene.update(deltaTime);
     });
-  }
 
-  tick(callback) {
-    // todo
+    this.resize();
+    this.stop();
   }
 
   stop() {
@@ -43,16 +39,16 @@ class Global {
       this.unload();
     }
     this.scene = scene;
-    this.scene.create();
+    this.scene.create(this);
 
     this.engine.stage.addChild(scene.graphics);
-    this.events.emit('load_scene', this);
+    this.events.emit('global/load', this);
     this.start();
   }
 
   unload() {
     this.stop();
-    this.events.emit('before_unload_scene', this);
+    this.events.emit('global/beforeunload', this);
     this.engine.stage.removeChild(this.scene.graphics);
 
     this.scene.destroy();
@@ -62,32 +58,8 @@ class Global {
   resize() {
     const {innerWidth, innerHeight} = window;
     this.engine.renderer.resize(innerWidth, innerHeight);
-    this.rootX = Math.round(innerWidth / 2);
-    this.rootY = Math.round(innerHeight / 2);
-  }
-
-  localToGlobalX(x) {
-    return x + this.rootX + this.scene.offsetX;
-  }
-
-  localToGlobalY(y) {
-    return y + this.rootY + this.scene.offsetY;
-  }
-
-  globalToLocalX(x) {
-    return x - this.rootX - this.scene.offsetX;
-  }
-
-  globalToLocalY(y) {
-    return y - this.rootY - this.scene.offsetY;
-  }
-
-  globalToGridX(x) {
-    return localToGrid(this.globalToLocalX(x));
-  }
-
-  globalToGridY(y) {
-    return localToGrid(this.globalToLocalY(y));
+    this.centerX = Math.round(innerWidth / 2);
+    this.centerY = Math.round(innerHeight / 2);
   }
 }
 

@@ -1,10 +1,12 @@
 import {Container, TilingSprite} from 'pixi.js';
 
 class Background {
-  constructor({tilesize, background}) {
+  constructor(spriteset) {
+    const {tilesize, background} = spriteset;
     this.tilesize = tilesize;
-    this.container = new Container();
+    this.graphics = new Container();
     this.fragments = [];
+
     this.initialize(background.edges, background.texture);
   }
 
@@ -12,8 +14,8 @@ class Background {
     this.fragments = [0, ...edges].map((topEdge, index, edges) => {
       const base = new TilingSprite(texture);
       const fill = new TilingSprite(texture);
-      this.container.addChild(base);
-      this.container.addChild(fill);
+      this.graphics.addChild(base);
+      this.graphics.addChild(fill);
 
       const top = topEdge * texture.height;
       const bottomEdge = edges[index + 1] || 1;

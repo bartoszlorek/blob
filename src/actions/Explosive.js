@@ -45,7 +45,7 @@ class Explosive extends Action {
       bomb.destroy();
 
       if (this.area.intersects(player)) {
-        this.global.events.emit('player_dead');
+        this.global.events.emit('player/dead');
         player.destroy();
       }
     }

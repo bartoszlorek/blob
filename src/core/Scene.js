@@ -18,18 +18,23 @@ class Scene {
     this.foreground = new Container();
 
     this.graphics = new Container();
-    this.graphics.addChild(this.background.container);
+    this.graphics.addChild(this.background.graphics);
     this.graphics.addChild(this.foreground);
 
     // events
     this.resize = this.resize.bind(this);
-    this.global.events.on('resize', this.resize);
+    this.global.events.on('global/resize', this.resize);
 
-    // parameters
-    this.offsetX = 0;
-    this.offsetY = 0;
+    // camera
     this.cameraRadius = 100;
     this.cameraSpeed = 0.01;
+    this.cameraOffsetX = 0;
+    this.cameraOffsetY = 0;
+
+    // position
+    this.offsetX = -((spriteset.width / 2) * spriteset.tilesize);
+    this.offsetY = -((spriteset.height / 2) * spriteset.tilesize);
+    this.resize();
   }
 
   create() {
@@ -57,12 +62,7 @@ class Scene {
   }
 
   resize() {
-    const {width, height, tilesize} = this.spriteset;
-    const left = this.global.rootX - (width / 2) * tilesize;
-    const top = this.global.rootY - (height / 2) * tilesize;
-
-    this.foreground.x = left + this.offsetX;
-    this.foreground.y = top + this.offsetY;
+    this.updateForegroundPosition();
     this.background.resize();
   }
 
@@ -73,8 +73,7 @@ class Scene {
     const {x, y} = body.sprite;
     this.offsetX = -x;
     this.offsetY = -y;
-    this.foreground.x = this.global.rootX + this.offsetX;
-    this.foreground.y = this.global.rootY + this.offsetY;
+    this.updateForegroundPosition();
   }
 
   follow(body) {
@@ -92,13 +91,17 @@ class Scene {
     const factor = Math.min(1, distance / this.cameraRadius);
     this.offsetX = lerp(this.offsetX, -x, this.cameraSpeed * factor);
     this.offsetY = lerp(this.offsetY, -y, this.cameraSpeed * factor);
-    this.foreground.x = this.global.rootX + this.offsetX;
-    this.foreground.y = this.global.rootY + this.offsetY;
+    this.updateForegroundPosition();
+  }
+
+  updateForegroundPosition() {
+    this.foreground.x = this.global.centerX + this.offsetX + this.cameraOffsetX;
+    this.foreground.y = this.global.centerY + this.offsetY + this.cameraOffsetY;
   }
 
   destroy() {
     this.cleanup();
-    this.global.events.off('resize', this.resize);
+    this.global.events.off('global/resize', this.resize);
     this.global = null;
     this.refs = null;
   }
