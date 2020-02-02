@@ -1,5 +1,7 @@
 // @flow strict
 
+import type Body from '@core/physics/Body';
+
 class Action {
   name: string;
 
@@ -7,7 +9,7 @@ class Action {
     this.name = name;
   }
 
-  update(deltaTime: number) {
+  update(body: Body, deltaTime: number) {
     // fill in subclass
   }
 

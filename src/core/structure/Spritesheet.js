@@ -1,7 +1,16 @@
+// @flow strict
+
 import {Texture, Rectangle} from 'pixi.js';
 
+import type PIXI from 'pixi.js';
+
 class Spritesheet {
-  constructor(texture, tilesize) {
+  baseTexture: PIXI.BaseTexture;
+  width: number;
+  tilesize: number;
+  tilemap: Map<number, Texture>;
+
+  constructor(texture: Texture, tilesize: number) {
     const {baseTexture} = texture;
 
     this.baseTexture = baseTexture;
@@ -10,7 +19,7 @@ class Spritesheet {
     this.tilemap = new Map();
   }
 
-  getById(id) {
+  getById(id: number) {
     if (this.tilemap.has(id)) {
       return this.tilemap.get(id);
     }

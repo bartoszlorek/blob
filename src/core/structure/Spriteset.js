@@ -2,9 +2,8 @@
 
 import Spritesheet from './Spritesheet';
 
-import type {IResourceDictionary} from 'pixi.js';
+import type PIXI, {IResourceDictionary} from 'pixi.js';
 import type {TiledMapJson} from './TiledMapEditor';
-import type {Background} from '@core/Background';
 
 type SpriteLayer = {
   id: number,
@@ -21,8 +20,13 @@ class Spriteset {
   width: number;
   height: number;
   tilesize: number;
-  background: Background;
-  layers: {[name: string]: SpriteLayer | TileLayer};
+  background: {
+    edges: Array<number>,
+    texture: PIXI.Texture,
+  };
+  layers: {
+    [name: string]: SpriteLayer | TileLayer,
+  };
   spritesheet: Spritesheet;
 
   constructor(json: TiledMapJson, resources: IResourceDictionary) {

@@ -1,9 +1,24 @@
+// @flow strict
+
 import {Container, Sprite} from 'pixi.js';
 import {baseSize} from '@app/constants';
+import Spritesheet from '@core/structure/Spritesheet';
 import Tilemap from '@core/structure/Tilemap';
 
+import type {VectorType} from '@core/physics/Vector';
+
 class Tileset extends Tilemap {
-  constructor(values, dimension, offset) {
+  values: Array<number>;
+  dimension: number;
+  tilesize: number;
+  offset: VectorType;
+
+  children: Map<number, Sprite>;
+  graphics: Container;
+
+  isTileset: true;
+
+  constructor(values: Array<number>, dimension: number, offset: VectorType) {
     super(values, dimension, baseSize, offset);
 
     // pixijs
@@ -16,7 +31,7 @@ class Tileset extends Tilemap {
     this.isTileset = true;
   }
 
-  removeByIndex(index) {
+  removeByIndex(index: number) {
     // remove value
     super.removeByIndex(index);
 
@@ -34,7 +49,7 @@ class Tileset extends Tilemap {
     this.graphics.cacheAsBitmap = true;
   }
 
-  loadSprites(sheet) {
+  loadSprites(spritesheet: Spritesheet) {
     this.children.clear();
 
     for (let index = 0; index < this.values.length; index++) {
@@ -44,7 +59,7 @@ class Tileset extends Tilemap {
         const x = index % this.dimension;
         const y = Math.floor(index / this.dimension);
 
-        const sprite = new Sprite(sheet.getById(tileId));
+        const sprite = new Sprite(spritesheet.getById(tileId));
         sprite.position.x = x * baseSize;
         sprite.position.y = y * baseSize;
 

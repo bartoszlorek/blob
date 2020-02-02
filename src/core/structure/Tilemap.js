@@ -1,8 +1,25 @@
+// @flow strict
+
 import BoundingBox from '@core/BoundingBox';
 import Vector from '@core/physics/Vector';
 
+import type {VectorType} from '@core/physics/Vector';
+
 class Tilemap extends BoundingBox {
-  constructor(values = [], dimension = 8, tilesize = 32, offset = [0, 0]) {
+  values: Array<number>;
+  dimension: number;
+  tilesize: number;
+  offset: VectorType;
+
+  _closestArray: Array<number>;
+  _point: VectorType;
+
+  constructor(
+    values: Array<number> = [],
+    dimension: number = 8,
+    tilesize: number = 32,
+    offset: VectorType = [0, 0]
+  ) {
     super();
 
     this.values = values;
@@ -17,22 +34,25 @@ class Tilemap extends BoundingBox {
     this.calculateBoundingBox();
   }
 
-  removeByIndex(index) {
+  removeByIndex(index: number) {
     this.values[index] = 0;
     this.calculateBoundingBox();
   }
 
-  getIndex(x, y) {
+  getIndex(x: number, y: number) {
     return x + this.dimension * y;
   }
 
-  getPoint(index) {
+  getPoint(index: number) {
     this._point[0] = (index % this.dimension) + this.offset[0];
     this._point[1] = Math.floor(index / this.dimension) + this.offset[1];
     return this._point;
   }
 
-  search(bbox, iteratee) {
+  search(
+    bbox: BoundingBox,
+    iteratee: (value: number, index: number, tilemap: Tilemap) => mixed
+  ) {
     const startX = Math.floor(bbox.min[0] / this.tilesize) - this.offset[0];
     const startY = Math.floor(bbox.min[1] / this.tilesize) - this.offset[1];
     const endX = Math.floor(bbox.max[0] / this.tilesize) - this.offset[0];
@@ -63,7 +83,7 @@ class Tilemap extends BoundingBox {
     }
   }
 
-  closest(x, y) {
+  closest(x: number, y: number) {
     const ox = x - this.offset[0];
     const oy = y - this.offset[1];
     const arr = this._closestArray;
@@ -95,7 +115,7 @@ class Tilemap extends BoundingBox {
     return arr;
   }
 
-  raycast(x, y, dx, dy) {
+  raycast(x: number, y: number, dx: number, dy: number) {
     // todo: optimize raycast
     const minX = this.min[0] / this.tilesize;
     const maxX = this.max[0] / this.tilesize;

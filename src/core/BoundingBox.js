@@ -1,39 +1,46 @@
+// @flow strict
+
+import type {VectorType} from '@core/physics/Vector';
+
 class BoundingBox {
-  constructor(min = [0, 0], max = [0, 0]) {
+  min: VectorType;
+  max: VectorType;
+
+  constructor(min: VectorType = [0, 0], max: VectorType = [0, 0]) {
     this.min = min;
     this.max = max;
   }
 
-  translate(vector) {
+  translate(vector: VectorType) {
     this.min[0] += vector[0];
     this.min[1] += vector[1];
     this.max[0] += vector[0];
     this.max[1] += vector[1];
   }
 
-  translateX(value) {
+  translateX(value: number) {
     this.min[0] += value;
     this.max[0] += value;
   }
 
-  translateY(value) {
+  translateY(value: number) {
     this.min[1] += value;
     this.max[1] += value;
   }
 
-  alignX(value) {
+  alignX(value: number) {
     const width = this.max[0] - this.min[0];
     this.min[0] = value;
     this.max[0] = value + width;
   }
 
-  alignY(value) {
+  alignY(value: number) {
     const height = this.max[1] - this.min[1];
     this.min[1] = value;
     this.max[1] = value + height;
   }
 
-  intersects(bbox) {
+  intersects(bbox: BoundingBox) {
     return !(
       this.min[0] > bbox.max[0] ||
       this.min[1] > bbox.max[1] ||
@@ -42,7 +49,7 @@ class BoundingBox {
     );
   }
 
-  intersectsMargin(bbox, margin) {
+  intersectsMargin(bbox: BoundingBox, margin: number) {
     return !(
       this.min[0] > bbox.max[0] + margin ||
       this.min[1] > bbox.max[1] + margin ||
@@ -51,7 +58,7 @@ class BoundingBox {
     );
   }
 
-  contains(x, y) {
+  contains(x: number, y: number) {
     return !(
       this.min[0] > x ||
       this.max[0] < x ||
@@ -60,7 +67,7 @@ class BoundingBox {
     );
   }
 
-  copy(bbox) {
+  copy(bbox: BoundingBox) {
     this.min[0] = bbox.min[0];
     this.min[1] = bbox.min[1];
     this.max[0] = bbox.max[0];

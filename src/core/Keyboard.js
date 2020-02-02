@@ -1,17 +1,25 @@
+// @flow strict
+
+type KeyCode = $PropertyType<KeyboardEvent, 'key'>;
+
 class Keyboard {
+  states: Map<KeyCode, boolean>;
+  events: Map<KeyCode, (pressed: boolean) => mixed>;
+  destroy: () => mixed;
+
   constructor() {
     this.states = new Map();
     this.events = new Map();
     this.destroy = this.listen();
   }
 
-  on(code, callback) {
-    code.split(' ').forEach(e => {
-      this.events.set(e, callback);
+  on(code: KeyCode, callback: (pressed: boolean) => mixed) {
+    code.split(' ').forEach(key => {
+      this.events.set(key, callback);
     });
   }
 
-  handleEvent(event) {
+  handleEvent(event: KeyboardEvent) {
     event.preventDefault();
     const {code} = event;
 
@@ -26,7 +34,9 @@ class Keyboard {
     }
     if (this.states.get(code) !== pressed) {
       this.states.set(code, pressed);
-      this.events.get(code)(pressed);
+
+      const callback = this.events.get(code);
+      if (callback) callback(pressed);
     }
   }
 

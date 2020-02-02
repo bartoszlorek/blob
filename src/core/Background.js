@@ -1,8 +1,28 @@
+// @flow strict
+
 import {Container, TilingSprite} from 'pixi.js';
 
+import type Spriteset from '@core/structure/Spriteset';
+import type PIXI from 'pixi.js';
+
+type Fragment = $ReadOnly<{|
+  base: TilingSprite,
+  fill: TilingSprite,
+  top: number,
+  topEdge: number,
+  bottom: number,
+  bottomEdge: number,
+  height: number,
+|}>;
+
 class Background {
-  constructor(spriteset) {
+  tilesize: number;
+  graphics: Container;
+  fragments: Array<Fragment>;
+
+  constructor(spriteset: Spriteset) {
     const {tilesize, background} = spriteset;
+
     this.tilesize = tilesize;
     this.graphics = new Container();
     this.fragments = [];
@@ -10,7 +30,7 @@ class Background {
     this.initialize(background.edges, background.texture);
   }
 
-  initialize(edges, texture) {
+  initialize(edges: Array<number>, texture: PIXI.Texture) {
     this.fragments = [0, ...edges].map((topEdge, index, edges) => {
       const base = new TilingSprite(texture);
       const fill = new TilingSprite(texture);

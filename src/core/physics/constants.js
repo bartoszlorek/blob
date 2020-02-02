@@ -1,3 +1,5 @@
+// @flow strict
+
 export const EDGE = {
   TOP: 0,
   RIGHT: 1,

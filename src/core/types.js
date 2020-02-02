@@ -1,9 +1,6 @@
 // @flow strict
 
-export type EventType = GlobalEvent;
+export type EventType = GlobalEvent | PlayerEvent;
 
-type GlobalEvent =
-  | 'global/resize'
-  | 'global/load'
-  | 'global/beforeunload'
-  | 'player/dead';
+type GlobalEvent = 'global/resize' | 'global/load' | 'global/beforeunload';
+type PlayerEvent = 'player/dead';

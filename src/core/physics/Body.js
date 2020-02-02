@@ -5,8 +5,20 @@ import Vector from '@core/physics/Vector';
 
 import type PIXI from 'pixi.js';
 import type Action from '@core/Action';
+import type World from '@core/physics/World';
+import type {VectorType} from '@core/physics/Vector';
 
 class Body extends BoundingBox {
+  sprite: PIXI.Sprite;
+  size: number;
+  velocity: VectorType;
+
+  actions: Array<Action>;
+  action: {[name: string]: Action};
+  parent: World | null;
+  isBody: true;
+  isAlive: boolean;
+
   constructor(
     sprite: PIXI.Sprite,
     x: number = 0,
@@ -59,7 +71,9 @@ class Body extends BoundingBox {
   }
 
   destroy() {
-    this.parent.removeChild(this);
+    if (this.parent) {
+      this.parent.removeChild(this);
+    }
   }
 
   unsafeDestroy() {
