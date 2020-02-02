@@ -1,13 +1,38 @@
+// @flow strict
+
 import Spritesheet from './Spritesheet';
 
+import type {IResourceDictionary} from 'pixi.js';
+import type {TiledMapJson} from './TiledMapEditor';
+import type {Background} from '@core/Background';
+
+type SpriteLayer = {
+  id: number,
+  position: Array<number>,
+};
+
+type TileLayer = {
+  tilemap: Array<number>,
+  offset: Array<number>,
+  width: number,
+};
+
 class Spriteset {
-  constructor(json, resources) {
+  width: number;
+  height: number;
+  tilesize: number;
+  background: Background;
+  layers: {[name: string]: SpriteLayer | TileLayer};
+  spritesheet: Spritesheet;
+
+  constructor(json: TiledMapJson, resources: IResourceDictionary) {
     this.width = json.width;
     this.height = json.height;
     this.tilesize = json.tilewidth;
 
     const props = this.parseProperties(json.properties, {
-      backgroundEdges: value => stringToIntArray(value),
+      backgroundEdges: value =>
+        typeof value === 'string' ? stringToIntArray(value) : [],
     });
 
     this.background = this.parseBackground(
@@ -26,7 +51,7 @@ class Spriteset {
     console.log(this);
   }
 
-  parseLayers(rawLayers) {
+  parseLayers(rawLayers: $PropertyType<TiledMapJson, 'layers'>) {
     const layers = {};
 
     rawLayers.forEach(layer => {
@@ -48,7 +73,7 @@ class Spriteset {
     return layers;
   }
 
-  parseSprite(data, width) {
+  parseSprite(data: Array<number>, width: number) {
     const sprites = [];
 
     for (let index = 0; index < data.length; index++) {
@@ -65,26 +90,37 @@ class Spriteset {
     return sprites;
   }
 
-  parseTiles(data) {
+  parseTiles(data: Array<number>) {
     return data;
   }
 
-  parseSpritesheet(tilesets, tilesize, resources) {
+  parseSpritesheet(
+    tilesets: $PropertyType<TiledMapJson, 'tilesets'>,
+    tilesize: number,
+    resources: IResourceDictionary
+  ) {
     const name = tilesets[0].source.replace('.tsx', '');
     return new Spritesheet(resources[name].texture, tilesize);
   }
 
-  parseBackground(edges = [], tilesize, resources) {
+  parseBackground(
+    edges: Array<number> = [],
+    tilesize: number,
+    resources: IResourceDictionary
+  ) {
     const {texture} = resources['background'];
     const tileheight = texture.height / tilesize;
 
     return {
-      edges: edges.map(value => value / tileheight),
+      edges: edges.map<number>(value => value / tileheight),
       texture,
     };
   }
 
-  parseProperties(props, filter = {}) {
+  parseProperties(
+    props: $PropertyType<TiledMapJson, 'properties'>,
+    filter: {[name: string]: (value: mixed) => mixed} = {}
+  ) {
     const result = {};
 
     props.forEach(prop => {
@@ -94,11 +130,11 @@ class Spriteset {
     return result;
   }
 
-  isTypeSprite(props) {
+  isTypeSprite(props: $PropertyType<TiledMapJson, 'properties'>) {
     return !!props && props.some(prop => prop.name === 'sprite' && prop.value);
   }
 
-  getPosition(index, width) {
+  getPosition(index: number, width: number) {
     return [index % width, Math.floor(index / width)];
   }
 
@@ -107,8 +143,8 @@ class Spriteset {
   }
 }
 
-function stringToIntArray(string) {
-  return string
+function stringToIntArray(value: string) {
+  return value
     .split(',')
     .filter(a => a !== ',')
     .map(a => parseInt(a));

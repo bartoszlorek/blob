@@ -1,3 +1,5 @@
+// @flow strict
+
 export {default as createBack} from './createBack';
 export {default as createEnemies} from './createEnemies';
 export {default as createFront} from './createFront';

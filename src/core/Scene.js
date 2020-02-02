@@ -1,11 +1,34 @@
+// @flow strict
+
 import {Container} from 'pixi.js';
 import {baseSize} from '@app/constants';
 import {lerp} from '@utils/math';
 import Background from '@core/Background';
 import World from '@core/physics/World';
 
+import type Body from '@core/physics/Body';
+import type Global from '@core/Global';
+import type Spriteset from '@core/structure/Spriteset';
+
 class Scene {
-  constructor(global, spriteset) {
+  global: Global | null;
+  spriteset: Spriteset;
+  refs: {[name: string]: mixed} | null;
+  resize: () => void;
+
+  physics: World;
+  background: Background;
+  foreground: Container;
+  graphics: Container;
+
+  cameraRadius: number;
+  cameraSpeed: number;
+  cameraOffsetX: number;
+  cameraOffsetY: number;
+  offsetX: number;
+  offsetY: number;
+
+  constructor(global: Global, spriteset: Spriteset) {
     this.global = global;
     this.spriteset = spriteset;
     this.refs = {};
@@ -23,7 +46,7 @@ class Scene {
 
     // events
     this.resize = this.resize.bind(this);
-    this.global.events.on('global/resize', this.resize);
+    global.events.on('global/resize', this.resize);
 
     // camera
     this.cameraRadius = 100;
@@ -37,11 +60,11 @@ class Scene {
     this.resize();
   }
 
-  create() {
+  create(global: Global) {
     // fill in subclass
   }
 
-  update() {
+  update(deltaTime: number) {
     // fill in subclass
   }
 
@@ -49,6 +72,7 @@ class Scene {
     // fill in subclass
   }
 
+  // $FlowFixMe
   renderChild(child) {
     if (child.isBody) {
       this.foreground.addChild(child.sprite);
@@ -66,7 +90,7 @@ class Scene {
     this.background.resize();
   }
 
-  focus(body) {
+  focus(body: Body) {
     if (!body.isAlive) {
       return;
     }
@@ -76,7 +100,7 @@ class Scene {
     this.updateForegroundPosition();
   }
 
-  follow(body) {
+  follow(body: Body) {
     if (!body.isAlive) {
       return;
     }
@@ -95,13 +119,18 @@ class Scene {
   }
 
   updateForegroundPosition() {
+    if (!this.global) {
+      return;
+    }
     this.foreground.x = this.global.centerX + this.offsetX + this.cameraOffsetX;
     this.foreground.y = this.global.centerY + this.offsetY + this.cameraOffsetY;
   }
 
   destroy() {
+    if (this.global) {
+      this.global.events.off('global/resize', this.resize);
+    }
     this.cleanup();
-    this.global.events.off('global/resize', this.resize);
     this.global = null;
     this.refs = null;
   }

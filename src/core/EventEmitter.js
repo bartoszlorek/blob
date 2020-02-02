@@ -1,9 +1,17 @@
-class EventEmitter {
+// @flow strict
+
+import {arrayRemove} from '@utils/array';
+
+type HandlerType = (value: mixed) => mixed;
+
+class EventEmitter<EventType> {
+  registry: Map<EventType, Array<HandlerType>>;
+
   constructor() {
     this.registry = new Map();
   }
 
-  emit(event, value) {
+  emit(event: EventType, value: mixed) {
     const handlers = this.registry.get(event) || [];
 
     for (let i = 0; i < handlers.length; i++) {
@@ -16,14 +24,14 @@ class EventEmitter {
     }
   }
 
-  on(event, handler) {
+  on(event: EventType, handler: HandlerType) {
     const handlers = this.registry.get(event) || [];
 
     this.registry.set(event, handlers);
     handlers.push(handler);
   }
 
-  off(event, handler) {
+  off(event: EventType, handler: HandlerType) {
     const handlers = this.registry.get(event) || [];
 
     this.registry.set(event, handlers);

@@ -1,8 +1,18 @@
+// @flow strict
+
 import BoundingBox from '@core/BoundingBox';
 import Vector from '@core/physics/Vector';
 
+import type PIXI from 'pixi.js';
+import type Action from '@core/Action';
+
 class Body extends BoundingBox {
-  constructor(sprite, x = 0, y = 0, size = 32) {
+  constructor(
+    sprite: PIXI.Sprite,
+    x: number = 0,
+    y: number = 0,
+    size: number = 32
+  ) {
     super([x, y], [x + size, y + size]);
 
     // pixijs
@@ -24,7 +34,7 @@ class Body extends BoundingBox {
     this.updateSprite();
   }
 
-  update(deltaTime) {
+  update(deltaTime: number) {
     // update sprite to the position from the previous frame
     this.updateSprite();
 
@@ -43,7 +53,7 @@ class Body extends BoundingBox {
     this.sprite.position.y = this.min[1] + this.size / 2;
   }
 
-  addAction(action) {
+  addAction(action: Action) {
     this.actions.push(action);
     this.action[action.name] = action;
   }

@@ -1,29 +1,35 @@
+// @flow strict
+
 import {fromEvent} from 'rxjs';
 import EventEmitter from '@core/EventEmitter';
+import Scene from '@core/Scene';
+
+import type PIXI from 'pixi.js';
+import type {EventType} from './types';
 
 class Global {
-  constructor(engine) {
+  engine: PIXI.Application;
+  events: EventEmitter<EventType>;
+  scene: Scene | null;
+  delta: number;
+  centerX: number;
+  centerY: number;
+
+  constructor(engine: PIXI.Application) {
     this.engine = engine;
+    this.events = new EventEmitter<EventType>();
     this.scene = null;
 
-    // parameters
-    this.time = 1 / 60;
+    // framerate independent movement/physics
+    this.delta = 1 / 60;
 
     // global events
-    this.events = new EventEmitter();
-
     fromEvent(window, 'resize').subscribe(() => {
       this.events.emit('global/resize');
       this.resize();
     });
 
-    this.engine.ticker.add(deltaFrame => {
-      const deltaTime = deltaFrame * this.time;
-      this.scene.update(deltaTime);
-    });
-
     this.resize();
-    this.stop();
   }
 
   stop() {
@@ -34,25 +40,11 @@ class Global {
     this.engine.ticker.start();
   }
 
-  load(scene) {
-    if (this.scene !== null) {
-      this.unload();
+  ticker(deltaFrame: number) {
+    if (this.scene) {
+      const deltaTime = deltaFrame * this.delta;
+      this.scene.update(deltaTime);
     }
-    this.scene = scene;
-    this.scene.create(this);
-
-    this.engine.stage.addChild(scene.graphics);
-    this.events.emit('global/load', this);
-    this.start();
-  }
-
-  unload() {
-    this.stop();
-    this.events.emit('global/beforeunload', this);
-    this.engine.stage.removeChild(this.scene.graphics);
-
-    this.scene.destroy();
-    this.scene = null;
   }
 
   resize() {
@@ -60,6 +52,35 @@ class Global {
     this.engine.renderer.resize(innerWidth, innerHeight);
     this.centerX = Math.round(innerWidth / 2);
     this.centerY = Math.round(innerHeight / 2);
+  }
+
+  load(scene: Scene) {
+    if (this.scene !== null) {
+      this.unload();
+    }
+    this.scene = scene;
+    this.scene.create(this);
+
+    // setup new scene
+    this.engine.stage.addChild(scene.graphics);
+    this.engine.ticker.add(this.ticker, this);
+    this.events.emit('global/load', this);
+    this.start();
+  }
+
+  unload() {
+    if (this.scene === null) {
+      return;
+    }
+    const scene = this.scene;
+    this.events.emit('global/beforeunload', this);
+    this.engine.stage.removeChild(scene.graphics);
+    this.engine.ticker.remove(this.ticker, this);
+    this.stop();
+
+    // cleanup
+    scene.destroy();
+    this.scene = null;
   }
 }
 

@@ -1,3 +1,5 @@
+// @flow strict
+
 import Scene from '@core/Scene';
 
 import {
@@ -10,14 +12,18 @@ import {
   createPlayer,
 } from '@layers';
 
+import type Global from '@core/Global';
+import type Spriteset from '@core/structure/Spriteset';
+
 class Level extends Scene {
-  constructor(global, spriteset) {
+  constructor(global: Global, spriteset: Spriteset) {
     super(global, spriteset);
   }
 
   create() {
+    const global = this.global;
     const props = {
-      global: this.global,
+      global,
       spriteset: this.spriteset,
     };
 
@@ -38,6 +44,7 @@ class Level extends Scene {
     this.renderChild(player);
     this.renderChild(front);
 
+    this.refs = {};
     this.refs.player = player;
     this.refs.ground = ground;
 
@@ -64,11 +71,14 @@ class Level extends Scene {
     this.physics.gravityTile(player, ground);
 
     // events
-    this.global.events.on('player/dead', () => this.global.stop());
+    if (global) {
+      global.events.on('player/dead', () => global.stop());
+    }
+
     // this.focus(player);
   }
 
-  update(deltaTime) {
+  update(deltaTime: number) {
     this.physics.update(deltaTime);
     // this.follow(this.refs.player);
   }

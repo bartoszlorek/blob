@@ -1,9 +1,13 @@
+// @flow strict
+
 class Action {
-  constructor(name) {
+  name: string;
+
+  constructor(name: string) {
     this.name = name;
   }
 
-  update(deltaTime) {
+  update(deltaTime: number) {
     // fill in subclass
   }
 
