@@ -13,7 +13,7 @@ import type Spriteset from '@core/structure/Spriteset';
 class Scene {
   global: Global | null;
   spriteset: Spriteset;
-  refs: {[name: string]: mixed} | null;
+  refs: {[name: string]: any} | null;
   resize: () => void;
 
   physics: World;

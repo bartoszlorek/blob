@@ -82,6 +82,14 @@ class Global {
     scene.destroy();
     this.scene = null;
   }
+
+  globalToLocalX(x: number) {
+    return x - this.centerX - (this.scene ? this.scene.offsetX : 0);
+  }
+
+  globalToLocalY(y: number) {
+    return y - this.centerY - (this.scene ? this.scene.offsetY : 0);
+  }
 }
 
 export default Global;

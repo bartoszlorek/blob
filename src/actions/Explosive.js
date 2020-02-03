@@ -1,13 +1,26 @@
+// @flow strict
+
 import {baseSize} from '@app/constants';
 import BoundingBox from '@core/BoundingBox';
 import Action from '@core/Action';
+
+import type Global from '@core/Global';
+import type Body from '@core/physics/Body';
 
 const destoryTilemap = (value, index, tilemap) => {
   tilemap.removeByIndex(index);
 };
 
 class Explosive extends Action {
-  constructor(global, range = baseSize) {
+  global: Global;
+  active: boolean;
+
+  area: BoundingBox;
+  range: number;
+  timer: number;
+  delay: number;
+
+  constructor(global: Global, range: number = baseSize) {
     super('explosive');
     this.global = global;
     this.active = false;
@@ -25,7 +38,7 @@ class Explosive extends Action {
     this.active = true;
   }
 
-  update(bomb, deltaTime) {
+  update(bomb: Body, deltaTime: number) {
     if (this.active === false) {
       return;
     }
@@ -35,14 +48,15 @@ class Explosive extends Action {
     }
 
     if (this.timer >= this.delay) {
-      const {player, ground} = this.global.scene.refs;
+      const scene = this.global.scene;
+      const {player, ground} = (scene && scene.refs) || {};
 
       this.area.alignX(bomb.min[0] - this.range);
       this.area.alignY(bomb.min[1] - this.range);
 
       // todo: add blast sprite
-      ground.search(this.area, destoryTilemap);
       bomb.destroy();
+      ground.search(this.area, destoryTilemap);
 
       if (this.area.intersects(player)) {
         this.global.events.emit('player/dead');

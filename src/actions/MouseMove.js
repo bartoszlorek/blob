@@ -1,8 +1,19 @@
+// @flow strict
+
 import {baseSize} from '@app/constants';
 import Action from '@core/Action';
 
+import type Global from '@core/Global';
+import type Body from '@core/physics/Body';
+
 class MouseMove extends Action {
-  constructor(global) {
+  global: Global;
+  active: boolean;
+  speed: number;
+  x: number;
+  y: number;
+
+  constructor(global: Global) {
     super('mouse_move');
 
     this.active = false;
@@ -24,7 +35,7 @@ class MouseMove extends Action {
     view.addEventListener('mousemove', handleMouseMove);
   }
 
-  update(body) {
+  update(body: Body) {
     if (!this.active) {
       return;
     }

@@ -1,16 +1,26 @@
+// @flow strict
+
 import Action from '@core/Action';
 import {EDGE} from '@core/physics/constants';
 
+import type {EdgeType} from '@core/physics/constants';
+import type Scene from '@core/Scene';
+import type Body from '@core/physics/Body';
+
 class Watcher extends Action {
-  constructor({scene, direction = 1, speed}) {
+  scene: Scene;
+  direction: number;
+  speed: number;
+
+  constructor(scene: Scene, direction: number = 1, speed: number = 1) {
     super('watcher');
     this.scene = scene;
     this.direction = direction;
     this.speed = speed;
   }
 
-  update(entity, deltaTime) {
-    const {ground} = this.scene.refs;
+  update(entity: Body, deltaTime: number) {
+    const {ground} = (this.scene && this.scene.refs) || {};
     const closest = ground.closest(entity.gridX, entity.gridY);
     const bottom = closest && closest[7];
 
@@ -21,23 +31,23 @@ class Watcher extends Action {
     const beforeEdge = !closest[7 + this.direction];
 
     if (beforeEdge) {
-      if (entity.velocity.x > 0) {
-        if (entity.maxX > bottom.maxX) {
+      if (entity.velocity[0] > 0) {
+        if (entity.max[0] > bottom.maxX) {
           this.turnBack(entity);
         }
-      } else if (entity.velocity.x < 0) {
-        if (entity.minX < bottom.minX) {
+      } else if (entity.velocity[0] < 0) {
+        if (entity.min[0] < bottom.minX) {
           this.turnBack(entity);
         }
       }
     }
 
     // finally, apply movement
-    entity.velocity.x = this.direction * this.speed;
-    entity.position.x += entity.velocity.x * deltaTime;
+    entity.velocity[0] = this.direction * this.speed;
+    entity.sprite.x += entity.velocity[0] * deltaTime;
   }
 
-  collide(entity, other, edge) {
+  collide(entity: Body, edge: EdgeType) {
     switch (edge) {
       case EDGE.LEFT:
       case EDGE.RIGHT:
@@ -46,7 +56,7 @@ class Watcher extends Action {
     }
   }
 
-  turnBack(entity) {
+  turnBack(entity: Body) {
     this.direction = -this.direction;
     entity.sprite.scale.x = this.direction;
   }

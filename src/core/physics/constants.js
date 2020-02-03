@@ -1,5 +1,7 @@
 // @flow strict
 
+export type EdgeType = 0 | 1 | 2 | 3;
+
 export const EDGE = {
   TOP: 0,
   RIGHT: 1,

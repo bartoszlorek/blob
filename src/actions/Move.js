@@ -1,9 +1,14 @@
+// @flow strict
+
 import {baseSize} from '@app/constants';
 import {rotateVector} from '@utils/physics';
 import {lerp} from '@utils/math';
 
 import Vector from '@core/physics/Vector';
 import Action from '@core/Action';
+
+import type {EdgeType} from '@core/physics/constants';
+import type Body from '@core/physics/Body';
 
 const alignmentMin = 0.65;
 const alignmentMax = 0.99;
@@ -12,6 +17,12 @@ const alignmentMax = 0.99;
 const m_vector = Vector.create();
 
 class Move extends Action {
+  direction: number;
+
+  acceleration: number;
+  deceleration: number;
+  dragFactor: number;
+
   constructor() {
     super('move');
     this.direction = 0;
@@ -30,13 +41,15 @@ class Move extends Action {
     this.direction -= 1;
   }
 
-  update(body, deltaTime) {
+  update(body: Body, deltaTime: number) {
     m_vector[0] = this.direction;
     m_vector[1] = 0;
 
     const {velocity, gravity, sprite} = body;
-    const axis = +Vector.isHorizontal(gravity.vector);
-    const actualDirection = rotateVector(gravity.vector, m_vector)[axis];
+    const axis = gravity && Vector.isHorizontal(gravity.vector) ? 1 : 0;
+    const actualDirection = gravity
+      ? rotateVector(gravity.vector, m_vector)[axis]
+      : this.direction;
 
     if (this.direction !== 0) {
       velocity[axis] += this.acceleration * actualDirection * deltaTime;
@@ -52,12 +65,12 @@ class Move extends Action {
     velocity[axis] *= this.dragFactor;
   }
 
-  collide(body, edge) {
+  collide(body: Body, edge: EdgeType) {
     if (this.direction !== 0) {
       return;
     }
     const {min: position, gravity} = body;
-    const axis = +Vector.isHorizontal(gravity.vector);
+    const axis = gravity && Vector.isHorizontal(gravity.vector) ? 1 : 0;
     const base = position[axis] / baseSize;
 
     // fancy logic to calculate `alignment` [0-1]
@@ -69,10 +82,19 @@ class Move extends Action {
     if (alignment >= alignmentMin) {
       const tilePosition = Math.round(base) * baseSize;
       const lerpPosition = lerp(position[axis], tilePosition, 0.2);
-      body[axis ? 'alignY' : 'alignX'](lerpPosition);
+
+      if (axis === 0) {
+        body.alignX(lerpPosition);
+      } else {
+        body.alignY(lerpPosition);
+      }
 
       if (alignment >= alignmentMax) {
-        body[axis ? 'alignY' : 'alignX'](tilePosition);
+        if (axis === 0) {
+          body.alignX(tilePosition);
+        } else {
+          body.alignY(tilePosition);
+        }
       }
     }
   }

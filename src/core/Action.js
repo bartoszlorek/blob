@@ -1,6 +1,7 @@
 // @flow strict
 
 import type Body from '@core/physics/Body';
+import type {EdgeType} from '@core/physics/constants';
 
 class Action {
   name: string;
@@ -13,7 +14,7 @@ class Action {
     // fill in subclass
   }
 
-  collide() {
+  collide(body: Body, edge: EdgeType) {
     // fill in subclass
   }
 }
