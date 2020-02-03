@@ -1,3 +1,5 @@
+// @flow strict
+
 import {Loader} from 'pixi.js';
 
 const loader = new Loader();

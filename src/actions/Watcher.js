@@ -12,7 +12,7 @@ class Watcher extends Action {
   direction: number;
   speed: number;
 
-  constructor(scene: Scene, direction: number = 1, speed: number = 1) {
+  constructor(scene: Scene, speed: number = 1, direction: number = 1) {
     super('watcher');
     this.scene = scene;
     this.direction = direction;

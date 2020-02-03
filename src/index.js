@@ -1,3 +1,5 @@
+// @flow strict
+
 import engine from '@app/engine';
 import loader from '@app/loader';
 

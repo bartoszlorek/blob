@@ -4,15 +4,20 @@ import Spritesheet from './Spritesheet';
 
 import type PIXI, {IResourceDictionary} from 'pixi.js';
 import type {TiledMapJson} from './TiledMapEditor';
+import type {VectorType} from '@core/physics/Vector';
 
 type SpriteLayer = {
-  id: number,
-  position: Array<number>,
+  type: 'spriteLayer',
+  sprites: Array<{
+    id: number,
+    position: VectorType,
+  }>,
 };
 
 type TileLayer = {
+  type: 'tileLayer',
   tilemap: Array<number>,
-  offset: Array<number>,
+  offset: VectorType,
   width: number,
 };
 
@@ -63,10 +68,12 @@ class Spriteset {
 
       if (this.isTypeSprite(properties)) {
         layers[name] = {
+          type: 'spriteLayer',
           sprites: this.parseSprite(data, width),
         };
       } else {
         layers[name] = {
+          type: 'tileLayer',
           tilemap: this.parseTiles(data),
           offset: [0, 0],
           width,

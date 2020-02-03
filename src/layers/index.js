@@ -1,5 +1,13 @@
 // @flow strict
 
+import type Global from '@core/Global';
+import type Spriteset from '@core/structure/Spriteset';
+
+export type LayerProps = $ReadOnly<{
+  global: Global,
+  spriteset: Spriteset,
+}>;
+
 export {default as createBack} from './createBack';
 export {default as createEnemies} from './createEnemies';
 export {default as createFront} from './createFront';

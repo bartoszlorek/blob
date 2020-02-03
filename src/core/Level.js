@@ -14,17 +14,17 @@ import {
 
 import type Global from '@core/Global';
 import type Spriteset from '@core/structure/Spriteset';
+import type {LayerProps} from '@layers';
 
 class Level extends Scene {
   constructor(global: Global, spriteset: Spriteset) {
     super(global, spriteset);
   }
 
-  create() {
-    const global = this.global;
-    const props = {
-      global,
+  create(global: Global) {
+    const props: LayerProps = {
       spriteset: this.spriteset,
+      global,
     };
 
     const [ground] = createGround(props);

@@ -1,3 +1,5 @@
+// @flow strict
+
 import PIXI, {Application} from 'pixi.js';
 
 // disable interpolation when scaling, will make texture be pixelated
@@ -14,7 +16,10 @@ const engine = new Application({
 // engine.ticker.maxFPS = 12;
 
 // engine.view.className = 'view fade-steps';
-document.body.appendChild(engine.view);
+
+if (document.body) {
+  document.body.appendChild(engine.view);
+}
 
 // export const fastFadeIn = callback => {
 //   engine.view.classList.add('hidden');

@@ -1,14 +1,22 @@
+// @flow strict
+
 import {Sprite} from 'pixi.js';
 import Keyboard from '@core/Keyboard';
 import Body from '@core/physics/Body';
-
 import Jump from '@actions/Jump';
 import Move from '@actions/Move';
 import MouseMove from '@actions/MouseMove';
 
-function createPlayer({global, spriteset}) {
-  const {sprites} = spriteset.layers['player'];
-  const {id, position} = sprites[0]; // singleplayer
+import type {LayerProps} from '@layers';
+
+function createPlayer({global, spriteset}: LayerProps) {
+  const layer = spriteset.layers['player'];
+
+  if (layer.type === 'tileLayer') {
+    throw Error('wrong type of layer');
+  }
+
+  const {id, position} = layer.sprites[0]; // singleplayer
 
   let player = new Body(
     new Sprite(spriteset.spritesheet.getById(id)),
@@ -23,15 +31,15 @@ function createPlayer({global, spriteset}) {
 
   const input = new Keyboard();
   input.on('ArrowRight KeyD', pressed => {
-    player.action['move'][pressed ? 'forward' : 'backward']();
+    player && player.action['move'][pressed ? 'forward' : 'backward']();
   });
 
   input.on('ArrowLeft KeyA', pressed => {
-    player.action['move'][pressed ? 'backward' : 'forward']();
+    player && player.action['move'][pressed ? 'backward' : 'forward']();
   });
 
   input.on('Space', pressed => {
-    player.action['jump'][pressed ? 'start' : 'cancel']();
+    player && player.action['jump'][pressed ? 'start' : 'cancel']();
   });
 
   function cleanup() {

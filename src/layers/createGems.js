@@ -1,19 +1,23 @@
-import {Sprite} from 'pixi.js';
-import {GlowFilter} from '@pixi/filter-glow';
+// @flow strict
 
+import {Sprite} from 'pixi.js';
 import Group from '@core/physics/Group';
 import Body from '@core/physics/Body';
 
+import type {LayerProps} from '@layers';
+
 const glowDistance = 10;
 
-function createGems({global, spriteset}) {
-  const {sprites} = spriteset.layers['gems'];
+function createGems({global, spriteset}: LayerProps) {
+  const layer = spriteset.layers['gems'];
+
+  if (layer.type === 'tileLayer') {
+    throw Error('wrong type of layer');
+  }
 
   let gems = new Group();
-  let filters = [new GlowFilter(glowDistance, 1, 0, 0xf2dc30)];
-  filters[0].padding = glowDistance;
 
-  sprites.forEach(sprite => {
+  layer.sprites.forEach(sprite => {
     const {id, position} = sprite;
     const gem = new Body(
       new Sprite(spriteset.spritesheet.getById(id)),
@@ -22,13 +26,13 @@ function createGems({global, spriteset}) {
       spriteset.tilesize
     );
 
-    // gem.sprite.filters = filters;
-    gems.add(gem);
+    if (gems) {
+      gems.add(gem);
+    }
   });
 
   function cleanup() {
     gems = null;
-    filters = null;
   }
 
   return [gems, cleanup];

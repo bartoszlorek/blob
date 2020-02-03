@@ -1,14 +1,22 @@
+// @flow strict
+
 import {Sprite} from 'pixi.js';
 import Group from '@core/physics/Group';
 import Body from '@core/physics/Body';
-
 import Watcher from '@actions/Watcher';
 
-function createEnemies({global, spriteset}) {
-  const {sprites} = spriteset.layers['enemies'];
+import type {LayerProps} from '@layers';
+
+function createEnemies({global, spriteset}: LayerProps) {
+  const layer = spriteset.layers['enemies'];
+
+  if (layer.type === 'tileLayer') {
+    throw Error('wrong type of layer');
+  }
+
   let enemies = new Group();
 
-  sprites.forEach(sprite => {
+  layer.sprites.forEach(sprite => {
     const {id, position} = sprite;
     const enemy = new Body(
       new Sprite(spriteset.spritesheet.getById(id)),
@@ -17,8 +25,12 @@ function createEnemies({global, spriteset}) {
       spriteset.tilesize
     );
 
-    enemy.addAction(new Watcher({scene, speed: 60}));
-    enemies.add(enemy);
+    if (global.scene) {
+      enemy.addAction(new Watcher(global.scene, 60));
+    }
+    if (enemies) {
+      enemies.add(enemy);
+    }
   });
 
   function cleanup() {
