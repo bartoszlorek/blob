@@ -11,7 +11,7 @@ import {
 import type {EdgeType} from '@core/physics/constants';
 import type Body from '@core/physics/Body';
 import type Component from '@core/physics/Component';
-import type Group from '@core/structure/Group';
+import type Group from '@core/physics/Group';
 
 class World {
   children: Array<Body>;

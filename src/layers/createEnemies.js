@@ -1,5 +1,5 @@
 import {Sprite} from 'pixi.js';
-import Group from '@core/structure/Group';
+import Group from '@core/physics/Group';
 import Body from '@core/physics/Body';
 
 import Watcher from '@actions/Watcher';

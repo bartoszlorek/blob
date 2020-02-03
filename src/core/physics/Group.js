@@ -2,12 +2,10 @@
 
 import {utils} from 'pixi.js';
 
-import type BoundingBox from '@core/BoundingBox';
-
-type Child = BoundingBox | Group;
+import Body from '@core/physics/Body';
 
 class Group {
-  children: Array<Child>;
+  children: Array<Body | Group>;
   isGroup: true;
 
   constructor() {
@@ -15,11 +13,11 @@ class Group {
     this.isGroup = true;
   }
 
-  add(child: Child) {
+  add(child: Body | Group) {
     this.children.push(child);
   }
 
-  remove(child: Child) {
+  remove(child: Body) {
     for (let index = 0; index < this.children.length; index++) {
       const elem = this.children[index];
 
@@ -36,7 +34,7 @@ class Group {
     return false;
   }
 
-  contains(child: Child) {
+  contains(child: Body) {
     for (let index = 0; index < this.children.length; index++) {
       const elem = this.children[index];
 
@@ -48,7 +46,7 @@ class Group {
     return false;
   }
 
-  forEach(iteratee: (child: Child, index: number, group: Group) => boolean) {
+  forEach(iteratee: (child: Body, index: number, group: Group) => boolean) {
     for (let index = 0; index < this.children.length; index++) {
       const child = this.children[index];
       let result;
@@ -57,6 +55,7 @@ class Group {
         // $FlowFixMe class-disjoint-unions
         result = child.forEach(iteratee);
       } else {
+        // $FlowFixMe class-disjoint-unions
         result = iteratee(child, index, this);
       }
       if (result === false) {
@@ -66,8 +65,8 @@ class Group {
   }
 
   search(
-    bbox: BoundingBox,
-    iteratee: (child: Child, index: number, group: Group) => mixed
+    bbox: Body,
+    iteratee: (child: Body, index: number, group: Group) => mixed
   ) {
     for (let index = 0; index < this.children.length; index++) {
       const child = this.children[index];
@@ -78,6 +77,7 @@ class Group {
         result = child.search(bbox, iteratee);
         // $FlowFixMe class-disjoint-unions
       } else if (bbox.intersects(child)) {
+        // $FlowFixMe class-disjoint-unions
         result = iteratee(child, index, this);
       }
       if (result !== undefined) {

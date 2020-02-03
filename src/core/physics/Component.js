@@ -1,7 +1,7 @@
 // @flow strict
 
 import type Body from '@core/physics/Body';
-import type Group from '@core/structure/Group';
+import type Group from '@core/physics/Group';
 
 class Component<Props: {}> {
   props: Props;
