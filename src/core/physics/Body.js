@@ -16,7 +16,7 @@ class Body extends BoundingBox {
   gravity: Force | null;
 
   actions: Array<Action>;
-  action: {[name: string]: any};
+  action: {[name: string]: any}; // todo: subtypes of Action
   parent: World | null;
   isBody: true;
   isAlive: boolean;

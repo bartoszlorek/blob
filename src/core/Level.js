@@ -52,23 +52,42 @@ class Level extends Scene {
     this.physics.processChild(player);
     this.physics.processChild(mines);
 
-    this.physics.overlapBody(player, gems, function() {});
-
-    this.physics.overlapBody(player, mines, function(player, mine) {
-      mine.action['explosive'].ignite();
+    this.physics.overlapBody({
+      bodyA: player,
+      bodyB: gems,
+      callback: () => {},
     });
 
-    // this.physics.collideBody(player, mines, function(body, mines, edge) {
-    //   body.action['jump'].collide(body, edge);
-    //   body.action['move'].collide(body, edge);
-    // });
-
-    this.physics.collideTile(player, ground, function(body, ground, edge) {
-      body.action['jump'].collide(body, edge);
-      body.action['move'].collide(body, edge);
+    this.physics.overlapBody({
+      bodyA: player,
+      bodyB: mines,
+      callback: (player, mine) => {
+        mine.action['explosive'].ignite();
+      },
     });
 
-    this.physics.gravityTile(player, ground);
+    this.physics.collideBody({
+      bodyA: player,
+      bodyB: mines,
+      callback: (body, mines, edge) => {
+        body.action['jump'].collide(body, edge);
+        body.action['move'].collide(body, edge);
+      },
+    });
+
+    this.physics.collideTile({
+      body: player,
+      tiles: ground,
+      callback: (body, ground, edge) => {
+        body.action['jump'].collide(body, edge);
+        body.action['move'].collide(body, edge);
+      },
+    });
+
+    this.physics.gravityTile({
+      body: player,
+      tiles: ground,
+    });
 
     // events
     if (global) {

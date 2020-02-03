@@ -1,5 +1,14 @@
-class Component {
-  constructor(props) {
+// @flow strict
+
+import type Body from '@core/physics/Body';
+import type Group from '@core/structure/Group';
+
+class Component<Props: {}> {
+  props: Props;
+  children: Array<Body | Group>;
+  isActive: boolean;
+
+  constructor(props: Props) {
     this.props = props;
     this.children = [];
 
@@ -16,15 +25,16 @@ class Component {
     });
   }
 
-  update(deltaTime) {
+  update(deltaTime: number) {
     // fill in subclass
   }
 
-  validate(body) {
+  validate(body: Body) {
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
 
       if (child.isGroup) {
+        // $FlowFixMe class-disjoint-unions
         this.validateGroup(child, body);
       } else if (child === body) {
         this.isActive = !!body.isAlive;
@@ -32,7 +42,7 @@ class Component {
     }
   }
 
-  validateGroup(group, body) {
+  validateGroup(group: Group, body: Body) {
     if (this.isActive) {
       // disable component with empty group
       if (group.remove(body) && group.isEmpty()) {
@@ -47,7 +57,6 @@ class Component {
   }
 
   destroy() {
-    this.props = null;
     this.isActive = false;
   }
 }

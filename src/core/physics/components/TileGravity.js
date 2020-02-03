@@ -1,11 +1,23 @@
+// @flow strict
+
 import {vectorRotation} from '@utils/physics';
 import Component from '@core/physics/Component';
 import Force from '@core/physics/Force';
 
 import {calculateGravityDirection} from '../gravity/tileGravity';
 
-class TileGravity extends Component {
-  constructor(props) {
+import type {EdgeType} from '@core/physics/constants';
+import type {VectorType} from '@core/physics/Vector';
+import type Body from '@core/physics/Body';
+import type Tileset from '@core/structure/Tileset';
+
+type PropsType = {
+  body: Body,
+  tiles: Tileset,
+};
+
+class TileGravity extends Component<PropsType> {
+  constructor(props: PropsType) {
     super(props);
 
     props.body.gravity = new Force(0, 1, {
@@ -16,14 +28,19 @@ class TileGravity extends Component {
 
   update() {
     const {body, tiles} = this.props;
+    const {gravity} = body;
+
+    if (gravity === null) {
+      return;
+    }
     const direction = calculateGravityDirection(body, tiles);
 
     if (direction) {
-      body.gravity.applyDirection(direction);
+      gravity.applyDirection(direction);
     }
 
-    body.gravity.applyTo(body.velocity);
-    body.sprite.rotation = vectorRotation(body.gravity.vector);
+    gravity.applyTo(body.velocity);
+    body.sprite.rotation = vectorRotation(gravity.vector);
   }
 }
 

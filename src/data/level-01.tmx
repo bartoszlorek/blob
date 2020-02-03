@@ -5,7 +5,7 @@
   <export target="level-01.json" format="json"/>
  </editorsettings>
  <properties>
-  <property name="backgroundEdges" value="3,7,17"/>
+  <property name="backgroundEdges" value="3,13,17"/>
  </properties>
  <tileset firstgid="1" source="world.tsx"/>
  <layer id="8" name="ground" width="8" height="16">

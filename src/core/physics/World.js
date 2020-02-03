@@ -2,18 +2,20 @@
 
 import {arrayRemove} from '@utils/array';
 import {
+  BodyCollision,
   BodyOverlap,
   TileCollision,
   TileGravity,
 } from '@core/physics/components';
 
+import type {EdgeType} from '@core/physics/constants';
 import type Body from '@core/physics/Body';
 import type Component from '@core/physics/Component';
 import type Group from '@core/structure/Group';
 
 class World {
   children: Array<Body>;
-  components: Array<Component>;
+  components: Array<Component<any>>;
 
   removeStack: Array<Body>;
   removeIndex: number;
@@ -78,22 +80,20 @@ class World {
   // Defined Common Components
   // --------------------------
 
-  // $FlowFixMe
-  collideTile(body: Body, tiles, callback: () => mixed) {
-    this.components.push(new TileCollision({body, tiles, callback}));
+  collideTile(props: $PropertyType<TileCollision, 'props'>) {
+    this.components.push(new TileCollision(props));
   }
 
-  // $FlowFixMe
-  gravityTile(body: Body, tiles) {
-    this.components.push(new TileGravity({body, tiles}));
+  gravityTile(props: $PropertyType<TileGravity, 'props'>) {
+    this.components.push(new TileGravity(props));
   }
 
-  overlapBody(
-    bodyA: Body,
-    bodyB: Body,
-    callback: (body: Body, body: Body) => mixed
-  ) {
-    this.components.push(new BodyOverlap({bodyA, bodyB, callback}));
+  collideBody(props: $PropertyType<BodyCollision, 'props'>) {
+    this.components.push(new BodyCollision(props));
+  }
+
+  overlapBody(props: $PropertyType<BodyOverlap, 'props'>) {
+    this.components.push(new BodyOverlap(props));
   }
 }
 
