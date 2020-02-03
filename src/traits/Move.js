@@ -28,8 +28,8 @@ class Move extends Trait {
     this.direction = 0;
 
     // parameters
-    this.acceleration = 650;
-    this.deceleration = 300;
+    this.acceleration = 600;
+    this.deceleration = 350;
     this.dragFactor = 0.95;
   }
 

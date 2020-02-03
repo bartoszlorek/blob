@@ -27,7 +27,7 @@ class Jump extends Trait {
     super('jump');
 
     this.force = new Force(0, -1, {
-      str: 100,
+      str: 85,
       dex: 0.6,
     });
 
