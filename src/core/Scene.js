@@ -2,39 +2,40 @@
 
 import {Container} from 'pixi.js';
 import {baseSize} from '@app/constants';
-import {lerp} from '@utils/math';
 import Background from '@core/Background';
+import Camera from '@core/Camera';
 import World from '@core/physics/World';
 
-import type Body from '@core/physics/Body';
+import type PIXI from 'pixi.js';
 import type Global from '@core/Global';
+import type Body from '@core/physics/Body';
+import type BodyGroup from '@core/physics/BodyGroup';
+import type Tileset from '@core/structure/Tileset';
 import type Spriteset from '@core/structure/Spriteset';
 
 class Scene {
+  +offsetX: number;
+  +offsetY: number;
+
   global: Global | null;
   spriteset: Spriteset;
   refs: {[name: string]: any} | null;
   resize: () => void;
 
   physics: World;
+  camera: Camera;
+
   background: Background;
   foreground: Container;
   graphics: Container;
-
-  cameraRadius: number;
-  cameraSpeed: number;
-  cameraOffsetX: number;
-  cameraOffsetY: number;
-  offsetX: number;
-  offsetY: number;
 
   constructor(global: Global, spriteset: Spriteset) {
     this.global = global;
     this.spriteset = spriteset;
     this.refs = {};
 
-    // physics
     this.physics = new World();
+    this.camera = new Camera(global, 0.2);
 
     // pixijs layers di
     this.background = new Background(spriteset);
@@ -47,12 +48,6 @@ class Scene {
     // events
     this.resize = this.resize.bind(this);
     global.events.on('global/resize', this.resize);
-
-    // camera
-    this.cameraRadius = 100;
-    this.cameraSpeed = 0.01;
-    this.cameraOffsetX = 0;
-    this.cameraOffsetY = 0;
 
     // position
     this.offsetX = -((spriteset.width / 2) * spriteset.tilesize);
@@ -72,13 +67,12 @@ class Scene {
     // fill in subclass
   }
 
-  // $FlowFixMe
-  renderChild(child) {
-    if (child.isBody) {
+  renderChild(child: Body | BodyGroup | Tileset) {
+    if (child.isBody === true) {
       this.foreground.addChild(child.sprite);
-    } else if (child.isTileset) {
+    } else if (child.isTiles === true) {
       this.foreground.addChild(child.graphics);
-    } else if (child.isGroup) {
+    } else if (child.isGroup === true) {
       child.forEach(a => this.renderChild(a));
     } else {
       this.foreground.addChild(child);
@@ -86,44 +80,25 @@ class Scene {
   }
 
   resize() {
-    this.updateForegroundPosition();
     this.background.resize();
+    this.updateForeground();
   }
 
   focus(body: Body) {
-    if (!body.isAlive) {
-      return;
-    }
-    const {x, y} = body.sprite;
-    this.offsetX = -x;
-    this.offsetY = -y;
-    this.updateForegroundPosition();
+    this.camera.focus(body);
+    this.updateForeground();
   }
 
   follow(body: Body) {
-    if (!body.isAlive) {
-      return;
-    }
-    const {x, y} = body.sprite;
-    const a = x + this.offsetX;
-    const b = y + this.offsetY;
-    const distance = Math.sqrt(a * a + b * b);
-
-    if (distance < baseSize) {
-      return;
-    }
-    const factor = Math.min(1, distance / this.cameraRadius);
-    this.offsetX = lerp(this.offsetX, -x, this.cameraSpeed * factor);
-    this.offsetY = lerp(this.offsetY, -y, this.cameraSpeed * factor);
-    this.updateForegroundPosition();
+    this.camera.follow(body);
+    this.updateForeground();
   }
 
-  updateForegroundPosition() {
-    if (!this.global) {
-      return;
+  updateForeground() {
+    if (this.global) {
+      this.foreground.x = this.global.centerX + this.offsetX + this.camera.x;
+      this.foreground.y = this.global.centerY + this.offsetY + this.camera.y;
     }
-    this.foreground.x = this.global.centerX + this.offsetX + this.cameraOffsetX;
-    this.foreground.y = this.global.centerY + this.offsetY + this.cameraOffsetY;
   }
 
   destroy() {

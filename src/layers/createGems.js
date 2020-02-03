@@ -1,8 +1,8 @@
 // @flow strict
 
 import {Sprite} from 'pixi.js';
-import Group from '@core/physics/Group';
 import Body from '@core/physics/Body';
+import BodyGroup from '@core/physics/BodyGroup';
 
 import type {LayerProps} from '@layers';
 
@@ -15,7 +15,7 @@ function createGems({global, spriteset}: LayerProps) {
     throw Error('wrong type of layer');
   }
 
-  let gems = new Group();
+  let gems = new BodyGroup();
 
   layer.sprites.forEach(sprite => {
     const {id, position} = sprite;

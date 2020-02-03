@@ -8,6 +8,10 @@ import Tilemap from '@core/structure/Tilemap';
 import type {VectorType} from '@core/physics/Vector';
 
 class Tileset extends Tilemap {
+  +isBody: false;
+  +isGroup: false;
+  +isTiles: true;
+
   values: Array<number>;
   dimension: number;
   tilesize: number;
@@ -15,8 +19,6 @@ class Tileset extends Tilemap {
 
   children: Map<number, Sprite>;
   graphics: Container;
-
-  isTileset: true;
 
   constructor(values: Array<number>, dimension: number, offset: VectorType) {
     super(values, dimension, baseSize, offset);
@@ -27,8 +29,9 @@ class Tileset extends Tilemap {
     this.graphics.position.x = this.offset[0] * baseSize;
     this.graphics.position.y = this.offset[1] * baseSize;
 
-    // parameters
-    this.isTileset = true;
+    this.isBody = false;
+    this.isGroup = false;
+    this.isTiles = true;
   }
 
   removeByIndex(index: number) {

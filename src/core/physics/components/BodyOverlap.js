@@ -5,11 +5,11 @@ import {EDGE} from '@core/physics/constants';
 
 import type {EdgeType} from '@core/physics/constants';
 import type Body from '@core/physics/Body';
-import type Group from '@core/physics/Group';
+import type BodyGroup from '@core/physics/BodyGroup';
 
 type PropsType = {
   bodyA: Body,
-  bodyB: Body | Group,
+  bodyB: Body | BodyGroup,
   callback: (body: Body, body: Body, edge: EdgeType) => mixed,
 };
 
@@ -21,17 +21,14 @@ class BodyOverlap extends Component<PropsType> {
   update() {
     const {bodyA, bodyB, callback} = this.props;
 
-    if (bodyB.isGroup) {
-      // $FlowFixMe class-disjoint-unions
+    if (bodyB.isGroup === true) {
       bodyB.forEach(child => {
         if (bodyA.intersects(child)) {
           callback(bodyA, child, this.getOverlapingEdge(bodyA, child));
         }
       });
     } else {
-      // $FlowFixMe class-disjoint-unions
       if (bodyA.intersects(bodyB)) {
-        // $FlowFixMe class-disjoint-unions
         callback(bodyA, bodyB, this.getOverlapingEdge(bodyA, bodyB));
       }
     }

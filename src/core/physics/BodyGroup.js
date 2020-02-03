@@ -1,19 +1,26 @@
 // @flow strict
 
 import {utils} from 'pixi.js';
-
 import Body from '@core/physics/Body';
 
-class Group {
-  children: Array<Body | Group>;
-  isGroup: true;
+type IterateeType = (child: Body, index: number, group: BodyGroup) => mixed;
+
+class BodyGroup {
+  +isBody: false;
+  +isGroup: true;
+  +isTiles: false;
+
+  children: Array<Body | BodyGroup>;
 
   constructor() {
     this.children = [];
+
+    this.isBody = false;
     this.isGroup = true;
+    this.isTiles = false;
   }
 
-  add(child: Body | Group) {
+  add(child: Body | BodyGroup) {
     this.children.push(child);
   }
 
@@ -26,8 +33,7 @@ class Group {
         return true;
       }
 
-      // $FlowFixMe class-disjoint-unions
-      if (elem.isGroup && elem.remove(child)) {
+      if (elem.isGroup === true && elem.remove(child)) {
         return true;
       }
     }
@@ -38,24 +44,21 @@ class Group {
     for (let index = 0; index < this.children.length; index++) {
       const elem = this.children[index];
 
-      // $FlowFixMe class-disjoint-unions
-      if (elem === child || (elem.isGroup && elem.contains(child))) {
+      if (elem === child || (elem.isGroup === true && elem.contains(child))) {
         return true;
       }
     }
     return false;
   }
 
-  forEach(iteratee: (child: Body, index: number, group: Group) => boolean) {
+  forEach(iteratee: IterateeType) {
     for (let index = 0; index < this.children.length; index++) {
       const child = this.children[index];
       let result;
 
-      if (child.isGroup) {
-        // $FlowFixMe class-disjoint-unions
+      if (child.isGroup === true) {
         result = child.forEach(iteratee);
       } else {
-        // $FlowFixMe class-disjoint-unions
         result = iteratee(child, index, this);
       }
       if (result === false) {
@@ -64,20 +67,14 @@ class Group {
     }
   }
 
-  search(
-    bbox: Body,
-    iteratee: (child: Body, index: number, group: Group) => mixed
-  ) {
+  search(bbox: Body, iteratee: IterateeType) {
     for (let index = 0; index < this.children.length; index++) {
       const child = this.children[index];
       let result;
 
-      if (child.isGroup) {
-        // $FlowFixMe class-disjoint-unions
+      if (child.isGroup === true) {
         result = child.search(bbox, iteratee);
-        // $FlowFixMe class-disjoint-unions
       } else if (bbox.intersects(child)) {
-        // $FlowFixMe class-disjoint-unions
         result = iteratee(child, index, this);
       }
       if (result !== undefined) {
@@ -90,8 +87,7 @@ class Group {
     for (let index = 0; index < this.children.length; index++) {
       const child = this.children[index];
 
-      // $FlowFixMe class-disjoint-unions
-      if (!(child.isGroup && child.isEmpty())) {
+      if (!(child.isGroup === true && child.isEmpty())) {
         return false;
       }
     }
@@ -99,4 +95,4 @@ class Group {
   }
 }
 
-export default Group;
+export default BodyGroup;

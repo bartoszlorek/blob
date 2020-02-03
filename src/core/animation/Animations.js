@@ -8,10 +8,10 @@ class Animations {
 
   add(elem) {
     // prettier-ignore
-    if (elem.isBody) {
+    if (elem.isBody === true) {
       this.children.push(elem.sprite);
 
-    } else if (elem.isGroup) {
+    } else if (elem.isGroup === true) {
       elem.children.forEach(child => {
         this.add(child);
       });

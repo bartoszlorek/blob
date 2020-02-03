@@ -1,11 +1,11 @@
 // @flow strict
 
 import type Body from '@core/physics/Body';
-import type Group from '@core/physics/Group';
+import type BodyGroup from '@core/physics/BodyGroup';
 
 class Component<Props: {}> {
   props: Props;
-  children: Array<Body | Group>;
+  children: Array<Body | BodyGroup>;
   isActive: boolean;
 
   constructor(props: Props) {
@@ -19,7 +19,7 @@ class Component<Props: {}> {
     Object.keys(props).forEach(name => {
       const child = props[name];
 
-      if (child.isBody || child.isGroup) {
+      if (child.isBody === true || child.isGroup === true) {
         this.children.push(child);
       }
     });
@@ -33,16 +33,15 @@ class Component<Props: {}> {
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
 
-      if (child.isGroup) {
-        // $FlowFixMe class-disjoint-unions
+      if (child.isGroup === true) {
         this.validateGroup(child, body);
       } else if (child === body) {
-        this.isActive = !!body.isAlive;
+        this.isActive = !!body.alive;
       }
     }
   }
 
-  validateGroup(group: Group, body: Body) {
+  validateGroup(group: BodyGroup, body: Body) {
     if (this.isActive) {
       // disable component with empty group
       if (group.remove(body) && group.isEmpty()) {

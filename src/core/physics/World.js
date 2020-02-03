@@ -10,8 +10,8 @@ import {
 
 import type {EdgeType} from '@core/physics/constants';
 import type Body from '@core/physics/Body';
+import type BodyGroup from '@core/physics/BodyGroup';
 import type Component from '@core/physics/Component';
-import type Group from '@core/physics/Group';
 
 class World {
   children: Array<Body>;
@@ -47,21 +47,18 @@ class World {
     }
   }
 
-  processChild(child: Body | Group) {
-    if (child.isBody) {
-      // $FlowFixMe class-disjoint-unions
+  processChild(child: Body | BodyGroup) {
+    if (child.isBody === true) {
       this.children.push(child);
-      // $FlowFixMe class-disjoint-unions
       child.parent = this;
-    } else if (child.isGroup) {
-      // $FlowFixMe class-disjoint-unions
+    } else if (child.isGroup === true) {
       child.forEach(a => this.processChild(a));
     }
   }
 
   removeChild(child: Body) {
     this.removeStack[this.removeIndex++] = child;
-    child.isAlive = false;
+    child.alive = false;
   }
 
   unsafeRemoveChild(child: Body) {

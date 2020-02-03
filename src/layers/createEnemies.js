@@ -1,8 +1,8 @@
 // @flow strict
 
 import {Sprite} from 'pixi.js';
-import Group from '@core/physics/Group';
 import Body from '@core/physics/Body';
+import BodyGroup from '@core/physics/BodyGroup';
 import Watcher from '@actions/Watcher';
 
 import type {LayerProps} from '@layers';
@@ -14,7 +14,7 @@ function createEnemies({global, spriteset}: LayerProps) {
     throw Error('wrong type of layer');
   }
 
-  let enemies = new Group();
+  let enemies = new BodyGroup();
 
   layer.sprites.forEach(sprite => {
     const {id, position} = sprite;

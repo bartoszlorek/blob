@@ -10,16 +10,19 @@ import type Force from '@core/physics/Force';
 import type {VectorType} from '@core/physics/Vector';
 
 class Body extends BoundingBox {
+  +isBody: true;
+  +isGroup: false;
+  +isTiles: false;
+  +size: number;
+
   sprite: PIXI.Sprite;
-  size: number;
   velocity: VectorType;
   gravity: Force | null;
 
   actions: Array<Action>;
   action: {[name: string]: any}; // todo: subtypes of Action
   parent: World | null;
-  isBody: true;
-  isAlive: boolean;
+  alive: boolean;
 
   constructor(
     sprite: PIXI.Sprite,
@@ -41,10 +44,11 @@ class Body extends BoundingBox {
     this.actions = [];
     this.action = {};
     this.parent = null;
+    this.alive = true;
 
-    // flags
     this.isBody = true;
-    this.isAlive = true;
+    this.isGroup = false;
+    this.isTiles = false;
 
     // process
     this.updateSprite();

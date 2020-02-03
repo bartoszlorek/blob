@@ -1,8 +1,8 @@
 // @flow strict
 
 import {Sprite} from 'pixi.js';
-import Group from '@core/physics/Group';
 import Body from '@core/physics/Body';
+import BodyGroup from '@core/physics/BodyGroup';
 import Explosive from '@actions/Explosive';
 
 import type {LayerProps} from '@layers';
@@ -14,7 +14,7 @@ function createMines({global, spriteset}: LayerProps) {
     throw Error('wrong type of layer');
   }
 
-  let mines = new Group();
+  let mines = new BodyGroup();
 
   layer.sprites.forEach(sprite => {
     const {id, position} = sprite;
