@@ -35,7 +35,7 @@ class Scene {
     this.refs = {};
 
     this.physics = new World();
-    this.camera = new Camera(global, 0.2);
+    this.camera = new Camera(global, 0.15, 100);
 
     // pixijs layers di
     this.background = new Background(spriteset);

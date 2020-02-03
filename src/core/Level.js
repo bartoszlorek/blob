@@ -93,8 +93,6 @@ class Level extends Scene {
     if (global) {
       global.events.on('player/dead', () => global.stop());
     }
-
-    this.focus(player);
   }
 
   update(deltaTime: number) {
