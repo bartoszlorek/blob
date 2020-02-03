@@ -62,7 +62,7 @@ class Level extends Scene {
       bodyA: player,
       bodyB: mines,
       callback: (player, mine) => {
-        mine.action['explosive'].ignite();
+        mine.trait['explosive'].ignite();
       },
     });
 
@@ -70,8 +70,8 @@ class Level extends Scene {
       bodyA: player,
       bodyB: mines,
       callback: (body, mines, edge) => {
-        body.action['jump'].collide(body, edge);
-        body.action['move'].collide(body, edge);
+        body.trait['jump'].collide(body, edge);
+        body.trait['move'].collide(body, edge);
       },
     });
 
@@ -79,8 +79,8 @@ class Level extends Scene {
       body: player,
       tiles: ground,
       callback: (body, ground, edge) => {
-        body.action['jump'].collide(body, edge);
-        body.action['move'].collide(body, edge);
+        body.trait['jump'].collide(body, edge);
+        body.trait['move'].collide(body, edge);
       },
     });
 

@@ -2,7 +2,7 @@
 
 import {rotateEdge, rotateVector} from '@utils/physics';
 import Sound from '@core/Sound';
-import Action from '@core/Action';
+import Trait from '@core/Trait';
 import Vector from '@core/physics/Vector';
 import Force from '@core/physics/Force';
 import {EDGE} from '@core/physics/constants';
@@ -12,7 +12,7 @@ import type Body from '@core/physics/Body';
 
 const m_vector = Vector.create();
 
-class Jump extends Action {
+class Jump extends Trait {
   force: Force;
   jumpSound: Sound;
 

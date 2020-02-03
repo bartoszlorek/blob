@@ -3,7 +3,7 @@
 import type Body from '@core/physics/Body';
 import type {EdgeType} from '@core/physics/constants';
 
-class Action {
+class Trait {
   name: string;
 
   constructor(name: string) {
@@ -19,4 +19,4 @@ class Action {
   }
 }
 
-export default Action;
+export default Trait;

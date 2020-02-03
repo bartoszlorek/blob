@@ -1,13 +1,13 @@
 // @flow strict
 
-import Action from '@core/Action';
+import Trait from '@core/Trait';
 import {EDGE} from '@core/physics/constants';
 
 import type {EdgeType} from '@core/physics/constants';
 import type Scene from '@core/Scene';
 import type Body from '@core/physics/Body';
 
-class Watcher extends Action {
+class Watcher extends Trait {
   scene: Scene;
   direction: number;
   speed: number;

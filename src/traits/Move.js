@@ -5,7 +5,7 @@ import {rotateVector} from '@utils/physics';
 import {lerp} from '@utils/math';
 
 import Vector from '@core/physics/Vector';
-import Action from '@core/Action';
+import Trait from '@core/Trait';
 
 import type {EdgeType} from '@core/physics/constants';
 import type Body from '@core/physics/Body';
@@ -16,7 +16,7 @@ const alignmentMax = 0.99;
 // mutable data
 const m_vector = Vector.create();
 
-class Move extends Action {
+class Move extends Trait {
   direction: number;
 
   acceleration: number;

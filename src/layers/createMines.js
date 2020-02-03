@@ -3,7 +3,7 @@
 import {Sprite} from 'pixi.js';
 import Body from '@core/physics/Body';
 import BodyGroup from '@core/physics/BodyGroup';
-import Explosive from '@actions/Explosive';
+import Explosive from '@traits/Explosive';
 
 import type {LayerProps} from '@layers';
 

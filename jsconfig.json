@@ -5,10 +5,10 @@
     "allowSyntheticDefaultImports": false,
     "paths": {
       "@app": ["./src/*"],
-      "@actions": ["./src/actions/*"],
       "@core": ["./src/core/*"],
       "@data": ["./src/data/*"],
       "@layers": ["./src/layers/*"],
+      "@traits": ["./src/traits/*"],
       "@utils": ["./src/utils/*"]
     }
   },

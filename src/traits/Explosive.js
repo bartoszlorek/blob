@@ -2,7 +2,7 @@
 
 import {baseSize} from '@app/constants';
 import BoundingBox from '@core/BoundingBox';
-import Action from '@core/Action';
+import Trait from '@core/Trait';
 
 import type Global from '@core/Global';
 import type Body from '@core/physics/Body';
@@ -11,7 +11,7 @@ const destoryTilemap = (value, index, tilemap) => {
   tilemap.removeByIndex(index);
 };
 
-class Explosive extends Action {
+class Explosive extends Trait {
   global: Global;
   active: boolean;
 

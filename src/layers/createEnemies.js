@@ -3,7 +3,7 @@
 import {Sprite} from 'pixi.js';
 import Body from '@core/physics/Body';
 import BodyGroup from '@core/physics/BodyGroup';
-import Watcher from '@actions/Watcher';
+import Watcher from '@traits/Watcher';
 
 import type {LayerProps} from '@layers';
 

@@ -11,10 +11,10 @@ module.exports = {
     extensions: ['.js', '.jsx'],
     alias: {
       '@app': path.resolve(__dirname, 'src/'),
-      '@actions': path.resolve(__dirname, 'src/actions/'),
       '@core': path.resolve(__dirname, 'src/core/'),
       '@data': path.resolve(__dirname, 'src/data/'),
       '@layers': path.resolve(__dirname, 'src/layers/'),
+      '@traits': path.resolve(__dirname, 'src/traits/'),
       '@utils': path.resolve(__dirname, 'src/utils/'),
     },
   },

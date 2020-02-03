@@ -1,12 +1,12 @@
 // @flow strict
 
 import {baseSize} from '@app/constants';
-import Action from '@core/Action';
+import Trait from '@core/Trait';
 
 import type Global from '@core/Global';
 import type Body from '@core/physics/Body';
 
-class MouseMove extends Action {
+class MouseMove extends Trait {
   global: Global;
   active: boolean;
   speed: number;

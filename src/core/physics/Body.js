@@ -4,7 +4,7 @@ import BoundingBox from '@core/BoundingBox';
 import Vector from '@core/physics/Vector';
 
 import type PIXI from 'pixi.js';
-import type Action from '@core/Action';
+import type Trait from '@core/Trait';
 import type World from '@core/physics/World';
 import type Force from '@core/physics/Force';
 import type {VectorType} from '@core/physics/Vector';
@@ -19,8 +19,8 @@ class Body extends BoundingBox {
   velocity: VectorType;
   gravity: Force | null;
 
-  actions: Array<Action>;
-  action: {[name: string]: any}; // todo: subtypes of Action
+  traits: Array<Trait>;
+  trait: {[name: string]: any}; // todo: subtypes of Trait
   parent: World | null;
   alive: boolean;
 
@@ -41,8 +41,8 @@ class Body extends BoundingBox {
     this.velocity = Vector.create(0, 0);
     this.gravity = null;
 
-    this.actions = [];
-    this.action = {};
+    this.traits = [];
+    this.trait = {};
     this.parent = null;
     this.alive = true;
 
@@ -58,9 +58,9 @@ class Body extends BoundingBox {
     // update sprite to the position from the previous frame
     this.updateSprite();
 
-    // actions phase
-    for (let index = 0; index < this.actions.length; index++) {
-      this.actions[index].update(this, deltaTime);
+    // traits phase
+    for (let index = 0; index < this.traits.length; index++) {
+      this.traits[index].update(this, deltaTime);
     }
 
     // apply velocity from the current frame to the bbox
@@ -73,9 +73,9 @@ class Body extends BoundingBox {
     this.sprite.position.y = this.min[1] + this.size / 2;
   }
 
-  addAction(action: Action) {
-    this.actions.push(action);
-    this.action[action.name] = action;
+  addAction(trait: Trait) {
+    this.traits.push(trait);
+    this.trait[trait.name] = trait;
   }
 
   destroy() {

@@ -3,9 +3,9 @@
 import {Sprite} from 'pixi.js';
 import Keyboard from '@core/Keyboard';
 import Body from '@core/physics/Body';
-import Jump from '@actions/Jump';
-import Move from '@actions/Move';
-import MouseMove from '@actions/MouseMove';
+import Jump from '@traits/Jump';
+import Move from '@traits/Move';
+import MouseMove from '@traits/MouseMove';
 
 import type {LayerProps} from '@layers';
 
@@ -31,15 +31,15 @@ function createPlayer({global, spriteset}: LayerProps) {
 
   const input = new Keyboard();
   input.on('ArrowRight KeyD', pressed => {
-    player && player.action['move'][pressed ? 'forward' : 'backward']();
+    player && player.trait['move'][pressed ? 'forward' : 'backward']();
   });
 
   input.on('ArrowLeft KeyA', pressed => {
-    player && player.action['move'][pressed ? 'backward' : 'forward']();
+    player && player.trait['move'][pressed ? 'backward' : 'forward']();
   });
 
   input.on('Space', pressed => {
-    player && player.action['jump'][pressed ? 'start' : 'cancel']();
+    player && player.trait['jump'][pressed ? 'start' : 'cancel']();
   });
 
   function cleanup() {
