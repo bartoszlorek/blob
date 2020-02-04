@@ -1,6 +1,7 @@
 // @flow strict
 
 import {lerp} from '@utils/math';
+import {EDGE} from '@core/physics/constants';
 
 export type VectorType = [number, number];
 
@@ -47,6 +48,19 @@ class Vector {
 
   static isHorizontal(vector: VectorType) {
     return Math.abs(vector[0]) > Math.abs(vector[1]);
+  }
+
+  static edge(vector: VectorType) {
+    if (vector[0] > 0) {
+      return EDGE.LEFT;
+    }
+    if (vector[0] < 0) {
+      return EDGE.RIGHT;
+    }
+    if (vector[1] < 0) {
+      return EDGE.TOP;
+    }
+    return EDGE.BOTTOM;
   }
 }
 

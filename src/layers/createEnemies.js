@@ -20,8 +20,7 @@ function createEnemies({global, spriteset}: LayerProps) {
     const {id, position} = sprite;
     const enemy = new Body(
       new Sprite(spriteset.spritesheet.getById(id)),
-      position[0] * spriteset.tilesize,
-      position[1] * spriteset.tilesize,
+      [position[0] * spriteset.tilesize, position[1] * spriteset.tilesize],
       spriteset.tilesize
     );
 

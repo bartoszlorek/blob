@@ -2,6 +2,8 @@
 
 import BoundingBox from '@core/BoundingBox';
 import Vector from '@core/physics/Vector';
+import {rotateEdge} from '@utils/physics';
+import {EDGE} from '@core/physics/constants';
 
 import type PIXI from 'pixi.js';
 import type Trait from '@core/Trait';
@@ -9,10 +11,24 @@ import type World from '@core/physics/World';
 import type Force from '@core/physics/Force';
 import type {VectorType} from '@core/physics/Vector';
 
+const getSpriteOffsetTable = (bboxSize: number, spriteSize: number) => {
+  const middle = bboxSize / 2;
+  const offset = (bboxSize - spriteSize) / 2;
+
+  return [
+    [middle, middle - offset], // top
+    [middle - offset, middle], // right
+    [middle, middle + offset], // bottom
+    [middle + offset, middle], // left
+  ];
+};
+
 class Body extends BoundingBox {
   +isBody: true;
   +isGroup: false;
   +isTiles: false;
+
+  +offsetTable: Array<VectorType>; // todo: use argument
   +size: number;
 
   sprite: PIXI.Sprite;
@@ -24,19 +40,15 @@ class Body extends BoundingBox {
   parent: World | null;
   alive: boolean;
 
-  constructor(
-    sprite: PIXI.Sprite,
-    x: number = 0,
-    y: number = 0,
-    size: number = 32
-  ) {
-    super([x, y], [x + size, y + size]);
+  constructor(sprite: PIXI.Sprite, position: VectorType, size: number = 32) {
+    super(position, [position[0] + size, position[1] + size]);
 
     // pixijs
     this.sprite = sprite;
     this.sprite.anchor.set(0.5);
+    this.offsetTable = getSpriteOffsetTable(size, sprite.width);
 
-    // props
+    // other
     this.size = size;
     this.velocity = Vector.create(0, 0);
     this.gravity = null;
@@ -50,7 +62,6 @@ class Body extends BoundingBox {
     this.isGroup = false;
     this.isTiles = false;
 
-    // process
     this.updateSprite();
   }
 
@@ -69,8 +80,15 @@ class Body extends BoundingBox {
   }
 
   updateSprite() {
-    this.sprite.position.x = this.min[0] + this.size / 2;
-    this.sprite.position.y = this.min[1] + this.size / 2;
+    let offset = this.offsetTable[EDGE.BOTTOM];
+
+    if (this.gravity) {
+      // todo: rotate edge in TileGravity
+      offset = this.offsetTable[rotateEdge(this.gravity.vector, EDGE.BOTTOM)];
+    }
+
+    this.sprite.position.x = this.min[0] + offset[0];
+    this.sprite.position.y = this.min[1] + offset[1];
   }
 
   addTrait(trait: Trait) {

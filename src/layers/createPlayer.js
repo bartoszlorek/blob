@@ -20,9 +20,8 @@ function createPlayer({global, spriteset}: LayerProps) {
 
   let player = new Body(
     new Sprite(spriteset.spritesheet.getById(id)),
-    position[0] * spriteset.tilesize,
-    position[1] * spriteset.tilesize,
-    spriteset.tilesize
+    [position[0] * spriteset.tilesize, position[1] * spriteset.tilesize],
+    spriteset.tilesize / 2
   );
 
   player.addTrait(new Jump());

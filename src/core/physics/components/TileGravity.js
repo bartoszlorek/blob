@@ -1,5 +1,6 @@
 // @flow strict
 
+import {lerp} from '@utils/math';
 import {vectorRotation} from '@utils/physics';
 import Component from '@core/physics/Component';
 import Force from '@core/physics/Force';
@@ -10,6 +11,9 @@ import type {EdgeType} from '@core/physics/constants';
 import type {VectorType} from '@core/physics/Vector';
 import type Body from '@core/physics/Body';
 import type Tileset from '@core/structure/Tileset';
+
+const rotationSpeed = 0.5;
+const rotationError = 0;
 
 type PropsType = {
   body: Body,
@@ -40,7 +44,14 @@ class TileGravity extends Component<PropsType> {
     }
 
     gravity.applyTo(body.velocity);
-    body.sprite.rotation = vectorRotation(gravity.vector);
+    const rotationTarget = vectorRotation(gravity.vector);
+
+    body.sprite.rotation = lerp(
+      body.sprite.rotation,
+      rotationTarget,
+      rotationSpeed,
+      rotationError
+    );
   }
 }
 

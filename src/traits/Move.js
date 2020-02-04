@@ -19,6 +19,7 @@ const m_vector = Vector.create();
 class Move extends Trait {
   direction: number;
 
+  snapToTiles: boolean;
   acceleration: number;
   deceleration: number;
   dragFactor: number;
@@ -31,6 +32,7 @@ class Move extends Trait {
     this.acceleration = 600;
     this.deceleration = 350;
     this.dragFactor = 0.95;
+    this.snapToTiles = false;
   }
 
   forward() {
@@ -66,6 +68,9 @@ class Move extends Trait {
   }
 
   collide(body: Body, edge: EdgeType) {
+    if (!this.snapToTiles) {
+      return;
+    }
     if (this.direction !== 0) {
       return;
     }
