@@ -1,8 +1,8 @@
-import BodyGroup from './BodyGroup';
+import Group from './Group';
 
-describe('BodyGroup()', () => {
+describe('Group()', () => {
   it('should add child', () => {
-    const group = new BodyGroup();
+    const group = new Group();
     const child = {value: 1};
 
     group.add(child);
@@ -10,7 +10,7 @@ describe('BodyGroup()', () => {
   });
 
   it('should remove child', () => {
-    const group = new BodyGroup();
+    const group = new Group();
     const child = {value: 1};
 
     group.add(child);
@@ -19,8 +19,8 @@ describe('BodyGroup()', () => {
   });
 
   it('should remove deep child', () => {
-    const master = new BodyGroup();
-    const group = new BodyGroup();
+    const master = new Group();
+    const group = new Group();
     const child1 = {value: 1};
     const child2 = {value: 2};
 
@@ -34,7 +34,7 @@ describe('BodyGroup()', () => {
   });
 
   it('should return true when contains child', () => {
-    const group = new BodyGroup();
+    const group = new Group();
     const child = {value: 1};
 
     group.add(child);
@@ -42,16 +42,16 @@ describe('BodyGroup()', () => {
   });
 
   it('should add group', () => {
-    const master = new BodyGroup();
-    const group = new BodyGroup();
+    const master = new Group();
+    const group = new Group();
 
     master.add(group);
     expect(master.children).toEqual([group]);
   });
 
   it('should remove group', () => {
-    const master = new BodyGroup();
-    const group = new BodyGroup();
+    const master = new Group();
+    const group = new Group();
 
     master.add(group);
     master.remove(group);
@@ -59,9 +59,9 @@ describe('BodyGroup()', () => {
   });
 
   it('should return true when contains deep child', () => {
-    const master = new BodyGroup();
-    const group1 = new BodyGroup();
-    const group2 = new BodyGroup();
+    const master = new Group();
+    const group1 = new Group();
+    const group2 = new Group();
     const child1 = {value: 1};
     const child2 = {value: 2};
 
@@ -75,9 +75,9 @@ describe('BodyGroup()', () => {
   });
 
   it('should loop over every child inside', () => {
-    const master = new BodyGroup();
-    const group1 = new BodyGroup();
-    const group2 = new BodyGroup();
+    const master = new Group();
+    const group1 = new Group();
+    const group2 = new Group();
     const child1 = {value: 1};
     const child2 = {value: 2};
 
@@ -97,20 +97,20 @@ describe('BodyGroup()', () => {
   });
 
   it('returns true when is shallowly empty', () => {
-    const group = new BodyGroup();
+    const group = new Group();
     expect(group.isEmpty()).toBe(true);
   });
 
   it('returns true when is deeply empty', () => {
-    const master = new BodyGroup();
-    const group = new BodyGroup();
+    const master = new Group();
+    const group = new Group();
 
     master.add(group);
     expect(master.isEmpty()).toBe(true);
   });
 
   it('returns false when is not shallowly empty', () => {
-    const group = new BodyGroup();
+    const group = new Group();
     const child = {value: 1};
 
     group.add(child);
@@ -118,8 +118,8 @@ describe('BodyGroup()', () => {
   });
 
   it('returns false when is not deeply empty', () => {
-    const master = new BodyGroup();
-    const group = new BodyGroup();
+    const master = new Group();
+    const group = new Group();
     const child = {value: 1};
 
     group.add(child);
@@ -128,9 +128,9 @@ describe('BodyGroup()', () => {
   });
 
   it('returns false when group with children is not only first', () => {
-    const master = new BodyGroup();
-    const groupA = new BodyGroup();
-    const groupB = new BodyGroup();
+    const master = new Group();
+    const groupA = new Group();
+    const groupB = new Group();
 
     groupB.add('value');
     master.add(groupA);
@@ -139,9 +139,9 @@ describe('BodyGroup()', () => {
   });
 
   it('returns true when all children groups are empty', () => {
-    const master = new BodyGroup();
-    const groupA = new BodyGroup();
-    const groupB = new BodyGroup();
+    const master = new Group();
+    const groupA = new Group();
+    const groupB = new Group();
 
     master.add(groupA);
     master.add(groupB);

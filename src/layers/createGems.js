@@ -2,7 +2,7 @@
 
 import {Sprite} from 'pixi.js';
 import Body from '@core/physics/Body';
-import BodyGroup from '@core/physics/BodyGroup';
+import Group from '@core/physics/Group';
 
 import type {LayerProps} from '@layers';
 
@@ -15,7 +15,7 @@ function createGems({global, spriteset}: LayerProps) {
     throw Error('wrong type of layer');
   }
 
-  let gems = new BodyGroup();
+  let gems = new Group();
 
   layer.sprites.forEach(sprite => {
     const {id, position} = sprite;

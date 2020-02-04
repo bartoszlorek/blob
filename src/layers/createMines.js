@@ -2,7 +2,7 @@
 
 import {Sprite} from 'pixi.js';
 import Body from '@core/physics/Body';
-import BodyGroup from '@core/physics/BodyGroup';
+import Group from '@core/physics/Group';
 import Explosive from '@traits/Explosive';
 
 import type {LayerProps} from '@layers';
@@ -14,7 +14,7 @@ function createMines({global, spriteset}: LayerProps) {
     throw Error('wrong type of layer');
   }
 
-  let mines = new BodyGroup();
+  let mines = new Group();
 
   layer.sprites.forEach(sprite => {
     const {id, position} = sprite;
@@ -25,7 +25,7 @@ function createMines({global, spriteset}: LayerProps) {
       spriteset.tilesize
     );
 
-    mine.addAction(new Explosive(global));
+    mine.addTrait(new Explosive(global));
 
     if (mines) {
       mines.add(mine);

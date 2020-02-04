@@ -25,9 +25,9 @@ function createPlayer({global, spriteset}: LayerProps) {
     spriteset.tilesize
   );
 
-  player.addAction(new Jump());
-  player.addAction(new Move());
-  // player.addAction(new MouseMove(global));
+  player.addTrait(new Jump());
+  player.addTrait(new Move());
+  // player.addTrait(new MouseMove(global));
 
   const input = new Keyboard();
   input.on('ArrowRight KeyD', pressed => {

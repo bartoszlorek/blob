@@ -5,11 +5,11 @@ import {EDGE} from '@core/physics/constants';
 
 import type {EdgeType} from '@core/physics/constants';
 import type Body from '@core/physics/Body';
-import type BodyGroup from '@core/physics/BodyGroup';
+import type Group from '@core/physics/Group';
 
 type PropsType = {
   bodyA: Body,
-  bodyB: Body | BodyGroup,
+  bodyB: Body | Group,
   callback: (body: Body, body: Body, edge: EdgeType) => mixed,
 };
 

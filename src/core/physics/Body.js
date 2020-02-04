@@ -73,7 +73,7 @@ class Body extends BoundingBox {
     this.sprite.position.y = this.min[1] + this.size / 2;
   }
 
-  addAction(trait: Trait) {
+  addTrait(trait: Trait) {
     this.traits.push(trait);
     this.trait[trait.name] = trait;
   }

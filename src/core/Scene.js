@@ -9,7 +9,7 @@ import World from '@core/physics/World';
 import type PIXI from 'pixi.js';
 import type Global from '@core/Global';
 import type Body from '@core/physics/Body';
-import type BodyGroup from '@core/physics/BodyGroup';
+import type Group from '@core/physics/Group';
 import type Tileset from '@core/structure/Tileset';
 import type Spriteset from '@core/structure/Spriteset';
 
@@ -67,7 +67,7 @@ class Scene {
     // fill in subclass
   }
 
-  renderChild(child: Body | BodyGroup | Tileset) {
+  renderChild(child: Body | Group | Tileset) {
     if (child.isBody === true) {
       this.foreground.addChild(child.sprite);
     } else if (child.isTiles === true) {

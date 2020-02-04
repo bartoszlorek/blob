@@ -1,11 +1,11 @@
 // @flow strict
 
 import type Body from '@core/physics/Body';
-import type BodyGroup from '@core/physics/BodyGroup';
+import type Group from '@core/physics/Group';
 
 class Component<Props: {}> {
   props: Props;
-  children: Array<Body | BodyGroup>;
+  children: Array<Body | Group>;
   isActive: boolean;
 
   constructor(props: Props) {
@@ -41,7 +41,7 @@ class Component<Props: {}> {
     }
   }
 
-  validateGroup(group: BodyGroup, body: Body) {
+  validateGroup(group: Group, body: Body) {
     if (this.isActive) {
       // disable component with empty group
       if (group.remove(body) && group.isEmpty()) {

@@ -57,7 +57,7 @@ class Camera {
 
       if (rightDiff < 0) {
         this.x = lerp(this.x, rightDiff, this.delay);
-      } else {
+      } else if (this.x !== 0) {
         this.x = lerp(this.x, 0, this.delay);
       }
     }
@@ -73,7 +73,7 @@ class Camera {
 
       if (bottomDiff < 0) {
         this.y = lerp(this.y, bottomDiff, this.delay);
-      } else {
+      } else if (this.y !== 0) {
         this.y = lerp(this.y, 0, this.delay);
       }
     }

@@ -2,7 +2,7 @@
 
 import {Sprite} from 'pixi.js';
 import Body from '@core/physics/Body';
-import BodyGroup from '@core/physics/BodyGroup';
+import Group from '@core/physics/Group';
 import Watcher from '@traits/Watcher';
 
 import type {LayerProps} from '@layers';
@@ -14,7 +14,7 @@ function createEnemies({global, spriteset}: LayerProps) {
     throw Error('wrong type of layer');
   }
 
-  let enemies = new BodyGroup();
+  let enemies = new Group();
 
   layer.sprites.forEach(sprite => {
     const {id, position} = sprite;
@@ -26,7 +26,7 @@ function createEnemies({global, spriteset}: LayerProps) {
     );
 
     if (global.scene) {
-      enemy.addAction(new Watcher(global.scene, 60));
+      enemy.addTrait(new Watcher(global.scene, 60));
     }
     if (enemies) {
       enemies.add(enemy);

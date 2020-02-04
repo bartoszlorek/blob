@@ -10,7 +10,7 @@ import {
 
 import type {EdgeType} from '@core/physics/constants';
 import type Body from '@core/physics/Body';
-import type BodyGroup from '@core/physics/BodyGroup';
+import type Group from '@core/physics/Group';
 import type Component from '@core/physics/Component';
 
 class World {
@@ -47,7 +47,7 @@ class World {
     }
   }
 
-  processChild(child: Body | BodyGroup) {
+  processChild(child: Body | Group) {
     if (child.isBody === true) {
       this.children.push(child);
       child.parent = this;
