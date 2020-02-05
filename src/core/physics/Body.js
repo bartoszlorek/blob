@@ -28,7 +28,7 @@ class Body extends BoundingBox {
   +isGroup: false;
   +isTiles: false;
 
-  +offsetTable: Array<VectorType>; // todo: use argument
+  +offsetTable: Array<VectorType>; // todo: use as argument
   +size: number;
 
   sprite: PIXI.Sprite;
@@ -84,7 +84,8 @@ class Body extends BoundingBox {
 
     if (this.gravity) {
       // todo: rotate edge in TileGravity
-      offset = this.offsetTable[rotateEdge(this.gravity.vector, EDGE.BOTTOM)];
+      offset = this.offsetTable[Vector.edge(this.gravity.vector)];
+      // offset = this.offsetTable[rotateEdge(this.gravity.vector, EDGE.BOTTOM)];
     }
 
     this.sprite.position.x = this.min[0] + offset[0];

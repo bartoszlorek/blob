@@ -19,7 +19,7 @@ export function getOutsideVector(body, tilemap, out) {
     out[1] = 1;
     return out;
   }
-  // bottom on bottom
+  // body on bottom
   if (body.min[1] >= tilemap.max[1]) {
     out[0] = 0;
     out[1] = -1;
