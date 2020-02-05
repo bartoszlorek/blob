@@ -29,8 +29,8 @@ export function calculateGravityDirection(body, tilemap) {
     return getOutsideVector(body, tilemap, m_vector);
   }
 
-  const coordX = Math.floor((body.min[0] + body.size / 2) / tilemap.tilesize);
-  const coordY = Math.floor((body.min[1] + body.size / 2) / tilemap.tilesize);
+  const coordX = Math.floor((body.min[0] + body.width / 2) / tilemap.tilesize);
+  const coordY = Math.floor((body.min[1] + body.height / 2) / tilemap.tilesize);
   const closestTiles = tilemap.closest(coordX, coordY);
 
   // corner case inside bounding box

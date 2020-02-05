@@ -5,10 +5,14 @@ import type {VectorType} from '@core/physics/Vector';
 class BoundingBox {
   min: VectorType;
   max: VectorType;
+  width: number;
+  height: number;
 
   constructor(min: VectorType = [0, 0], max: VectorType = [0, 0]) {
     this.min = min;
     this.max = max;
+    this.width = max[0] - min[0];
+    this.height = max[1] - min[1];
   }
 
   translate(vector: VectorType) {
@@ -28,16 +32,21 @@ class BoundingBox {
     this.max[1] += value;
   }
 
+  align(vector: VectorType) {
+    this.min[0] = vector[0];
+    this.max[0] = vector[0] + this.width;
+    this.min[1] = vector[1];
+    this.max[1] = vector[1] + this.height;
+  }
+
   alignX(value: number) {
-    const width = this.max[0] - this.min[0];
     this.min[0] = value;
-    this.max[0] = value + width;
+    this.max[0] = value + this.width;
   }
 
   alignY(value: number) {
-    const height = this.max[1] - this.min[1];
     this.min[1] = value;
-    this.max[1] = value + height;
+    this.max[1] = value + this.height;
   }
 
   intersects(bbox: BoundingBox) {

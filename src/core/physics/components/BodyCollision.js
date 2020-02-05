@@ -46,7 +46,7 @@ class BodyCollision extends Component<PropsType> {
       bodyA.velocity[0] = 0;
 
       if (diffX < 0) {
-        bodyA.alignX(bodyB.min[0] - bodyA.size);
+        bodyA.alignX(bodyB.min[0] - bodyA.width);
         return EDGE.RIGHT;
       } else {
         bodyA.alignX(bodyB.max[0]);
@@ -56,7 +56,7 @@ class BodyCollision extends Component<PropsType> {
       bodyA.velocity[1] = 0;
 
       if (diffY < 0) {
-        bodyA.alignY(bodyB.min[1] - bodyA.size);
+        bodyA.alignY(bodyB.min[1] - bodyA.height);
         return EDGE.BOTTOM;
       } else {
         bodyA.alignY(bodyB.max[1]);

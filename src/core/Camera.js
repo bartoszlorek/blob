@@ -23,8 +23,8 @@ class Camera {
   focus(body: Body) {
     if (body.alive && this.global.scene) {
       const {offsetX, offsetY} = this.global.scene;
-      this.x = -(body.min[0] + body.size / 2) - offsetX;
-      this.y = -(body.min[1] + body.size / 2) - offsetY;
+      this.x = -(body.min[0] + body.width / 2) - offsetX;
+      this.y = -(body.min[1] + body.height / 2) - offsetY;
     }
   }
 
@@ -33,8 +33,8 @@ class Camera {
       return;
     }
     const {offsetX, offsetY} = this.global.scene;
-    const targetX = -(body.min[0] + body.size / 2) - offsetX;
-    const targetY = -(body.min[1] + body.size / 2) - offsetY;
+    const targetX = -(body.min[0] + body.width / 2) - offsetX;
+    const targetY = -(body.min[1] + body.height / 2) - offsetY;
     this.x = lerp(this.x, targetX, this.delay);
     this.y = lerp(this.y, targetY, this.delay);
   }

@@ -29,7 +29,6 @@ class Body extends BoundingBox {
   +isTiles: false;
 
   +offsetTable: Array<VectorType>; // todo: use as argument
-  +size: number;
 
   sprite: PIXI.Sprite;
   velocity: VectorType;
@@ -49,7 +48,6 @@ class Body extends BoundingBox {
     this.offsetTable = getSpriteOffsetTable(size, sprite.width);
 
     // other
-    this.size = size;
     this.velocity = Vector.create(0, 0);
     this.gravity = null;
 

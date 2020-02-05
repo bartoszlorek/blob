@@ -12,7 +12,7 @@ import type {VectorType} from '@core/physics/Vector';
 import type Body from '@core/physics/Body';
 import type Tileset from '@core/structure/Tileset';
 
-const rotationSpeed = 0.5;
+const rotationSpeed = 0.45;
 const rotationError = 0;
 
 type PropsType = {
