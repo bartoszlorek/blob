@@ -49,6 +49,7 @@ class Move extends Trait {
 
     const {velocity, gravity, sprite} = body;
     const axis = gravity && Vector.isHorizontal(gravity.vector) ? 1 : 0;
+
     const actualDirection = gravity
       ? rotateVector(gravity.vector, m_vector)[axis]
       : this.direction;
@@ -58,10 +59,12 @@ class Move extends Trait {
 
       // rotate sprite horizontally
       sprite.scale.x = this.direction;
+      sprite.animation.play('run');
     } else if (velocity[axis] !== 0) {
       // prettier-ignore
       const dec = Math.min(Math.abs(velocity[axis]), this.deceleration * deltaTime);
       velocity[axis] += velocity[axis] > 0 ? -dec : dec;
+      sprite.animation.play('idle');
     }
 
     velocity[axis] *= this.dragFactor;

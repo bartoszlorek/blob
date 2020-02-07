@@ -2,6 +2,7 @@
 
 import {Container} from 'pixi.js';
 import {baseSize} from '@app/constants';
+import Animations from '@core/Animations';
 import Background from '@core/Background';
 import Camera from '@core/Camera';
 import World from '@core/physics/World';
@@ -24,6 +25,7 @@ class Scene {
 
   physics: World;
   camera: Camera;
+  animations: Animations;
 
   background: Background;
   foreground: Container;
@@ -36,6 +38,7 @@ class Scene {
 
     this.physics = new World();
     this.camera = new Camera(global, 0.15, 100);
+    this.animations = new Animations(10, spriteset);
 
     // pixijs layers di
     this.background = new Background(spriteset);
@@ -67,9 +70,14 @@ class Scene {
     // fill in subclass
   }
 
-  renderChild(child: Body | Group | Tileset) {
+  renderChild(child: Body | Group | Tileset | PIXI.Sprite) {
     if (child.isBody === true) {
       this.foreground.addChild(child.sprite);
+
+      if (child.sprite.animation) {
+        this.animations.addSprite(child.sprite);
+        console.log(child);
+      }
     } else if (child.isTiles === true) {
       this.foreground.addChild(child.graphics);
     } else if (child.isGroup === true) {

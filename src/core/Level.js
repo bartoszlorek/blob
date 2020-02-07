@@ -94,11 +94,13 @@ class Level extends Scene {
       global.events.on('player/dead', () => global.stop());
     }
 
+    player.sprite.animation.play('idle');
     console.log(this);
   }
 
   update(deltaTime: number) {
     this.physics.update(deltaTime);
+    this.animations.requestFrame(deltaTime);
 
     if (this.refs) {
       this.follow(this.refs.player);

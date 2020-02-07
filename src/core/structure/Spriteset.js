@@ -54,8 +54,6 @@ class Spriteset {
 
     this.layers = this.parseLayers(json.layers);
     this.spritesheet = this.parseSpritesheets(json.tilesets, resources);
-
-    console.log(this);
   }
 
   parseLayers(rawLayers: $PropertyType<TiledMapJson, 'layers'>) {

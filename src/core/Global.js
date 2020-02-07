@@ -40,9 +40,9 @@ class Global {
     this.engine.ticker.start();
   }
 
-  ticker(deltaFrame: number) {
+  ticker(time: number) {
     if (this.scene) {
-      const deltaTime = deltaFrame * this.delta;
+      const deltaTime = this.delta * time;
       this.scene.update(deltaTime);
     }
   }
