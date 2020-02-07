@@ -6,8 +6,9 @@ const loader = new Loader();
 
 loader.add([
   // graphics
-  {name: 'world', url: 'assets/world.png'},
   {name: 'background', url: 'assets/background.png'},
+  {name: 'characters', url: 'assets/characters.png'},
+  {name: 'world', url: 'assets/world.png'},
 
   // sounds
   {name: 'jump_01', url: 'assets/jump_01.mp3'},

@@ -45,6 +45,8 @@ class Body extends BoundingBox {
     // pixijs
     this.sprite = sprite;
     this.sprite.anchor.set(0.5);
+
+    // todo: better solution for sprite offseting
     this.offsetTable = getSpriteOffsetTable(size, sprite.width);
 
     // other

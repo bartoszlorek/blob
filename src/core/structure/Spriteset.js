@@ -1,6 +1,8 @@
 // @flow strict
 
 import Spritesheet from './Spritesheet';
+import SpritesheetGroup from './SpritesheetGroup';
+import tilesetsData from '@data/tilesets';
 
 import type PIXI, {IResourceDictionary} from 'pixi.js';
 import type {TiledMapJson} from './TiledMapEditor';
@@ -32,7 +34,7 @@ class Spriteset {
   layers: {
     [name: string]: SpriteLayer | TileLayer,
   };
-  spritesheet: Spritesheet;
+  spritesheet: SpritesheetGroup;
 
   constructor(json: TiledMapJson, resources: IResourceDictionary) {
     this.width = json.width;
@@ -51,11 +53,7 @@ class Spriteset {
     );
 
     this.layers = this.parseLayers(json.layers);
-    this.spritesheet = this.parseSpritesheet(
-      json.tilesets,
-      json.tilewidth,
-      resources
-    );
+    this.spritesheet = this.parseSpritesheets(json.tilesets, resources);
 
     console.log(this);
   }
@@ -105,13 +103,26 @@ class Spriteset {
     return data;
   }
 
-  parseSpritesheet(
+  parseSpritesheets(
     tilesets: $PropertyType<TiledMapJson, 'tilesets'>,
-    tilesize: number,
     resources: IResourceDictionary
   ) {
-    const name = tilesets[0].source.replace('.tsx', '');
-    return new Spritesheet(resources[name].texture, tilesize);
+    const sheets = tilesets.map<Spritesheet>((tileset, index, sets) => {
+      const {source, firstgid} = tileset;
+      const name = source.replace('.json', '');
+
+      const nextTileset = sets[index + 1];
+      const lastgid = nextTileset ? nextTileset.firstgid - 1 : Infinity;
+
+      return new Spritesheet(
+        resources[name].texture,
+        tilesetsData[name].tilewidth,
+        firstgid,
+        lastgid
+      );
+    });
+
+    return new SpritesheetGroup(sheets);
   }
 
   parseBackground(

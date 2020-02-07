@@ -6,17 +6,27 @@ import type PIXI from 'pixi.js';
 
 class Spritesheet {
   baseTexture: PIXI.BaseTexture;
-  width: number;
-  tilesize: number;
   tilemap: Map<number, Texture>;
+  tilesize: number;
 
-  constructor(texture: Texture, tilesize: number) {
+  width: number;
+  firstId: number;
+  lastId: number;
+
+  constructor(
+    texture: Texture,
+    tilesize: number,
+    firstId: number = 1,
+    lastId: number = Infinity
+  ) {
     const {baseTexture} = texture;
-
     this.baseTexture = baseTexture;
-    this.width = baseTexture.width / tilesize;
-    this.tilesize = tilesize;
     this.tilemap = new Map();
+    this.tilesize = tilesize;
+
+    this.width = baseTexture.width / tilesize;
+    this.firstId = firstId;
+    this.lastId = lastId;
   }
 
   getById(id: number) {
@@ -24,7 +34,7 @@ class Spritesheet {
       return this.tilemap.get(id);
     }
 
-    const index = id - 1;
+    const index = id - this.firstId;
     const x = index % this.width;
     const y = Math.floor(index / this.width);
 
