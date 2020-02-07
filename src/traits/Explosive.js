@@ -43,13 +43,17 @@ class Explosive extends Trait {
       return;
     }
 
+    const scene = this.global.scene;
+    if (!scene) {
+      return;
+    }
+
     if (this.timer === 0) {
       // todo: start animation
     }
 
     if (this.timer >= this.delay) {
-      const scene = this.global.scene;
-      const {player, ground} = (scene && scene.refs) || {};
+      const {player, ground} = scene.refs || {};
 
       this.area.alignX(bomb.min[0] - this.range);
       this.area.alignY(bomb.min[1] - this.range);
@@ -57,6 +61,7 @@ class Explosive extends Trait {
       // todo: add blast sprite
       bomb.destroy();
       ground.search(this.area, destoryTilemap);
+      scene.camera.shake();
 
       if (this.area.intersects(player)) {
         this.global.events.emit('player/dead');

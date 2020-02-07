@@ -78,6 +78,24 @@ class Camera {
       }
     }
   }
+
+  shake() {
+    let handle;
+    let steps = [16, -8, 4];
+    let index = 0;
+
+    handle = setInterval(() => {
+      const step = steps ? steps[index++] : 0;
+
+      if (!step) {
+        clearInterval(handle);
+        steps = null;
+        this.x = 0;
+      } else {
+        this.x = step;
+      }
+    }, 100);
+  }
 }
 
 export default Camera;

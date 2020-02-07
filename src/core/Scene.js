@@ -73,10 +73,8 @@ class Scene {
   renderChild(child: Body | Group | Tileset | PIXI.Sprite) {
     if (child.isBody === true) {
       this.foreground.addChild(child.sprite);
-
       if (child.sprite.animation) {
         this.animations.addSprite(child.sprite);
-        console.log(child);
       }
     } else if (child.isTiles === true) {
       this.foreground.addChild(child.graphics);
@@ -84,6 +82,9 @@ class Scene {
       child.forEach(a => this.renderChild(a));
     } else {
       this.foreground.addChild(child);
+      if (child.animation) {
+        this.animations.addSprite(child);
+      }
     }
   }
 
