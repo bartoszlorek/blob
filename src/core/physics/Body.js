@@ -11,15 +11,17 @@ import type World from '@core/physics/World';
 import type Force from '@core/physics/Force';
 import type {VectorType} from '@core/physics/Vector';
 
+const spriteAnchorY = 0.8;
+
 const getSpriteOffsetTable = (bboxSize: number, spriteSize: number) => {
+  const offset = (1 - spriteAnchorY) * spriteSize;
   const middle = bboxSize / 2;
-  const offset = (bboxSize - spriteSize) / 2;
 
   return [
-    [middle, middle - offset], // top
-    [middle - offset, middle], // right
-    [middle, middle + offset], // bottom
-    [middle + offset, middle], // left
+    [middle, offset], // top
+    [offset, middle], // right
+    [middle, bboxSize - offset], // bottom
+    [bboxSize - offset, middle], // left
   ];
 };
 
@@ -44,7 +46,7 @@ class Body extends BoundingBox {
 
     // pixijs
     this.sprite = sprite;
-    this.sprite.anchor.set(0.5);
+    this.sprite.anchor.set(0.5, spriteAnchorY);
 
     // todo: better solution for sprite offseting
     this.offsetTable = getSpriteOffsetTable(size, sprite.width);
