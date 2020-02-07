@@ -1,46 +1,45 @@
+import {EDGE_CYCLE} from '@core/physics/constants';
 import {modIndex} from '@utils/math';
-import {EDGE} from '@physics/World';
 
-const edgeValues = Object.values(EDGE);
-
-export function rotateEdge(gravity, edge) {
+export function rotateEdge(origin, edge) {
   let shift = 0;
 
-  if (gravity.direction.x < 0) {
+  if (origin[0] < 0) {
     shift = 1;
-  } else if (gravity.direction.y < 0) {
+  } else if (origin[1] < 0) {
     shift = 2;
-  } else if (gravity.direction.x > 0) {
+  } else if (origin[0] > 0) {
     shift = 3;
   }
-  const index = edgeValues.indexOf(edge);
-  return edgeValues[modIndex(index - shift, 4)];
+
+  const index = EDGE_CYCLE.indexOf(edge);
+  return EDGE_CYCLE[modIndex(index - shift, 4)];
 }
 
-export function rotateVector(gravity, vec) {
-  const {x, y} = vec;
+export function rotateVector(origin, vector) {
+  const [x, y] = vector;
 
-  if (gravity.direction.y < 0) {
-    vec.x = -x;
-    vec.y = -y;
-  } else if (gravity.direction.x > 0) {
-    vec.x = y;
-    vec.y = -x;
-  } else if (gravity.direction.x < 0) {
-    vec.x = -y;
-    vec.y = x;
+  if (origin[1] < 0) {
+    vector[0] = -x;
+    vector[1] = -y;
+  } else if (origin[0] > 0) {
+    vector[0] = y;
+    vector[1] = -x;
+  } else if (origin[0] < 0) {
+    vector[0] = -y;
+    vector[1] = x;
   }
-  return vec;
+  return vector;
 }
 
-export function vectorRotation(gravity) {
-  if (gravity.direction.y < 0) {
+export function vectorRotation(vector) {
+  if (vector[1] < 0) {
     return Math.PI;
   }
-  if (gravity.direction.x > 0) {
+  if (vector[0] > 0) {
     return (3 * Math.PI) / 2;
   }
-  if (gravity.direction.x < 0) {
+  if (vector[0] < 0) {
     return Math.PI / 2;
   }
   return 0;

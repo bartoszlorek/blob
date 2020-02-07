@@ -5,32 +5,30 @@ module.exports = {
   entry: './src/index.js',
   output: {
     path: path.join(__dirname, 'public'),
-    filename: 'scripts.js'
+    filename: 'scripts.js',
   },
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
       '@app': path.resolve(__dirname, 'src/'),
-      '@gui': path.resolve(__dirname, 'src/gui/'),
+      '@core': path.resolve(__dirname, 'src/core/'),
+      '@data': path.resolve(__dirname, 'src/data/'),
       '@layers': path.resolve(__dirname, 'src/layers/'),
-      '@levels': path.resolve(__dirname, 'src/levels/'),
-      '@models': path.resolve(__dirname, 'src/models/'),
-      '@physics': path.resolve(__dirname, 'src/physics/'),
-      '@state': path.resolve(__dirname, 'src/state/'),
       '@traits': path.resolve(__dirname, 'src/traits/'),
-      '@utils': path.resolve(__dirname, 'src/utils/')
-    }
+      '@utils': path.resolve(__dirname, 'src/utils/'),
+    },
   },
+  devtool: 'source-map',
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.js$/,
         exclude: /node_modules/,
-        loaders: ['babel-loader']
-      }
-    ]
+        loaders: ['babel-loader'],
+      },
+    ],
   },
   externals: {
-    'pixi.js': 'PIXI'
-  }
+    'pixi.js': 'PIXI',
+  },
 };

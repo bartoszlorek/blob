@@ -1,5 +1,4 @@
 {
   "editor.formatOnSave": true,
-  "prettier.singleQuote": true,
-  "prettier.bracketSpacing": false
+  "javascript.validate.enable": false,
 }

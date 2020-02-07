@@ -1,19 +1,28 @@
-import {baseSize} from '@app/consts';
+// @flow strict
+
 import {rotateVector} from '@utils/physics';
-import {lerp} from '@utils/math';
-import Trait from '@traits/Trait';
-import Vector from '@models/Vector';
+import Vector from '@core/physics/Vector';
+import Trait from '@core/Trait';
+
+import type Body from '@core/physics/Body';
+
+// mutable data
+const m_vector = Vector.create();
 
 class Move extends Trait {
+  direction: number;
+  acceleration: number;
+  deceleration: number;
+  dragFactor: number;
+
   constructor() {
     super('move');
     this.direction = 0;
 
     // parameters
-    this.acceleration = 650;
-    this.deceleration = 300;
+    this.acceleration = 600;
+    this.deceleration = 350;
     this.dragFactor = 0.95;
-    this.alignThreshold = 0.65;
   }
 
   forward() {
@@ -24,46 +33,32 @@ class Move extends Trait {
     this.direction -= 1;
   }
 
-  update(body, deltaTime) {
-    const vector = rotateVector(body.gravity, new Vector(this.direction, 0));
+  update(body: Body, deltaTime: number) {
+    m_vector[0] = this.direction;
+    m_vector[1] = 0;
 
-    const axis = body.gravity.vertical ? 'x' : 'y';
-    const velocity = body.velocity[axis];
-    const absolute = Math.abs(velocity);
+    const {velocity, gravity, sprite} = body;
+    const axis = gravity && Vector.isHorizontal(gravity.vector) ? 1 : 0;
+
+    const actualDirection = gravity
+      ? rotateVector(gravity.vector, m_vector)[axis]
+      : this.direction;
 
     if (this.direction !== 0) {
-      body.velocity[axis] += this.acceleration * deltaTime * vector[axis];
+      velocity[axis] += this.acceleration * actualDirection * deltaTime;
 
       // rotate sprite horizontally
-      // body.sprite.scale.x = this.direction;
-    } else if (velocity !== 0) {
-      const deceleration = Math.min(absolute, this.deceleration * deltaTime);
-      body.velocity[axis] += velocity > 0 ? -deceleration : deceleration;
+      sprite.scale.x = this.direction;
+      sprite.animation.play('run');
+    } else if (velocity[axis] !== 0) {
+      // prettier-ignore
+      const dec = Math.min(Math.abs(velocity[axis]), this.deceleration * deltaTime);
+      velocity[axis] += velocity[axis] > 0 ? -dec : dec;
+    } else {
+      sprite.animation.play('idle');
     }
 
-    body.velocity[axis] *= this.dragFactor;
-  }
-
-  collide(body, tiles, edge) {
-    if (this.direction !== 0) {
-      return;
-    }
-    const {position} = body;
-    const axis = body.gravity.vertical ? 'x' : 'y';
-    const base = position[axis] / baseSize;
-
-    const n = Math.abs(base) % 1;
-    const align = (n < 0.5 ? 1 - n : n) * 2 - 1;
-
-    if (align > this.alignThreshold) {
-      const aligned = Math.round(base) * baseSize;
-      position[axis] = lerp(position[axis], aligned, 0.2);
-
-      // to compensate lerp error
-      if (align > 0.99) {
-        position[axis] = aligned;
-      }
-    }
+    velocity[axis] *= this.dragFactor;
   }
 }
 

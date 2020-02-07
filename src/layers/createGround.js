@@ -1,25 +1,21 @@
-import {resolveTiles} from '@utils/tiles';
-import Sprite from '@models/Sprite';
-import Tile from '@models/Tile';
-import Tilemap from '@models/Tilemap';
+// @flow strict
 
-function createGround({data, global}) {
-  let ground = new Tilemap();
+import Tileset from '@core/structure/Tileset';
 
-  if (data.tiles.ground) {
-    resolveTiles('ground', data.tiles.ground, tile => {
-      const {texture} = global.assets[tile.asset];
-      ground.add(new Tile(new Sprite(texture, tile.x, tile.y)));
-    });
-  } else {
-    ground = null;
+import type {LayerProps} from '@layers';
+
+function createGround({global, spriteset}: LayerProps) {
+  const layer = spriteset.layers['ground'];
+
+  if (layer.type === 'spriteLayer') {
+    throw Error('wrong type of layer');
   }
 
-  function cleanup() {
-    ground = null;
-  }
+  const {tilemap, width, offset} = layer;
+  const ground = new Tileset(tilemap, width, offset);
 
-  return [ground, cleanup];
+  ground.loadSprites(spriteset.spritesheet);
+  return [ground];
 }
 
 export default createGround;

@@ -1,19 +1,17 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./",
     "target": "es2017",
     "allowSyntheticDefaultImports": false,
     "paths": {
       "@app": ["./src/*"],
-      "@gui": ["./src/gui/*"],
+      "@core": ["./src/core/*"],
+      "@data": ["./src/data/*"],
       "@layers": ["./src/layers/*"],
-      "@levels": ["./src/levels/*"],
-      "@models": ["./src/models/*"],
-      "@physics": ["./src/physics/*"],
-      "@state": ["./src/state/*"],
       "@traits": ["./src/traits/*"],
       "@utils": ["./src/utils/*"]
     }
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

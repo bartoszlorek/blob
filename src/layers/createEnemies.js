@@ -1,26 +1,38 @@
-import {arrayForEach} from '@utils/array';
-import Sprite from '@models/Sprite';
-import Group from '@models/Group';
-import DynamicBody from '@physics/DynamicBody';
+// @flow strict
 
+import {Sprite} from 'pixi.js';
+import Body from '@core/physics/Body';
+import Group from '@core/physics/Group';
 import Watcher from '@traits/Watcher';
 
-function createEnemies({data, global, scene}) {
-  let {texture} = global.assets['enemies'];
-  let enemies = new Group();
+import type {LayerProps} from '@layers';
 
-  if (data.bodies.enemies) {
-    arrayForEach(data.bodies.enemies, ([x, y]) => {
-      const enemy = new DynamicBody(new Sprite(texture, x, y));
-      enemy.addTrait(new Watcher({scene, speed: 60}));
-      enemies.add(enemy);
-    });
-  } else {
-    enemies = null;
+function createEnemies({global, spriteset}: LayerProps) {
+  const layer = spriteset.layers['enemies'];
+
+  if (layer.type === 'tileLayer') {
+    throw Error('wrong type of layer');
   }
 
+  let enemies = new Group();
+
+  layer.sprites.forEach(sprite => {
+    const {id, position} = sprite;
+    const enemy = new Body(
+      new Sprite(spriteset.spritesheet.getById(id)),
+      [position[0] * spriteset.tilesize, position[1] * spriteset.tilesize],
+      spriteset.tilesize
+    );
+
+    if (global.scene) {
+      enemy.addTrait(new Watcher(global.scene, 60));
+    }
+    if (enemies) {
+      enemies.add(enemy);
+    }
+  });
+
   function cleanup() {
-    texture = null;
     enemies = null;
   }
 

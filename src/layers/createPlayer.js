@@ -1,30 +1,59 @@
-import Keyboard from '@models/Keyboard';
-import Sprite from '@models/Sprite';
-import DynamicBody from '@physics/DynamicBody';
+// @flow strict
 
+import AnimatedSprite from '@core/AnimatedSprite';
+import Keyboard from '@core/Keyboard';
+import Body from '@core/physics/Body';
 import Jump from '@traits/Jump';
 import Move from '@traits/Move';
+import MouseMove from '@traits/MouseMove';
 
-function createPlayer({data, global}) {
-  const {texture} = global.assets['player'];
-  const [x, y] = data.bodies.player;
+import type {KeyframesType} from '@core/Animation';
+import type {LayerProps} from '@layers';
 
-  let player = new DynamicBody(new Sprite(texture, x, y));
+const keyframes: KeyframesType = {
+  idle: {
+    frame: 0,
+    firstId: 101,
+    lastId: 108,
+  },
+  run: {
+    frame: 0,
+    firstId: 111,
+    lastId: 118,
+  },
+};
 
+function createPlayer({global, spriteset}: LayerProps) {
+  const layer = spriteset.layers['player'];
+
+  if (layer.type === 'tileLayer') {
+    throw Error('wrong type of layer');
+  }
+
+  const {id, position} = layer.sprites[0]; // singleplayer
+
+  let player = new Body(
+    new AnimatedSprite(spriteset.spritesheet.getById(id)),
+    [position[0] * spriteset.tilesize, position[1] * spriteset.tilesize],
+    spriteset.tilesize / 2
+  );
+
+  player.sprite.animation.keyframes = keyframes;
   player.addTrait(new Jump());
   player.addTrait(new Move());
+  // player.addTrait(new MouseMove(global));
 
   const input = new Keyboard();
   input.on('ArrowRight KeyD', pressed => {
-    player.move[pressed ? 'forward' : 'backward']();
+    player && player.trait['move'][pressed ? 'forward' : 'backward']();
   });
 
   input.on('ArrowLeft KeyA', pressed => {
-    player.move[pressed ? 'backward' : 'forward']();
+    player && player.trait['move'][pressed ? 'backward' : 'forward']();
   });
 
   input.on('Space', pressed => {
-    player.jump[pressed ? 'start' : 'cancel']();
+    player && player.trait['jump'][pressed ? 'start' : 'cancel']();
   });
 
   function cleanup() {

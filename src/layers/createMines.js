@@ -1,40 +1,37 @@
-import {arrayForEach} from '@utils/array';
+// @flow strict
 
-import Animator from '@models/Animator';
-import Sprite from '@models/Sprite';
-import Group from '@models/Group';
-import Body from '@physics/Body';
-
+import {Sprite} from 'pixi.js';
+import Body from '@core/physics/Body';
+import Group from '@core/physics/Group';
 import Explosive from '@traits/Explosive';
 
-function createMines({data, global, scene}) {
-  let {texture} = global.assets['mines'];
-  let mines = new Group();
+import type {LayerProps} from '@layers';
 
-  if (data.static.mines) {
-    arrayForEach(data.static.mines, ([x, y]) => {
-      const sprite = new Sprite(texture, x, y);
+function createMines({global, spriteset}: LayerProps) {
+  const layer = spriteset.layers['mines'];
 
-      // animation
-      sprite.animator = new Animator();
-      sprite.animator.add('blink', [sprite]);
-
-      // group and traits
-      const mine = new Body(sprite);
-      mine.addTrait(new Explosive({global, scene}));
-      mines.add(mine);
-    });
-
-    scene.animations.add(mines);
-    scene.animations.keyframes['blink'] = [
-      [50, sprite => (sprite.visible = !sprite.visible)]
-    ];
-  } else {
-    mines = null;
+  if (layer.type === 'tileLayer') {
+    throw Error('wrong type of layer');
   }
 
+  let mines = new Group();
+
+  layer.sprites.forEach(sprite => {
+    const {id, position} = sprite;
+    const mine = new Body(
+      new Sprite(spriteset.spritesheet.getById(id)),
+      [position[0] * spriteset.tilesize, position[1] * spriteset.tilesize],
+      spriteset.tilesize
+    );
+
+    mine.addTrait(new Explosive(global));
+
+    if (mines) {
+      mines.add(mine);
+    }
+  });
+
   function cleanup() {
-    texture = null;
     mines = null;
   }
 
