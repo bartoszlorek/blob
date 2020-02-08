@@ -2,7 +2,7 @@
 
 import {arrayRemove} from '@utils/array';
 
-type HandlerType = (value: mixed) => mixed;
+type HandlerType = (value: any) => mixed;
 
 class EventEmitter<EventType> {
   registry: Map<EventType, Array<HandlerType>>;

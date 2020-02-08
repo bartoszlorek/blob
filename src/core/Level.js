@@ -91,7 +91,10 @@ class Level extends Scene {
 
     // events
     if (global) {
-      global.events.on('player/dead', () => global.stop());
+      global.events.on('player/dead', global => {
+        global.engine.view.classList.add('dead-mode');
+        global.stop();
+      });
     }
 
     player.sprite.animation.play('idle');

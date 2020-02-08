@@ -34,6 +34,10 @@ img {
   height: auto;
 }
 
+.dead-mode {
+  filter: saturate(0) contrast(1.2);
+}
+
 .fade-steps {
   -webkit-backface-visibility: hidden;
   -webkit-transform: translate3d(0, 0, 0);

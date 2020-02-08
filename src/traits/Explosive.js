@@ -77,8 +77,7 @@ class Explosive extends Trait {
       scene.camera.shake();
 
       if (this.area.intersects(player)) {
-        this.global.events.emit('player/dead');
-        player.destroy();
+        this.global.events.emit('player/dead', this.global);
       }
     }
 
