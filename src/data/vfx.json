@@ -1,0 +1,27 @@
+{ "columns":5,
+ "editorsettings":
+    {
+     "export":
+        {
+         "format":"",
+         "target":"."
+        }
+    },
+ "image":"..\/..\/public\/assets\/vfx.png",
+ "imageheight":480,
+ "imagewidth":480,
+ "margin":0,
+ "name":"vfx",
+ "spacing":0,
+ "tilecount":25,
+ "tiledversion":"1.3.1",
+ "tileheight":96,
+ "tileoffset":
+    {
+     "x":-32,
+     "y":32
+    },
+ "tilewidth":96,
+ "type":"tileset",
+ "version":1.2
+}

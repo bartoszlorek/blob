@@ -3,12 +3,18 @@
 import {baseSize} from '@app/constants';
 import BoundingBox from '@core/BoundingBox';
 import Trait from '@core/Trait';
+import {createExplosion} from '@layers';
 
 import type Global from '@core/Global';
 import type Body from '@core/physics/Body';
 
 const destoryTilemap = (value, index, tilemap) => {
   tilemap.removeByIndex(index);
+};
+
+const destoryExplosion = animation => {
+  animation.sprite.destroy();
+  animation.destroy();
 };
 
 class Explosive extends Trait {
@@ -61,6 +67,13 @@ class Explosive extends Trait {
       // todo: add blast sprite
       bomb.destroy();
       ground.search(this.area, destoryTilemap);
+
+      const explosion = createExplosion(scene.spriteset.spritesheet);
+      explosion.animation.play('explode', destoryExplosion);
+      explosion.x = this.area.min[0];
+      explosion.y = this.area.min[1];
+
+      scene.renderChild(explosion);
       scene.camera.shake();
 
       if (this.area.intersects(player)) {

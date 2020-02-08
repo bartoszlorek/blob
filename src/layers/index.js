@@ -10,6 +10,7 @@ export type LayerProps = $ReadOnly<{
 
 export {default as createBack} from './createBack';
 export {default as createEnemies} from './createEnemies';
+export {default as createExplosion} from './createExplosion';
 export {default as createFront} from './createFront';
 export {default as createGems} from './createGems';
 export {default as createGround} from './createGround';

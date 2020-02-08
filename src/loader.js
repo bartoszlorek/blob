@@ -8,6 +8,7 @@ loader.add([
   // graphics
   {name: 'background', url: 'assets/background.png'},
   {name: 'characters', url: 'assets/characters.png'},
+  {name: 'vfx', url: 'assets/vfx.png'},
   {name: 'world', url: 'assets/world.png'},
 
   // sounds

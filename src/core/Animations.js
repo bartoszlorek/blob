@@ -20,10 +20,12 @@ class Animations {
 
   addSprite(sprite: AnimatedSprite) {
     this.sprites.push(sprite);
+    sprite.animation.parent = this;
   }
 
   removeSprite(sprite: AnimatedSprite) {
     arrayRemove(this.sprites, sprite);
+    sprite.animation.parent = null;
   }
 
   requestFrame(deltaTime: number) {
@@ -33,8 +35,12 @@ class Animations {
     if (this.timer >= this.msPerFrame) {
       this.timer = 0;
 
-      for (let i = 0; i < this.sprites.length; i++) {
-        this.sprites[i].animation.update(this.spriteset);
+      // it goes backward because of possible
+      // changes in each animation callback
+      let index = this.sprites.length;
+
+      while (index > 0) {
+        this.sprites[--index].animation.update(this.spriteset);
       }
     }
     this.timer += deltaTime;

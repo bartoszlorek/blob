@@ -10,16 +10,17 @@ import MouseMove from '@traits/MouseMove';
 import type {KeyframesType} from '@core/Animation';
 import type {LayerProps} from '@layers';
 
+// todo: get firstgid from tilesets
 const keyframes: KeyframesType = {
   idle: {
     frame: 0,
-    firstId: 101,
-    lastId: 108,
+    firstId: 257 + 0,
+    lastId: 257 + 7,
   },
   run: {
     frame: 0,
-    firstId: 111,
-    lastId: 118,
+    firstId: 257 + 10,
+    lastId: 257 + 17,
   },
 };
 
