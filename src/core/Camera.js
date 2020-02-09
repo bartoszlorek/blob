@@ -79,10 +79,12 @@ class Camera {
     }
   }
 
-  shake() {
+  shake(restore: boolean = false) {
     let handle;
     let steps = [16, -8, 4];
     let index = 0;
+
+    const initialX = restore ? this.x : undefined;
 
     handle = setInterval(() => {
       const step = steps ? steps[index++] : 0;
@@ -90,9 +92,12 @@ class Camera {
       if (!step) {
         clearInterval(handle);
         steps = null;
-        this.x = 0;
+
+        if (initialX !== undefined) {
+          this.x = initialX;
+        }
       } else {
-        this.x = step;
+        this.x += step;
       }
     }, 100);
   }

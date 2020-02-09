@@ -1,5 +1,11 @@
-class Text {
-  constructor(name) {
+// @flow strict
+
+class TextElement {
+  text: string;
+  textNode: Text;
+  node: HTMLDivElement;
+
+  constructor(name: string) {
     if (!name) {
       throw 'Text requires name argument';
     }
@@ -12,10 +18,10 @@ class Text {
     this.node.appendChild(this.textNode);
   }
 
-  set value(str) {
-    if (str !== this.text) {
-      this.textNode.nodeValue = str;
-      this.text = str;
+  set value(value: string) {
+    if (value !== this.text) {
+      this.textNode.nodeValue = value;
+      this.text = value;
     }
   }
 
@@ -23,10 +29,10 @@ class Text {
     return this.text;
   }
 
-  set onClick(handler) {
+  set onClick(handler: (event: MouseEvent) => mixed) {
     this.node.classList.add('text--link');
     this.node.onclick = handler;
   }
 }
 
-export default Text;
+export default TextElement;
