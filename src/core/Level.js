@@ -50,12 +50,15 @@ class Level extends Scene {
 
     // physics
     this.physics.processChild(player);
+    this.physics.processChild(gems);
     this.physics.processChild(mines);
 
     this.physics.overlapBody({
       bodyA: player,
       bodyB: gems,
-      callback: () => {},
+      callback: (player, gem) => {
+        gem.trait['collectible'].collect();
+      },
     });
 
     this.physics.overlapBody({
