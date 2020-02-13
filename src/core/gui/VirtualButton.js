@@ -1,24 +1,32 @@
+// @flow strict
+
 const initialDelay = 500;
 const repeatsDelay = 80;
 
+type KeyType = 'keydown' | 'keyup';
+
 class VirtualButton {
-  constructor(code, node) {
+  code: string;
+  node: HTMLElement;
+
+  constructor(code: string, node: HTMLElement) {
     this.code = code;
     this.node = node;
 
-    let timer;
+    let intervalId;
+    let timeoutId;
 
     const clearTimer = () => {
-      clearInterval(timer);
-      clearTimeout(timer);
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
     };
 
-    node.addEventListener('touchstart', e => {
+    node.addEventListener('touchstart', (e: TouchEvent) => {
       e.preventDefault();
       clearTimer();
 
-      timer = setTimeout(() => {
-        timer = setInterval(() => {
+      timeoutId = setTimeout(() => {
+        intervalId = setInterval(() => {
           this.handleEvent('keydown');
         }, repeatsDelay);
 
@@ -28,16 +36,16 @@ class VirtualButton {
       this.handleEvent('keydown');
     });
 
-    node.addEventListener('touchend', e => {
+    node.addEventListener('touchend', (e: TouchEvent) => {
       this.handleEvent('keyup');
       clearTimer();
     });
   }
 
-  handleEvent(type) {
+  handleEvent(type: KeyType) {
     const event = new KeyboardEvent(type, {
       key: this.code,
-      code: this.code
+      code: this.code,
     });
 
     window.dispatchEvent(event);
@@ -49,9 +57,13 @@ class VirtualButton {
     }
   }
 
-  onKeydown() {}
+  onKeydown() {
+    // fill in subclass
+  }
 
-  onKeyup() {}
+  onKeyup() {
+    // fill in subclass
+  }
 }
 
 export default VirtualButton;

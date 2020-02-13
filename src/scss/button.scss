@@ -1,0 +1,36 @@
+.button {
+  background-image: url('./assets/gui.png');
+  width: 64px;
+  height: 64px;
+  opacity: 0.8;
+  margin-right: 4px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.button-ArrowLeft {
+  background-position: 0 0;
+
+  &--active {
+    background-position: 0 -64px;
+  }
+}
+
+.button-ArrowRight {
+  background-position: -128px 0;
+
+  &--active {
+    background-position: -128px -64px;
+  }
+}
+
+.button-Space {
+  background-position: -64px 0;
+  margin-left: auto;
+
+  &--active {
+    background-position: -64px -64px;
+  }
+}

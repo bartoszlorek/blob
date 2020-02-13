@@ -1,4 +1,5 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   mode: 'development',
@@ -7,6 +8,7 @@ module.exports = {
     path: path.join(__dirname, 'public'),
     filename: 'scripts.js',
   },
+  devtool: false,
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
@@ -18,7 +20,6 @@ module.exports = {
       '@utils': path.resolve(__dirname, 'src/utils/'),
     },
   },
-  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -26,8 +27,26 @@ module.exports = {
         exclude: /node_modules/,
         loaders: ['babel-loader'],
       },
+      {
+        test: /\.scss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              url: false,
+            },
+          },
+          'sass-loader',
+        ],
+      },
     ],
   },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+    }),
+  ],
   externals: {
     'pixi.js': 'PIXI',
   },
