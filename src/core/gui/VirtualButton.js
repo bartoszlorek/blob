@@ -1,5 +1,12 @@
 // @flow strict
 
+import {
+  clearFrameRequest,
+  setFrameTimeout,
+  setFrameInterval,
+  type RequestType,
+} from '@utils/raf';
+
 const initialDelay = 500;
 const repeatsDelay = 80;
 
@@ -13,20 +20,20 @@ class VirtualButton {
     this.code = code;
     this.node = node;
 
-    let intervalId;
-    let timeoutId;
+    let intervalRequest: RequestType;
+    let timeoutRequest: RequestType;
 
     const clearTimer = () => {
-      clearInterval(intervalId);
-      clearTimeout(timeoutId);
+      clearFrameRequest(intervalRequest);
+      clearFrameRequest(timeoutRequest);
     };
 
-    node.addEventListener('touchstart', (e: TouchEvent) => {
-      e.preventDefault();
+    node.addEventListener('touchstart', (event: TouchEvent) => {
+      event.preventDefault();
       clearTimer();
 
-      timeoutId = setTimeout(() => {
-        intervalId = setInterval(() => {
+      timeoutRequest = setFrameTimeout(() => {
+        intervalRequest = setFrameInterval(() => {
           this.handleEvent('keydown');
         }, repeatsDelay);
 
@@ -36,7 +43,7 @@ class VirtualButton {
       this.handleEvent('keydown');
     });
 
-    node.addEventListener('touchend', (e: TouchEvent) => {
+    node.addEventListener('touchend', () => {
       this.handleEvent('keyup');
       clearTimer();
     });

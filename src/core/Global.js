@@ -11,7 +11,8 @@ class Global {
   engine: PIXI.Application;
   events: EventEmitter<EventType>;
   scene: Scene | null;
-  delta: number;
+  accumulatedTime: number;
+  deltaTime: number;
   centerX: number;
   centerY: number;
 
@@ -20,8 +21,8 @@ class Global {
     this.events = new EventEmitter<EventType>();
     this.scene = null;
 
-    // framerate independent movement/physics
-    this.delta = 1 / 60;
+    this.accumulatedTime = 0;
+    this.deltaTime = 1 / 60;
 
     // global events
     fromEvent(window, 'resize').subscribe(() => {
@@ -40,10 +41,15 @@ class Global {
     this.engine.ticker.start();
   }
 
-  ticker(time: number) {
+  ticker(deltaFrame: number) {
     if (this.scene) {
-      const deltaTime = this.delta * time;
-      this.scene.update(deltaTime);
+      this.accumulatedTime += this.deltaTime * deltaFrame;
+
+      // framerate independent movement/physics
+      while (this.accumulatedTime > this.deltaTime) {
+        this.scene.update(this.deltaTime);
+        this.accumulatedTime -= this.deltaTime;
+      }
     }
   }
 
