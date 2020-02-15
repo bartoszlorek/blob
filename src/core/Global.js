@@ -11,6 +11,7 @@ class Global {
   engine: PIXI.Application;
   events: EventEmitter<EventType>;
   scene: Scene | null;
+
   accumulatedTime: number;
   deltaTime: number;
   centerX: number;

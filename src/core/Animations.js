@@ -6,16 +6,18 @@ import type AnimatedSprite from './AnimatedSprite';
 import type Spriteset from '@core/structure/Spriteset';
 
 class Animations {
-  +msPerFrame: number;
   spriteset: Spriteset;
   sprites: Array<AnimatedSprite>;
-  timer: number;
+
+  frameTime: number;
+  accumulatedTime: number;
 
   constructor(frameRate: number, spriteset: Spriteset) {
-    this.msPerFrame = 1 / frameRate;
     this.spriteset = spriteset;
     this.sprites = [];
-    this.timer = 0;
+
+    this.frameTime = 1 / frameRate;
+    this.accumulatedTime = 0;
   }
 
   addSprite(sprite: AnimatedSprite) {
@@ -32,8 +34,8 @@ class Animations {
     if (!this.sprites.length) {
       return;
     }
-    if (this.timer >= this.msPerFrame) {
-      this.timer = 0;
+    if (this.accumulatedTime >= this.frameTime) {
+      this.accumulatedTime = 0;
 
       // it goes backward because of possible
       // changes in each animation callback
@@ -43,7 +45,7 @@ class Animations {
         this.sprites[--index].animation.update(this.spriteset);
       }
     }
-    this.timer += deltaTime;
+    this.accumulatedTime += deltaTime;
   }
 
   destroy() {

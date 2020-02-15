@@ -2,9 +2,15 @@
 
 import Trait from '@core/Trait';
 import Easing from '@core/Easing';
+import {createSparks} from '@layers';
 
 import type Global from '@core/Global';
 import type Body from '@core/physics/Body';
+
+const destorySparks = animation => {
+  animation.sprite.destroy();
+  animation.destroy();
+};
 
 class Collectible extends Trait {
   global: Global;
@@ -29,9 +35,19 @@ class Collectible extends Trait {
     if (!this.active) {
       return;
     }
+    const scene = this.global.scene;
     const position = this.position;
 
+    if (!scene) {
+      return;
+    }
     if (position === null) {
+      const sparks = createSparks(scene.spriteset.spritesheet);
+      sparks.animation.play('shine', 4, destorySparks);
+      sparks.x = body.min[0];
+      sparks.y = body.min[1];
+      scene.renderChild(sparks);
+
       this.position = body.min[1];
       this.global.events.emit('player/score');
     } else {

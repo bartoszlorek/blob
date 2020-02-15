@@ -69,7 +69,7 @@ class Explosive extends Trait {
       ground.search(this.area, destoryTilemap);
 
       const explosion = createExplosion(scene.spriteset.spritesheet);
-      explosion.animation.play('explode', destoryExplosion);
+      explosion.animation.play('explode', 1, destoryExplosion);
       explosion.x = this.area.min[0];
       explosion.y = this.area.min[1];
 

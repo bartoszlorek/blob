@@ -16,3 +16,4 @@ export {default as createGems} from './createGems';
 export {default as createGround} from './createGround';
 export {default as createMines} from './createMines';
 export {default as createPlayer} from './createPlayer';
+export {default as createSparks} from './createSparks';

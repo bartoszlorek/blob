@@ -84,6 +84,7 @@ img {
   margin-bottom: 16px;
 
   @include breakpoint('medium') {
+    max-width: 85%;
     margin-bottom: 32px;
   }
 }

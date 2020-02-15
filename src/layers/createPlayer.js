@@ -10,20 +10,6 @@ import MouseMove from '@traits/MouseMove';
 import type {KeyframesType} from '@core/Animation';
 import type {LayerProps} from '@layers';
 
-// todo: get firstgid from tilesets
-const keyframes: KeyframesType = {
-  idle: {
-    frame: 0,
-    firstId: 257 + 0,
-    lastId: 257 + 7,
-  },
-  run: {
-    frame: 0,
-    firstId: 257 + 10,
-    lastId: 257 + 17,
-  },
-};
-
 function createPlayer({global, spriteset}: LayerProps) {
   const layer = spriteset.layers['player'];
 
@@ -39,10 +25,22 @@ function createPlayer({global, spriteset}: LayerProps) {
     spriteset.tilesize / 2
   );
 
+  const keyframes: KeyframesType = {
+    idle: {
+      frame: 0,
+      firstId: id + 0,
+      lastId: id + 7,
+    },
+    run: {
+      frame: 0,
+      firstId: id + 10,
+      lastId: id + 17,
+    },
+  };
+
   player.sprite.animation.keyframes = keyframes;
   player.addTrait(new Jump());
   player.addTrait(new Move());
-  // player.addTrait(new MouseMove(global));
 
   const input = new Keyboard();
   input.on('ArrowRight KeyD', pressed => {
