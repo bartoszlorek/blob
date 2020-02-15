@@ -1,9 +1,10 @@
 // @flow strict
 
 import './scss/main.scss';
+import {fadeInElement, showElement, hideElement} from '@utils/dom';
+import {setFrameTimeout} from '@utils/raf';
 import engine from '@app/engine';
 import loader from '@app/loader';
-import {fadeIn} from '@utils/dom';
 
 // core
 import Global from '@core/Global';
@@ -24,19 +25,40 @@ const footer = new Footer('.gui__footer');
 loader.load((loader, resources) => {
   const global = new Global(engine);
   const spriteset = new Spriteset(level01, resources);
-  const level = new Level(global, spriteset);
-
-  function handleStartClick() {
-    footer.render();
-    page.unmount(() => {
-      global.load(level);
-      fadeIn(global.engine.view);
-    });
-  }
 
   page.render(
     new LandingPage({
-      onClick: handleStartClick,
+      onStart: handleStart,
     })
   );
+
+  function handleStart() {
+    const {view} = global.engine;
+    hideElement(view);
+
+    footer.render();
+    page.unmount(() => {
+      global.load(new Level(global, spriteset));
+
+      setFrameTimeout(() => {
+        showElement(view);
+        fadeInElement(view);
+      }, 100);
+    });
+  }
+
+  global.events.on('player/dead', global => {
+    global.enableDeadMode();
+    global.stop();
+
+    setFrameTimeout(() => {
+      global.disableDeadMode();
+      global.load(new Level(global, spriteset));
+      fadeInElement(global.engine.view);
+    }, 500);
+  });
+
+  global.events.on('player/score', () => {
+    console.log('score');
+  });
 });

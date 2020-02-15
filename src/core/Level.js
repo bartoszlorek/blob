@@ -92,16 +92,7 @@ class Level extends Scene {
       tiles: ground,
     });
 
-    // events
-    if (global) {
-      global.events.on('player/dead', global => {
-        global.engine.view.classList.add('dead-mode');
-        global.stop();
-      });
-    }
-
     player.sprite.animation.play('idle');
-    console.log(this);
   }
 
   update(deltaTime: number) {

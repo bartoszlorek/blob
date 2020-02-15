@@ -30,6 +30,8 @@ class Global {
       this.resize();
     });
 
+    this.engine.ticker.add(this.ticker, this);
+    this.stop();
     this.resize();
   }
 
@@ -69,7 +71,6 @@ class Global {
 
     // setup new scene
     this.engine.stage.addChild(scene.graphics);
-    this.engine.ticker.add(this.ticker, this);
     this.events.emit('global/load', this);
     this.start();
   }
@@ -81,12 +82,23 @@ class Global {
     const scene = this.scene;
     this.events.emit('global/beforeunload', this);
     this.engine.stage.removeChild(scene.graphics);
-    this.engine.ticker.remove(this.ticker, this);
     this.stop();
 
     // cleanup
     scene.destroy();
     this.scene = null;
+  }
+
+  enableDeadMode() {
+    if (document.body) {
+      document.body.classList.add('dead-mode');
+    }
+  }
+
+  disableDeadMode() {
+    if (document.body) {
+      document.body.classList.remove('dead-mode');
+    }
   }
 
   globalToLocalX(x: number) {

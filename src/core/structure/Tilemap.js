@@ -22,7 +22,7 @@ class Tilemap extends BoundingBox {
   ) {
     super();
 
-    this.values = values;
+    this.values = [...values];
     this.dimension = dimension;
     this.tilesize = tilesize;
     this.offset = offset;

@@ -11,7 +11,7 @@ class Page<Props: {}> {
     return document.createDocumentFragment();
   }
 
-  render(): HTMLElement | DocumentFragment {
+  render(props: Props): HTMLElement | DocumentFragment {
     return this.createFragment();
   }
 }

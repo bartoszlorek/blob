@@ -1,6 +1,6 @@
 // @flow strict
 
-import {fadeIn, fadeOut} from '@utils/dom';
+import {fadeInElement, fadeOutElement} from '@utils/dom';
 import type Page from './Page';
 
 class PageRenderer {
@@ -17,13 +17,13 @@ class PageRenderer {
 
   render(page: Page<*>) {
     this.clear();
-    this.root.appendChild(page.render());
+    this.root.appendChild(page.render(page.props));
     this.root.classList.remove('hidden');
-    fadeIn(this.root);
+    fadeInElement(this.root);
   }
 
   unmount(callback?: () => mixed) {
-    fadeOut(this.root, () => {
+    fadeOutElement(this.root, () => {
       this.hide();
       this.clear();
 

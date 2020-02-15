@@ -10,6 +10,22 @@
   box-sizing: border-box;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'manaspace', monospace;
+  font-size: 24px;
+  line-height: 24px;
+  background-color: #03065c;
+  text-shadow: 2px 2px #cf339f;
+  color: #faf085;
+
+  @include breakpoint('medium') {
+    font-size: 32px;
+    line-height: 32px;
+  }
+}
+
 canvas {
   image-rendering: optimizeSpeed;
   image-rendering: -moz-crisp-edges;
@@ -19,17 +35,6 @@ canvas {
   -ms-interpolation-mode: nearest-neighbor;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'manaspace', monospace;
-  font-size: 32px;
-  line-height: 32px;
-  background-color: #03065c;
-  text-shadow: 2px 2px #cf339f;
-  color: #faf085;
-}
-
 img {
   width: 100%;
   height: auto;
@@ -37,36 +42,6 @@ img {
 
 .hidden {
   display: none !important;
-}
-
-.logo {
-  width: 85%;
-  max-width: 1000px;
-
-  @include breakpoint('medium') {
-    width: 60%;
-  }
-}
-
-.text {
-  text-transform: uppercase;
-  user-select: none;
-}
-
-.text--link {
-  cursor: pointer;
-}
-
-.text--link:hover {
-  text-decoration: underline;
-}
-
-.text-score {
-  margin-left: auto;
-}
-
-.dead-mode {
-  filter: saturate(0) contrast(1.2);
 }
 
 .fade-in {
@@ -97,4 +72,35 @@ img {
   to {
     opacity: 0;
   }
+}
+
+.dead-mode {
+  filter: saturate(0) contrast(1.2);
+}
+
+.logo {
+  width: auto;
+  max-width: 100%;
+  margin-bottom: 16px;
+
+  @include breakpoint('medium') {
+    margin-bottom: 32px;
+  }
+}
+
+.text {
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.text--link {
+  cursor: pointer;
+}
+
+.text--link:hover {
+  text-decoration: underline;
+}
+
+.text-score {
+  margin-left: auto;
 }
