@@ -15,11 +15,16 @@ import Spriteset from '@core/structure/Spriteset';
 import level01 from '@data/level-01.json';
 
 // gui
+import Header from '@core/gui/Header';
 import Footer from '@core/gui/Footer';
 import PageRenderer from '@core/gui/PageRenderer';
 import {LandingPage} from '@core/gui/pages';
 
+const RESPAWN_TIME = 1000;
+const SHOW_LEVEL_DELAY = 100;
+
 const page = new PageRenderer('.page');
+const header = new Header('.gui__header');
 const footer = new Footer('.gui__footer');
 
 loader.load((loader, resources) => {
@@ -36,6 +41,7 @@ loader.load((loader, resources) => {
     const {view} = global.engine;
     hideElement(view);
 
+    header.render(spriteset);
     footer.render();
     page.unmount(() => {
       global.load(new Level(global, spriteset));
@@ -43,7 +49,7 @@ loader.load((loader, resources) => {
       setFrameTimeout(() => {
         showElement(view);
         fadeInElement(view);
-      }, 100);
+      }, SHOW_LEVEL_DELAY);
     });
   }
 
@@ -52,13 +58,25 @@ loader.load((loader, resources) => {
     global.stop();
 
     setFrameTimeout(() => {
+      header.timer.reset();
+      header.clearScore();
+
       global.disableDeadMode();
       global.load(new Level(global, spriteset));
       fadeInElement(global.engine.view);
-    }, 500);
+    }, RESPAWN_TIME);
   });
 
   global.events.on('player/score', () => {
-    console.log('score');
+    header.incrementScore();
+
+    if (header.isCompletedScore()) {
+      header.timer.stop();
+      global.stop();
+    }
+  });
+
+  global.events.on('global/tick', deltaTime => {
+    header.updateTimer(deltaTime);
   });
 });

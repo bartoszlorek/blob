@@ -1,4 +1,6 @@
 .gui {
+  user-select: none;
+
   &__header,
   &__footer {
     position: fixed;

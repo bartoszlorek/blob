@@ -51,6 +51,7 @@ class Global {
       // framerate independent movement/physics
       while (this.accumulatedTime > this.deltaTime) {
         this.scene.update(this.deltaTime);
+        this.events.emit('global/tick', this.deltaTime);
         this.accumulatedTime -= this.deltaTime;
       }
     }

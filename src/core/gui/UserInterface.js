@@ -1,5 +1,7 @@
 // @flow strict
 
+import Spriteset from '@core/structure/Spriteset';
+
 class UserInterface {
   root: HTMLElement;
 
@@ -11,7 +13,7 @@ class UserInterface {
     this.root = root;
   }
 
-  render() {
+  render(spriteset?: Spriteset) {
     // fill in subclass
   }
 }

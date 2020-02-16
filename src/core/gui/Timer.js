@@ -1,12 +1,17 @@
+// @flow strict
+
 const pad = n => (n < 10 ? `0${n}` : n);
 
 class Timer {
+  seconds: number;
+  playing: boolean;
+
   constructor() {
     this.seconds = 0;
     this.playing = true;
   }
 
-  update(deltaTime) {
+  update(deltaTime: number) {
     if (this.playing) {
       this.seconds += deltaTime;
     }

@@ -1,8 +1,20 @@
+// https://www.dafont.com/pixel-operator.font
 @font-face {
-  font-family: 'manaspace';
-  src: url('./fonts/manaspace.woff2') format('woff2'),
-    url('./fonts/manaspace.woff') format('woff'),
-    url('./fonts/manaspace.ttf') format('truetype');
+  font-family: 'PixelOperator';
+  src: url('./fonts/PixelOperator.woff2') format('woff2'),
+    url('./fonts/PixelOperator.woff') format('woff'),
+    url('./fonts/PixelOperator.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PixelOperator';
+  src: url('./fonts/PixelOperator-Bold.woff2') format('woff2'),
+    url('./fonts/PixelOperator-Bold.woff') format('woff'),
+    url('./fonts/PixelOperator-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
 }
 
 * {
@@ -13,16 +25,13 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'manaspace', monospace;
-  font-size: 24px;
-  line-height: 24px;
+  font-family: 'PixelOperator', monospace;
+  font-size: 32px;
   background-color: #03065c;
-  text-shadow: 2px 2px #cf339f;
-  color: #faf085;
+  color: #fbfaff;
 
   @include breakpoint('medium') {
-    font-size: 32px;
-    line-height: 32px;
+    font-size: 36px;
   }
 }
 

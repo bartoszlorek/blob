@@ -1,7 +1,6 @@
 // @flow strict
 
 import {Container} from 'pixi.js';
-import {baseSize} from '@app/constants';
 import Animations from '@core/Animations';
 import Background from '@core/Background';
 import Camera from '@core/Camera';
