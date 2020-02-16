@@ -12,7 +12,7 @@ import Level from '@core/Level';
 import Spriteset from '@core/structure/Spriteset';
 
 // data
-import level01 from '@data/level-01.json';
+import levels from '@data/levels';
 
 // gui
 import Header from '@core/gui/Header';
@@ -22,20 +22,15 @@ import {LandingPage} from '@core/gui/pages';
 
 const RESPAWN_TIME = 1000;
 const SHOW_LEVEL_DELAY = 100;
+const NEXT_LEVEL_DELAY = 1000;
 
 const page = new PageRenderer('.page');
 const header = new Header('.gui__header');
 const footer = new Footer('.gui__footer');
 
 loader.load((loader, resources) => {
+  let spriteset = new Spriteset(levels.current, resources);
   const global = new Global(engine);
-  const spriteset = new Spriteset(level01, resources);
-
-  page.render(
-    new LandingPage({
-      onStart: handleStart,
-    })
-  );
 
   function handleStart() {
     const {view} = global.engine;
@@ -52,6 +47,12 @@ loader.load((loader, resources) => {
       }, SHOW_LEVEL_DELAY);
     });
   }
+
+  page.render(
+    new LandingPage({
+      onStart: handleStart,
+    })
+  );
 
   global.events.on('player/dead', global => {
     global.enableDeadMode();
@@ -71,8 +72,19 @@ loader.load((loader, resources) => {
     header.incrementScore();
 
     if (header.isCompletedScore()) {
-      header.timer.stop();
-      // global.stop();
+      if (levels.incrementLevel()) {
+        header.timer.stop();
+
+        setFrameTimeout(() => {
+          spriteset = new Spriteset(levels.current, resources);
+          header.render(spriteset);
+          header.timer.start();
+          global.load(new Level(global, spriteset));
+          fadeInElement(global.engine.view);
+        }, NEXT_LEVEL_DELAY);
+      } else {
+        header.timer.stop();
+      }
     }
   });
 

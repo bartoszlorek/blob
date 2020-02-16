@@ -14,8 +14,8 @@ import type Tileset from '@core/structure/Tileset';
 import type Spriteset from '@core/structure/Spriteset';
 
 class Scene {
-  +offsetX: number;
-  +offsetY: number;
+  offsetX: number;
+  offsetY: number;
 
   global: Global | null;
   spriteset: Spriteset;

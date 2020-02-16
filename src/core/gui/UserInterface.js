@@ -16,6 +16,13 @@ class UserInterface {
   render(spriteset?: Spriteset) {
     // fill in subclass
   }
+
+  setup(...nodes: Array<HTMLElement>) {
+    const frag = document.createDocumentFragment();
+    nodes.forEach(node => frag.appendChild(node));
+    this.root.innerHTML = '';
+    this.root.appendChild(frag);
+  }
 }
 
 export default UserInterface;

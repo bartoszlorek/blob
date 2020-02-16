@@ -4,25 +4,25 @@ const pad = n => (n < 10 ? `0${n}` : n);
 
 class Timer {
   seconds: number;
-  playing: boolean;
+  running: boolean;
 
   constructor() {
     this.seconds = 0;
-    this.playing = true;
+    this.running = true;
   }
 
   update(deltaTime: number) {
-    if (this.playing) {
+    if (this.running) {
       this.seconds += deltaTime;
     }
   }
 
-  play() {
-    this.playing = true;
+  start() {
+    this.running = true;
   }
 
   stop() {
-    this.playing = false;
+    this.running = false;
   }
 
   reset() {

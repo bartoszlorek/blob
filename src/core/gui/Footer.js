@@ -17,9 +17,7 @@ class Footer extends UserInterface {
     const moveRight = new Button('ArrowRight');
     const jump = new Button('Space');
 
-    this.root.appendChild(moveLeft.node);
-    this.root.appendChild(moveRight.node);
-    this.root.appendChild(jump.node);
+    this.setup(moveLeft.node, moveRight.node, jump.node);
   }
 }
 

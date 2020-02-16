@@ -14,21 +14,18 @@ class Header extends UserInterface {
 
   constructor(rootSelector: string) {
     super(document.querySelector(rootSelector));
+    this.score = new Text('score');
     this.scoreValue = 0;
     this.scoreLimit = 0;
+    this.time = new Text('time');
+    this.timer = new Timer();
   }
 
   render(spriteset?: Spriteset) {
-    this.time = new Text('time');
-    this.timer = new Timer();
-    this.updateTimer(0);
-
-    this.score = new Text('score');
     this.scoreLimit = this.getScoreLimit(spriteset);
+    this.setup(this.time.node, this.score.node);
+    this.updateTimer(0);
     this.clearScore();
-
-    this.root.appendChild(this.time.node);
-    this.root.appendChild(this.score.node);
   }
 
   incrementScore() {
