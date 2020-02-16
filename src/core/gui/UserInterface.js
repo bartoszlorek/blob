@@ -9,7 +9,6 @@ class UserInterface {
     if (root == null) {
       throw Error(`${this.constructor.name} requires root element`);
     }
-
     this.root = root;
   }
 

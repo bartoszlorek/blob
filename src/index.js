@@ -59,9 +59,7 @@ loader.load((loader, resources) => {
     global.stop();
 
     setFrameTimeout(() => {
-      header.timer.reset();
       header.clearScore();
-
       global.disableDeadMode();
       global.load(new Level(global, spriteset));
       fadeInElement(global.engine.view);
@@ -79,6 +77,7 @@ loader.load((loader, resources) => {
           spriteset = new Spriteset(levels.current, resources);
           header.render(spriteset);
           header.timer.start();
+
           global.load(new Level(global, spriteset));
           fadeInElement(global.engine.view);
         }, NEXT_LEVEL_DELAY);

@@ -14,13 +14,14 @@ import type Tileset from '@core/structure/Tileset';
 import type Spriteset from '@core/structure/Spriteset';
 
 class Scene {
-  offsetX: number;
-  offsetY: number;
+  +offsetX: number;
+  +offsetY: number;
 
   global: Global | null;
   spriteset: Spriteset;
   refs: {[name: string]: any} | null;
   resize: () => void;
+  cleanup: () => void;
 
   physics: World;
   camera: Camera;
@@ -114,6 +115,11 @@ class Scene {
       this.global.events.off('global/resize', this.resize);
     }
     this.cleanup();
+    this.physics.destroy();
+    this.animations.destroy();
+    this.graphics.destroy({
+      children: true,
+    });
     this.global = null;
     this.refs = null;
   }

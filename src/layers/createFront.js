@@ -12,10 +12,15 @@ function createFront({global, spriteset}: LayerProps) {
   }
 
   const {tilemap, width, offset} = layer;
-  const front = new Tileset(tilemap, width, offset);
+  let front = new Tileset(tilemap, width, offset);
 
   front.loadSprites(spriteset.spritesheet);
-  return [front];
+
+  function cleanup() {
+    front = null;
+  }
+
+  return [front, cleanup];
 }
 
 export default createFront;

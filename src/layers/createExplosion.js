@@ -2,12 +2,12 @@
 
 import AnimatedSprite from '@core/AnimatedSprite';
 
-import type SpritesheetGroup from '@core/structure/SpritesheetGroup';
+import type Spritesheet from '@core/structure/Spritesheet';
 import type {KeyframesType} from '@core/Animation';
 
 const spriteId = 357;
 
-function createExplosion(spritesheet: SpritesheetGroup) {
+function createExplosion(spritesheet: Spritesheet) {
   const keyframes: KeyframesType = {
     explode: {
       frame: 0,

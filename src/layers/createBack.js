@@ -12,10 +12,15 @@ function createBack({global, spriteset}: LayerProps) {
   }
 
   const {tilemap, width, offset} = layer;
-  const back = new Tileset(tilemap, width, offset);
+  let back = new Tileset(tilemap, width, offset);
 
   back.loadSprites(spriteset.spritesheet);
-  return [back];
+
+  function cleanup() {
+    back = null;
+  }
+
+  return [back, cleanup];
 }
 
 export default createBack;

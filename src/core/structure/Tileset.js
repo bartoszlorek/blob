@@ -2,7 +2,7 @@
 
 import {Container, Sprite} from 'pixi.js';
 import {baseSize} from '@app/constants';
-import SpritesheetGroup from '@core/structure/SpritesheetGroup';
+import Spritesheet from '@core/structure/Spritesheet';
 import Tilemap from '@core/structure/Tilemap';
 
 import type {VectorType} from '@core/physics/Vector';
@@ -52,7 +52,7 @@ class Tileset extends Tilemap {
     this.graphics.cacheAsBitmap = true;
   }
 
-  loadSprites(spritesheet: SpritesheetGroup) {
+  loadSprites(spritesheet: Spritesheet) {
     this.children.clear();
 
     for (let index = 0; index < this.values.length; index++) {

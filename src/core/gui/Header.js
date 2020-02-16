@@ -14,6 +14,7 @@ class Header extends UserInterface {
 
   constructor(rootSelector: string) {
     super(document.querySelector(rootSelector));
+
     this.score = new Text('score');
     this.scoreValue = 0;
     this.scoreLimit = 0;

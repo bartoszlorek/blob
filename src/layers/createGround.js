@@ -12,10 +12,15 @@ function createGround({global, spriteset}: LayerProps) {
   }
 
   const {tilemap, width, offset} = layer;
-  const ground = new Tileset(tilemap, width, offset);
+  let ground = new Tileset(tilemap, width, offset);
 
   ground.loadSprites(spriteset.spritesheet);
-  return [ground];
+
+  function cleanup() {
+    ground = null;
+  }
+
+  return [ground, cleanup];
 }
 
 export default createGround;

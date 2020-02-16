@@ -1,59 +1,55 @@
 // @flow strict
 
 import {Texture, Rectangle} from 'pixi.js';
-
 import type PIXI from 'pixi.js';
 
+export type BaseSpritesheet = {|
+  baseTexture: PIXI.BaseTexture,
+  tilewidth: number,
+  tilesize: number,
+  firstId: number,
+  lastId: number,
+|};
+
 class Spritesheet {
-  baseTexture: PIXI.BaseTexture;
-  tilemap: Map<number, Texture>;
-  tilesize: number;
+  registry: Map<number, Texture>;
+  tilesets: Array<BaseSpritesheet>;
 
-  width: number;
-  firstId: number;
-  lastId: number;
-
-  constructor(
-    texture: Texture,
-    tilesize: number,
-    firstId: number = 1,
-    lastId: number = Infinity
-  ) {
-    const {baseTexture} = texture;
-    this.baseTexture = baseTexture;
-    this.tilemap = new Map();
-    this.tilesize = tilesize;
-
-    this.width = baseTexture.width / tilesize;
-    this.firstId = firstId;
-    this.lastId = lastId;
+  constructor(tilesets: Array<BaseSpritesheet>) {
+    this.registry = new Map();
+    this.tilesets = tilesets;
   }
 
   getById(id: number) {
-    if (this.tilemap.has(id)) {
-      return this.tilemap.get(id);
+    if (this.registry.has(id)) {
+      return this.registry.get(id);
     }
 
-    const index = id - this.firstId;
-    const x = index % this.width;
-    const y = Math.floor(index / this.width);
+    for (let i = 0; i < this.tilesets.length; i++) {
+      const tileset = this.tilesets[i];
 
-    const rect = new Rectangle(
-      x * this.tilesize,
-      y * this.tilesize,
-      this.tilesize,
-      this.tilesize
-    );
+      if (tileset.firstId <= id && tileset.lastId >= id) {
+        return this.getTexture(id, tileset);
+      }
+    }
+  }
 
-    const texture = new Texture(this.baseTexture, rect);
+  getTexture(id: number, tileset: BaseSpritesheet) {
+    const {baseTexture, tilewidth, tilesize, firstId} = tileset;
 
-    this.tilemap.set(id, texture);
+    const index = id - firstId;
+    const x = index % tilewidth;
+    const y = Math.floor(index / tilewidth);
+
+    const rect = new Rectangle(x * tilesize, y * tilesize, tilesize, tilesize);
+    const texture = new Texture(baseTexture, rect);
+
+    this.registry.set(id, texture);
     return texture;
   }
 
   destroy() {
-    this.baseTexture.destroy();
-    this.tilemap.clear();
+    this.registry.clear();
   }
 }
 

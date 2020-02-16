@@ -73,6 +73,12 @@ class World {
     }
   }
 
+  destroy() {
+    this.children.length = 0;
+    this.components.length = 0;
+    this.removeStack.length = 0;
+  }
+
   // --------------------------
   // Defined Common Components
   // --------------------------

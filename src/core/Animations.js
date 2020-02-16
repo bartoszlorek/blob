@@ -50,7 +50,7 @@ class Animations {
 
   destroy() {
     // todo: destroy sprites.animation
-    this.sprites = [];
+    this.sprites.length = 0;
   }
 }
 

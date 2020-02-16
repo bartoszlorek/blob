@@ -27,13 +27,23 @@ class Level extends Scene {
       global,
     };
 
-    const [ground] = createGround(props);
-    const [back] = createBack(props);
-    const [gems] = createGems(props);
-    const [mines] = createMines(props);
-    const [enemies] = createEnemies(props);
-    const [player] = createPlayer(props);
-    const [front] = createFront(props);
+    const [ground, cleanupGround] = createGround(props);
+    const [back, cleanupBack] = createBack(props);
+    const [gems, cleanupGems] = createGems(props);
+    const [mines, cleanupMines] = createMines(props);
+    const [enemies, cleanupEniemies] = createEnemies(props);
+    const [player, cleanupPlayer] = createPlayer(props);
+    const [front, cleanupFront] = createFront(props);
+
+    this.cleanup = () => {
+      cleanupGround();
+      cleanupBack();
+      cleanupGems();
+      cleanupMines();
+      cleanupEniemies();
+      cleanupPlayer();
+      cleanupFront();
+    };
 
     // renderer
     this.renderChild(ground);

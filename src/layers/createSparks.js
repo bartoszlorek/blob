@@ -2,12 +2,12 @@
 
 import AnimatedSprite from '@core/AnimatedSprite';
 
-import type SpritesheetGroup from '@core/structure/SpritesheetGroup';
+import type Spritesheet from '@core/structure/Spritesheet';
 import type {KeyframesType} from '@core/Animation';
 
 const spriteId = 208;
 
-function createSparks(spritesheet: SpritesheetGroup) {
+function createSparks(spritesheet: Spritesheet) {
   const keyframes: KeyframesType = {
     shine: {
       frame: 0,
