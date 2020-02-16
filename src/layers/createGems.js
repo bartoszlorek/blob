@@ -30,16 +30,16 @@ function createGems({global, spriteset}: LayerProps) {
     );
 
     const keyframes: KeyframesType = {
-      shine: {
-        frame: 0,
-        delay: randomInt(5, 10),
+      reflection: {
+        frame: randomInt(-5, 0),
+        delay: 15,
         firstId: id,
         lastId: id + 5,
       },
     };
 
     gem.sprite.animation.keyframes = keyframes;
-    gem.sprite.animation.play('shine');
+    gem.sprite.animation.play('reflection');
 
     if (gems) {
       gem.addTrait(new Collectible(global));
