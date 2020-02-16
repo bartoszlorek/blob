@@ -72,7 +72,7 @@ loader.load((loader, resources) => {
 
     if (header.isCompletedScore()) {
       header.timer.stop();
-      global.stop();
+      // global.stop();
     }
   });
 

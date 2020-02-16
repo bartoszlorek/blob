@@ -9,6 +9,7 @@ import type {EdgeType} from '@core/physics/constants';
 import type {VectorType} from '@core/physics/Vector';
 import type Body from '@core/physics/Body';
 import type Tileset from '@core/structure/Tileset';
+import type {CollisionHandler} from '@core/physics/collisions/tileCollisions';
 
 type PropsType = {
   body: Body,
@@ -18,13 +19,7 @@ type PropsType = {
 
 class TileCollision extends Component<PropsType> {
   m_velocity: VectorType;
-  handleCollision: (
-    value: number,
-    index: number,
-    axis: number,
-    shift: number,
-    velocity: VectorType
-  ) => boolean;
+  handleCollision: CollisionHandler;
 
   constructor(props: PropsType) {
     super(props);

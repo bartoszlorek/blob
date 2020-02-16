@@ -1,5 +1,10 @@
+// @flow strict
+
+import Body from '@core/physics/Body';
+import Tilemap from '@core/structure/Tilemap';
 import BoundingBox from '@core/BoundingBox';
 import Vector from '@core/physics/Vector';
+import type {VectorType} from '@core/physics/Vector';
 
 const alignMargin = 0.1;
 const subtractError = 0.0001;
@@ -8,11 +13,19 @@ const subtractError = 0.0001;
 const m_bbox = new BoundingBox();
 const m_vector = Vector.create();
 
+export type CollisionHandler = (
+  value: number,
+  index: number,
+  axis: number,
+  shift: number,
+  velocity: VectorType
+) => mixed;
+
 export function detectTileCollision(
-  tilemap,
-  bbox,
-  deltaTimeVelocity,
-  onCollision
+  tilemap: Tilemap,
+  bbox: BoundingBox,
+  deltaTimeVelocity: VectorType,
+  onCollision: CollisionHandler
 ) {
   // persist initial position to compare after detection
   // because original bbox can change during collision
@@ -66,7 +79,7 @@ function detectAxisCollision(moveAxis, tilemap, bbox, velocity, onCollision) {
   const positive = velocity[moveAxis] > 0;
   const direction = positive ? 1 : -1;
 
-  const leading = bbox[positive ? 'max' : 'min'][moveAxis];
+  const leading = positive ? bbox.max[moveAxis] : bbox.min[moveAxis];
   const moveStart = Math.floor(leading / tilesize);
   const moveEnd = Math.floor((leading + velocity[moveAxis]) / tilesize);
 

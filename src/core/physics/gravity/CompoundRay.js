@@ -1,13 +1,21 @@
-import {RAY_TYPE} from './Ray';
+// @flow strict
 
-export const COMPOUND_TYPE = {
+import Ray, {RAY_TYPE} from './Ray';
+
+type CompoundRayType = 0 | 1 | 2;
+
+export const COMPOUND_TYPE: {[name: string]: CompoundRayType} = {
   SOLID_SOLID: 0,
   SOLID_BORDER: 1,
   BORDER_BORDER: 2,
 };
 
 class CompoundRay {
-  constructor(a, b) {
+  a: Ray;
+  b: Ray;
+  type: CompoundRayType;
+
+  constructor(a: Ray, b: Ray) {
     this.a = a;
     this.b = b;
     this.type = COMPOUND_TYPE.SOLID_SOLID;

@@ -21,6 +21,7 @@ class Header extends UserInterface {
   render(spriteset?: Spriteset) {
     this.time = new Text('time');
     this.timer = new Timer();
+    this.updateTimer(0);
 
     this.score = new Text('score');
     this.scoreLimit = this.getScoreLimit(spriteset);

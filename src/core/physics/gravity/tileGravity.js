@@ -1,3 +1,7 @@
+// @flow strict
+
+import Body from '@core/physics/Body';
+import Tilemap from '@core/structure/Tilemap';
 import Vector from '@core/physics/Vector';
 import CompoundRay, {COMPOUND_TYPE as TYPE} from './CompoundRay';
 import Ray from './Ray';
@@ -18,7 +22,7 @@ const compY = new CompoundRay(rayTop, rayBottom);
 
 const m_vector = Vector.create();
 
-export function calculateGravityDirection(body, tilemap) {
+export function calculateGravityDirection(body: Body, tilemap: Tilemap) {
   if (tilemap.intersectsMargin(body, -1) === false) {
     // we should use last known gravity
     // for corners outside bounding box

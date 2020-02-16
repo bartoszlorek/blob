@@ -1,7 +1,11 @@
-import {EDGE_CYCLE} from '@core/physics/constants';
-import {modIndex} from '@utils/math';
+// @flow strict
 
-export function rotateEdge(origin, edge) {
+import {modIndex} from '@utils/math';
+import {EDGE_CYCLE} from '@core/physics/constants';
+import type {VectorType} from '@core/physics/Vector';
+import type {EdgeType} from '@core/physics/constants';
+
+export function rotateEdge(origin: VectorType, edge: EdgeType) {
   let shift = 0;
 
   if (origin[0] < 0) {
@@ -16,7 +20,7 @@ export function rotateEdge(origin, edge) {
   return EDGE_CYCLE[modIndex(index - shift, 4)];
 }
 
-export function rotateVector(origin, vector) {
+export function rotateVector(origin: VectorType, vector: VectorType) {
   const [x, y] = vector;
 
   if (origin[1] < 0) {
@@ -32,7 +36,7 @@ export function rotateVector(origin, vector) {
   return vector;
 }
 
-export function vectorRotation(vector) {
+export function vectorRotation(vector: VectorType) {
   if (vector[1] < 0) {
     return Math.PI;
   }

@@ -1,18 +1,28 @@
-import Vector from '@core/physics/Vector';
+// @flow strict
 
-export const RAY_TYPE = {
+import Vector from '@core/physics/Vector';
+import Tilemap from '@core/structure/Tilemap';
+import type {VectorType} from '@core/physics/Vector';
+
+type RayType = 0 | 1;
+
+export const RAY_TYPE: {[name: string]: RayType} = {
   SOLID: 0,
   BORDER: 1,
 };
 
 class Ray {
-  constructor(x, y) {
+  type: RayType;
+  vector: VectorType;
+  length: number;
+
+  constructor(x: number, y: number) {
     this.type = RAY_TYPE.SOLID;
     this.vector = Vector.create(x, y);
     this.length = 0;
   }
 
-  cast(tilemap, x, y) {
+  cast(tilemap: Tilemap, x: number, y: number) {
     const length = tilemap.raycast(x, y, this.vector[0], this.vector[1]);
 
     if (length >= 0) {
@@ -25,7 +35,7 @@ class Ray {
     return this;
   }
 
-  lengthToBorder(tilemap, x, y) {
+  lengthToBorder(tilemap: Tilemap, x: number, y: number) {
     if (this.vector[1] === -1) {
       return Math.abs(tilemap.min[1] - y) + 1;
     }
@@ -41,7 +51,7 @@ class Ray {
     return 0;
   }
 
-  static min(a, b) {
+  static min(a: ?Ray, b: ?Ray) {
     if (!a || !b) {
       return a || b || null;
     }
@@ -51,6 +61,7 @@ class Ray {
     if (b.length < a.length) {
       return b;
     }
+    return null;
   }
 }
 

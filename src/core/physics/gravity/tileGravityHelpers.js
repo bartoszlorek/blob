@@ -1,4 +1,10 @@
-export function isOutsideOnCorner(body, tilemap) {
+// @flow strict
+
+import Body from '@core/physics/Body';
+import Tilemap from '@core/structure/Tilemap';
+import type {VectorType} from '@core/physics/Vector';
+
+export function isOutsideOnCorner(body: Body, tilemap: Tilemap) {
   const onTop = body.max[1] < tilemap.min[1];
   const onRight = body.min[0] > tilemap.max[0];
   const onBottom = body.min[1] > tilemap.max[1];
@@ -12,7 +18,11 @@ export function isOutsideOnCorner(body, tilemap) {
   );
 }
 
-export function getOutsideVector(body, tilemap, out) {
+export function getOutsideVector(
+  body: Body,
+  tilemap: Tilemap,
+  out: VectorType
+) {
   // body on top
   if (body.max[1] <= tilemap.min[1]) {
     out[0] = 0;
@@ -39,7 +49,7 @@ export function getOutsideVector(body, tilemap, out) {
   }
 }
 
-export function isCornerCase(matrix) {
+export function isCornerCase(matrix: Array<number>) {
   return (
     (matrix[6] && !matrix[3] && !matrix[7]) || // bottom-left
     (matrix[8] && !matrix[5] && !matrix[7]) || // bottom-right

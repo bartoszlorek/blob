@@ -1,4 +1,9 @@
-export function objectForEach(object, iteratee) {
+// @flow strict
+
+export function objectForEach<V, T: {}>(
+  object: T,
+  iteratee: (value: V, key: string, object: T) => mixed
+) {
   const props = Object.keys(object);
 
   for (let index = 0; index < props.length; index++) {
@@ -8,15 +13,4 @@ export function objectForEach(object, iteratee) {
       return;
     }
   }
-}
-
-export function createObjectPool(initial) {
-  const pool = [];
-
-  return function(index) {
-    if (!pool[index]) {
-      pool[index] = {...initial};
-    }
-    return pool[index];
-  };
 }

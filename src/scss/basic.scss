@@ -25,13 +25,15 @@
 body {
   margin: 0;
   padding: 0;
+  background-color: #03065c;
   font-family: 'PixelOperator', monospace;
   font-size: 32px;
-  background-color: #03065c;
+  line-height: 32px;
+  text-shadow: 2px 2px #03065c;
   color: #fbfaff;
 
   @include breakpoint('medium') {
-    font-size: 36px;
+    font-size: 40px;
   }
 }
 
