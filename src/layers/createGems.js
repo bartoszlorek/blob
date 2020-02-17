@@ -31,8 +31,8 @@ function createGems({global, spriteset}: LayerProps) {
 
     const keyframes: KeyframesType = {
       reflection: {
-        frame: randomInt(-5, 0),
-        delay: 15,
+        frame: randomInt(-2, 0),
+        delay: randomInt(5, 10),
         firstId: id,
         lastId: id + 5,
       },

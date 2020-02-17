@@ -28,7 +28,7 @@ class Spriteset {
   height: number;
   tilesize: number;
   background: {
-    edges: Array<number>,
+    slices: Array<number>,
     texture: PIXI.Texture,
   };
   layers: {
@@ -42,18 +42,17 @@ class Spriteset {
     this.tilesize = json.tilewidth;
 
     const props = this.parseProperties(json.properties, {
-      backgroundEdges: value =>
+      backgroundTilepoints: value =>
         typeof value === 'string' ? stringToIntArray(value) : [],
     });
 
+    this.layers = this.parseLayers(json.layers);
+    this.spritesheet = this.parseSpritesheets(json.tilesets, resources);
     this.background = this.parseBackground(
-      props.backgroundEdges,
+      props.backgroundTilepoints,
       json.tilewidth,
       resources
     );
-
-    this.layers = this.parseLayers(json.layers);
-    this.spritesheet = this.parseSpritesheets(json.tilesets, resources);
   }
 
   parseLayers(rawLayers: $PropertyType<TiledMapJson, 'layers'>) {
@@ -127,15 +126,15 @@ class Spriteset {
   }
 
   parseBackground(
-    edges: Array<number> = [],
+    tilepoints: Array<number> = [],
     tilesize: number,
     resources: IResourceDictionary
   ) {
     const {texture} = resources['background'];
-    const tileheight = texture.height / tilesize;
+    const height = texture.height / tilesize;
 
     return {
-      edges: edges.map<number>(value => value / tileheight),
+      slices: tilepoints.map<number>(value => value / height),
       texture,
     };
   }

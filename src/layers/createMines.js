@@ -1,6 +1,5 @@
 // @flow strict
 
-import {randomInt} from '@utils/math';
 import Body from '@core/physics/Body';
 import Group from '@core/physics/Group';
 import Explosive from '@traits/Explosive';
@@ -18,7 +17,7 @@ function createMines({global, spriteset}: LayerProps) {
 
   let mines = new Group();
 
-  layer.sprites.forEach(sprite => {
+  layer.sprites.forEach((sprite, index) => {
     const {id, position} = sprite;
 
     const mine = new Body(
@@ -29,8 +28,8 @@ function createMines({global, spriteset}: LayerProps) {
 
     const keyframes: KeyframesType = {
       reflection: {
-        frame: randomInt(-10, 0),
-        delay: 15,
+        frame: -(index + 5),
+        delay: 10,
         firstId: id,
         lastId: id + 7,
       },

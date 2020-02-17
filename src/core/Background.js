@@ -1,24 +1,23 @@
 // @flow strict
 
-import {Container, TilingSprite} from 'pixi.js';
-
+import {Container, TilingSprite, Rectangle, Texture} from 'pixi.js';
 import type Spriteset from '@core/structure/Spriteset';
 import type PIXI from 'pixi.js';
 
-type Fragment = $ReadOnly<{|
+type FragmentType = $ReadOnly<{|
   base: TilingSprite,
   fill: TilingSprite,
   top: number,
-  topEdge: number,
+  topSlice: number, // [0-1]
   bottom: number,
-  bottomEdge: number,
+  bottomSlice: number, // [0-1]
   height: number,
 |}>;
 
 class Background {
   tilesize: number;
   graphics: Container;
-  fragments: Array<Fragment>;
+  fragments: Array<FragmentType>;
 
   constructor(spriteset: Spriteset) {
     const {tilesize, background} = spriteset;
@@ -27,68 +26,71 @@ class Background {
     this.graphics = new Container();
     this.fragments = [];
 
-    this.initialize(background.edges, background.texture);
+    // prettier-ignore
+    this.setup(
+      background.slices,
+      background.texture
+    );
   }
 
-  initialize(edges: Array<number>, texture: PIXI.Texture) {
-    this.fragments = [0, ...edges].map((topEdge, index, edges) => {
+  setup(slices: Array<number>, texture: PIXI.Texture) {
+    this.fragments = [0, ...slices].map((topSlice, index, slices) => {
+      const top = topSlice * texture.height;
+      const bottomSlice = slices[index + 1] || 1;
+      const bottom = bottomSlice * texture.height;
+      const height = bottom - top;
+
+      const mask = new Rectangle(
+        0,
+        bottom - this.tilesize,
+        this.tilesize,
+        this.tilesize
+      );
+
       const base = new TilingSprite(texture);
-      const fill = new TilingSprite(texture);
+      const fill = new TilingSprite(new Texture(texture.baseTexture, mask));
       this.graphics.addChild(base);
       this.graphics.addChild(fill);
 
-      const top = topEdge * texture.height;
-      const bottomEdge = edges[index + 1] || 1;
-      const bottom = bottomEdge * texture.height;
+      base.height = height;
+      base.tilePosition.y = -top;
 
       return {
         base,
         fill,
         top,
-        topEdge,
+        topSlice,
         bottom,
-        bottomEdge,
-        height: bottom - top,
+        bottomSlice,
+        height,
       };
     });
   }
 
   resize() {
-    const {innerWidth, innerHeight} = window;
-    const tilesize = this.tilesize;
-
     for (let i = 0; i < this.fragments.length; i++) {
-      const {
-        base,
-        fill,
-        topEdge,
-        top,
-        bottomEdge,
-        bottom,
-        height,
-      } = this.fragments[i];
+      const {base, fill, topSlice, bottomSlice, height} = this.fragments[i];
+      const actualTop = this.getSlicePosition(topSlice);
+      const actualBottom = this.getSlicePosition(bottomSlice) + this.tilesize;
+      const actualHeight = actualBottom - actualTop;
 
-      const curr = Math.round((topEdge * innerHeight) / tilesize) * tilesize;
-      const next = Math.round((bottomEdge * innerHeight) / tilesize) * tilesize;
-      const diff = next - curr;
+      base.y = actualTop;
+      base.width = window.innerWidth;
 
-      base.width = innerWidth;
-      base.height = height;
-      base.tilePosition.y = -top;
-      base.y = curr;
-
-      if (diff > height) {
-        const fillHeight = diff - height;
-
+      if (actualHeight > height) {
+        fill.y = actualTop + height;
+        fill.width = window.innerWidth;
+        fill.height = actualHeight - height;
         fill.visible = true;
-        fill.width = innerWidth;
-        fill.height = fillHeight;
-        fill.tilePosition.y = -(bottom - fillHeight);
-        fill.y = next - fillHeight;
       } else {
         fill.visible = false;
       }
     }
+  }
+
+  getSlicePosition(slice: number) {
+    // prettier-ignore
+    return Math.round((slice * window.innerHeight) / this.tilesize) * this.tilesize;
   }
 }
 

@@ -37,7 +37,7 @@ class Scene {
     this.refs = {};
 
     this.physics = new World();
-    this.camera = new Camera(global, 0.15, 100);
+    this.camera = new Camera(global, 0.15, [100, 200]);
     this.animations = new Animations(10, spriteset);
 
     // pixijs layers di

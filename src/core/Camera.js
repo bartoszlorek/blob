@@ -2,17 +2,18 @@
 
 import {lerp} from '@utils/math';
 
+import type {VectorType} from '@core/physics/Vector';
 import type Global from '@core/Global';
 import type Body from '@core/physics/Body';
 
 class Camera {
   global: Global;
   delay: number;
-  margin: number;
+  margin: VectorType;
   x: number;
   y: number;
 
-  constructor(global: Global, delay: number, margin: number) {
+  constructor(global: Global, delay: number, margin: VectorType) {
     this.global = global;
     this.delay = delay;
     this.margin = margin;
@@ -28,7 +29,7 @@ class Camera {
     }
   }
 
-  simpleFollow(body: Body) {
+  followSimple(body: Body) {
     if (!body.alive || !this.global.scene) {
       return;
     }
@@ -47,13 +48,13 @@ class Camera {
     const {offsetX, offsetY} = this.global.scene;
 
     const left = body.min[0] + offsetX + centerX;
-    const leftDiff = this.margin - left;
+    const leftDiff = this.margin[0] - left;
 
     if (leftDiff > 0) {
       this.x = lerp(this.x, leftDiff, this.delay);
     } else {
       const right = body.max[0] + offsetX + centerX;
-      const rightDiff = window.innerWidth - this.margin - right;
+      const rightDiff = window.innerWidth - this.margin[0] - right;
 
       if (rightDiff < 0) {
         this.x = lerp(this.x, rightDiff, this.delay);
@@ -63,13 +64,13 @@ class Camera {
     }
 
     const top = body.min[1] + offsetY + centerY;
-    const topDiff = this.margin - top;
+    const topDiff = this.margin[1] - top;
 
     if (topDiff > 0) {
       this.y = lerp(this.y, topDiff, this.delay);
     } else {
       const bottom = body.max[1] + offsetY + centerY;
-      const bottomDiff = window.innerHeight - this.margin - bottom;
+      const bottomDiff = window.innerHeight - this.margin[1] - bottom;
 
       if (bottomDiff < 0) {
         this.y = lerp(this.y, bottomDiff, this.delay);

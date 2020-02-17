@@ -165,7 +165,7 @@
  "orientation":"orthogonal",
  "properties":[
         {
-         "name":"backgroundEdges",
+         "name":"backgroundTilepoints",
          "type":"string",
          "value":"3,13,17"
         }],
