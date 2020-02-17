@@ -48,3 +48,17 @@ export function vectorRotation(vector: VectorType) {
   }
   return 0;
 }
+
+// to keep rotation between in range 0 - 2*PI
+export function translateRotation(fromAngle: number, toAngle: number) {
+  const diff = fromAngle - toAngle;
+
+  if (Math.abs(diff) > Math.PI) {
+    if (diff > 0) {
+      return toAngle + Math.PI * 2;
+    } else {
+      return toAngle - Math.PI * 2;
+    }
+  }
+  return toAngle;
+}

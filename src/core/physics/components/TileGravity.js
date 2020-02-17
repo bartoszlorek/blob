@@ -1,7 +1,7 @@
 // @flow strict
 
 import {lerp} from '@utils/math';
-import {vectorRotation} from '@utils/physics';
+import {vectorRotation, translateRotation} from '@utils/physics';
 import Component from '@core/physics/Component';
 import Force from '@core/physics/Force';
 
@@ -37,6 +37,7 @@ class TileGravity extends Component<PropsType> {
     if (gravity === null) {
       return;
     }
+    // todo: memo old gravity and rotation
     const direction = calculateGravityDirection(body, tiles);
 
     if (direction) {
@@ -48,7 +49,7 @@ class TileGravity extends Component<PropsType> {
 
     body.sprite.rotation = lerp(
       body.sprite.rotation,
-      rotationTarget,
+      translateRotation(body.sprite.rotation, rotationTarget),
       rotationSpeed,
       rotationError
     );
