@@ -5,7 +5,6 @@ import Keyboard from '@core/Keyboard';
 import Body from '@core/physics/Body';
 import Jump from '@traits/Jump';
 import Move from '@traits/Move';
-import MouseMove from '@traits/MouseMove';
 
 import type {KeyframesType} from '@core/Animation';
 import type {LayerProps} from '@layers';

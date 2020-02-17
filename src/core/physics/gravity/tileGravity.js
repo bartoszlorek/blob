@@ -33,39 +33,43 @@ export function calculateGravityDirection(body: Body, tilemap: Tilemap) {
     return getOutsideVector(body, tilemap, m_vector);
   }
 
-  const coordX = Math.floor((body.min[0] + body.width / 2) / tilemap.tilesize);
-  const coordY = Math.floor((body.min[1] + body.height / 2) / tilemap.tilesize);
-  const closestTiles = tilemap.closest(coordX, coordY);
+  const tileX = body.tileX(tilemap.tilesize);
+  const tileY = body.tileY(tilemap.tilesize);
+  const closestTiles = tilemap.closest(tileX, tileY);
 
   // corner case inside bounding box
   if (isCornerCase(closestTiles)) {
     return null;
   }
 
-  rayLeft.cast(tilemap, coordX, coordY);
-  rayRight.cast(tilemap, coordX, coordY);
-  rayTop.cast(tilemap, coordX, coordY);
-  rayBottom.cast(tilemap, coordX, coordY);
+  rayLeft.cast(tilemap, tileX, tileY);
+  rayRight.cast(tilemap, tileX, tileY);
+  rayTop.cast(tilemap, tileX, tileY);
+  rayBottom.cast(tilemap, tileX, tileY);
 
   compX.sort();
   compY.sort();
 
-  // artificial gravity in the cave
+  // cave case (artificial gravity)
   if (compX.type === TYPE.SOLID_SOLID && compY.type === TYPE.SOLID_SOLID) {
     m_vector[0] = 0;
     m_vector[1] = 1;
     return m_vector;
   }
 
+  // chimney case (artificial gravity)
+  if (compX.type === TYPE.SOLID_SOLID && compY.type === TYPE.SOLID_BORDER) {
+    if (compX.a.length === 1 && compX.b.length === 1) {
+      m_vector[0] = 0;
+      m_vector[1] = 1;
+      return m_vector;
+    }
+  }
+
   // common cases
   if (compX.type === TYPE.SOLID_BORDER && compY.type === TYPE.SOLID_BORDER) {
-    if (compX.a.length < compY.a.length) {
-      return compX.a.vector;
-    }
-    if (compX.a.length > compY.a.length) {
-      return compY.a.vector;
-    }
-    return null;
+    const closestRay = Ray.min(compX.a, compY.a);
+    return closestRay ? closestRay.vector : null;
   }
 
   if (compX.type === TYPE.SOLID_SOLID && compY.type === TYPE.SOLID_BORDER) {

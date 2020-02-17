@@ -115,6 +115,41 @@ class Tilemap extends BoundingBox {
     return arr;
   }
 
+  // we should assume that x and y are inside tilemap bounding box
+  raycastInside(x: number, y: number, dx: number, dy: number) {
+    const startX = x - this.offset[0];
+    const startY = y - this.offset[1];
+
+    let limitSteps = 0;
+    let length = 0;
+
+    let currentIndex = this.getIndex(startX, startY);
+    const indexShift = this.getIndex(startX + dx, startY + dy) - currentIndex;
+
+    if (dx !== 0) {
+      if (dx > 0) {
+        limitSteps = this.max[0] / this.tilesize - startX - 1;
+      } else {
+        limitSteps = startX - this.min[0] / this.tilesize;
+      }
+    } else {
+      if (dy > 0) {
+        limitSteps = this.max[1] / this.tilesize - startY - 1;
+      } else {
+        limitSteps = startY - this.min[1] / this.tilesize;
+      }
+    }
+
+    while (0 <= limitSteps--) {
+      if (this.values[currentIndex] > 0) {
+        return length;
+      }
+      currentIndex += indexShift;
+      length += 1;
+    }
+    return -1;
+  }
+
   raycast(x: number, y: number, dx: number, dy: number) {
     // todo: optimize raycast
     const minX = this.min[0] / this.tilesize;

@@ -70,7 +70,7 @@ class Spriteset {
         layers[name] = {
           type: 'tileLayer',
           tilemap: this.parseTiles(data),
-          offset: [0, 0],
+          offset: [0, 0], // hardcoded?
           width,
         };
       }

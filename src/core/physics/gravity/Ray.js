@@ -23,7 +23,7 @@ class Ray {
   }
 
   cast(tilemap: Tilemap, x: number, y: number) {
-    const length = tilemap.raycast(x, y, this.vector[0], this.vector[1]);
+    const length = tilemap.raycastInside(x, y, this.vector[0], this.vector[1]);
 
     if (length >= 0) {
       this.type = RAY_TYPE.SOLID;
@@ -37,31 +37,28 @@ class Ray {
 
   lengthToBorder(tilemap: Tilemap, x: number, y: number) {
     if (this.vector[1] === -1) {
-      return Math.abs(tilemap.min[1] - y) + 1;
+      return Math.abs(tilemap.min[1] / tilemap.tilesize - y) + 1; // to top
     }
     if (this.vector[0] === 1) {
-      return Math.abs(tilemap.max[0] - x) + 1;
+      return Math.abs(tilemap.max[0] / tilemap.tilesize - x); // to right
     }
     if (this.vector[1] === 1) {
-      return Math.abs(tilemap.max[1] - y) + 1;
+      return Math.abs(tilemap.max[1] / tilemap.tilesize - y); // to bottom
     }
     if (this.vector[0] === -1) {
-      return Math.abs(tilemap.min[0] - x) + 1;
+      return Math.abs(tilemap.min[0] / tilemap.tilesize - x) + 1; // to left
     }
     return 0;
   }
 
   static min(a: ?Ray, b: ?Ray) {
-    if (!a || !b) {
-      return a || b || null;
+    if (a && b) {
+      if (a.length === b.length) {
+        return a;
+      }
+      return a.length < b.length ? a : b;
     }
-    if (a.length < b.length) {
-      return a;
-    }
-    if (b.length < a.length) {
-      return b;
-    }
-    return null;
+    return a || b || null;
   }
 }
 

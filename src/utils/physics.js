@@ -49,7 +49,7 @@ export function vectorRotation(vector: VectorType) {
   return 0;
 }
 
-// to keep rotation between in range 0 - 2*PI
+// handle the case when angle overlaps in point 0 aka 2*PI
 export function translateRotation(fromAngle: number, toAngle: number) {
   const diff = fromAngle - toAngle;
 

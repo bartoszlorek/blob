@@ -15,6 +15,14 @@ class BoundingBox {
     this.height = max[1] - min[1];
   }
 
+  tileX(tilesize: number) {
+    return Math.floor((this.min[0] + this.width / 2) / tilesize);
+  }
+
+  tileY(tilesize: number) {
+    return Math.floor((this.min[1] + this.height / 2) / tilesize);
+  }
+
   translate(vector: VectorType) {
     this.min[0] += vector[0];
     this.min[1] += vector[1];
