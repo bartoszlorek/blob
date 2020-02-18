@@ -49,40 +49,6 @@ class Tilemap extends BoundingBox {
     return this._point;
   }
 
-  search(
-    bbox: BoundingBox,
-    iteratee: (value: number, index: number, tilemap: Tilemap) => mixed
-  ) {
-    const startX = Math.floor(bbox.min[0] / this.tilesize) - this.offset[0];
-    const startY = Math.floor(bbox.min[1] / this.tilesize) - this.offset[1];
-    const endX = Math.floor(bbox.max[0] / this.tilesize) - this.offset[0];
-    const endY = Math.floor(bbox.max[1] / this.tilesize) - this.offset[1];
-
-    const minX = this.min[0] / this.tilesize - this.offset[0];
-    const maxX = this.max[0] / this.tilesize - this.offset[0];
-    const minY = this.min[1] / this.tilesize - this.offset[1];
-    const maxY = this.max[1] / this.tilesize - this.offset[1];
-
-    for (let y = startY; y < endY; y += 1) {
-      if (y < minY || y >= maxY) continue;
-
-      for (let x = startX; x < endX; x += 1) {
-        if (x < minX || x >= maxX) continue;
-
-        const index = this.getIndex(x, y);
-        const value = this.values[index];
-
-        if (value > 0) {
-          const result = iteratee(value, index, this);
-
-          if (result !== undefined) {
-            return result;
-          }
-        }
-      }
-    }
-  }
-
   closest(x: number, y: number) {
     const ox = x - this.offset[0];
     const oy = y - this.offset[1];
@@ -115,8 +81,8 @@ class Tilemap extends BoundingBox {
     return arr;
   }
 
-  // we should assume that x and y are inside tilemap bounding box
-  raycastInside(x: number, y: number, dx: number, dy: number) {
+  // important: X and Y should be inside tilemap bounding box
+  raycast(x: number, y: number, dx: number, dy: number) {
     const startX = x - this.offset[0];
     const startY = y - this.offset[1];
 
@@ -150,58 +116,38 @@ class Tilemap extends BoundingBox {
     return -1;
   }
 
-  raycast(x: number, y: number, dx: number, dy: number) {
-    // todo: optimize raycast
-    const minX = this.min[0] / this.tilesize;
-    const maxX = this.max[0] / this.tilesize;
-    const minY = this.min[1] / this.tilesize;
-    const maxY = this.max[1] / this.tilesize;
+  search(
+    bbox: BoundingBox,
+    iteratee: (value: number, index: number, tilemap: Tilemap) => mixed
+  ) {
+    const startX = Math.floor(bbox.min[0] / this.tilesize) - this.offset[0];
+    const startY = Math.floor(bbox.min[1] / this.tilesize) - this.offset[1];
+    const endX = Math.floor(bbox.max[0] / this.tilesize) - this.offset[0];
+    const endY = Math.floor(bbox.max[1] / this.tilesize) - this.offset[1];
 
-    const horizontal = dx !== 0;
+    const minX = this.min[0] / this.tilesize - this.offset[0];
+    const maxX = this.max[0] / this.tilesize - this.offset[0];
+    const minY = this.min[1] / this.tilesize - this.offset[1];
+    const maxY = this.max[1] / this.tilesize - this.offset[1];
 
-    // ignore ray that for sure will miss the map
-    if (horizontal ? minY > y || maxY < y : minX > x || maxX < x) {
-      return -1;
-    }
+    for (let y = startY; y < endY; y += 1) {
+      if (y < minY || y >= maxY) continue;
 
-    const fromMin = horizontal ? x - minX : y - minY;
-    const fromMax = horizontal ? maxX - x : maxY - y;
-    const toMin = dx < 0 || dy < 0;
-    const toMax = dx > 0 || dy > 0;
+      for (let x = startX; x < endX; x += 1) {
+        if (x < minX || x >= maxX) continue;
 
-    // ignore ray in the opposite direction
-    if ((toMin && fromMin <= 0) || (toMax && fromMax <= 0)) {
-      return -1;
-    }
+        const index = this.getIndex(x, y);
+        const value = this.values[index];
 
-    let shiftX = 0;
-    let shiftY = 0;
-    let length = 0;
+        if (value > 0) {
+          const result = iteratee(value, index, this);
 
-    // shift ray origin point closer to the map before casting ray
-    if ((toMin && fromMax < 0) || (toMax && fromMin < 0)) {
-      shiftX = dx > 0 ? minX - x : dx < 0 ? maxX - x : 0;
-      shiftY = dy > 0 ? minY - y : dy < 0 ? maxY - y : 0;
-      length = Math.abs(shiftX + shiftY);
-    }
-
-    const startX = x + shiftX - this.offset[0];
-    const startY = y + shiftY - this.offset[1];
-    let currentIndex = this.getIndex(startX, startY);
-    const indexShift = this.getIndex(startX + dx, startY + dy) - currentIndex;
-
-    // the amount of steps should not be greater than distance
-    // between point to the edge on map in current direction
-    let limitSteps = fromMin + fromMax;
-
-    while (0 <= limitSteps--) {
-      if (this.values[currentIndex] > 0) {
-        return length;
+          if (result !== undefined) {
+            return result;
+          }
+        }
       }
-      currentIndex += indexShift;
-      length += 1;
     }
-    return -1;
   }
 
   calculateBoundingBox() {

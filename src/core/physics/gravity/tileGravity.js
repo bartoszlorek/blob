@@ -7,7 +7,8 @@ import CompoundRay, {COMPOUND_TYPE as TYPE} from './CompoundRay';
 import Ray from './Ray';
 
 import {
-  isCornerCase,
+  isOuterCornerCase,
+  isInnerCornerCase,
   isOutsideOnCorner,
   getOutsideVector,
 } from './tileGravityHelpers';
@@ -37,8 +38,27 @@ export function calculateGravityDirection(body: Body, tilemap: Tilemap) {
   const tileY = body.tileY(tilemap.tilesize);
   const closestTiles = tilemap.closest(tileX, tileY);
 
-  // corner case inside bounding box
-  if (isCornerCase(closestTiles)) {
+  /*
+    █   ██     X
+    █   ██████   █
+    █            █
+    ██████████   █
+    outer corner case
+  */
+
+  if (isOuterCornerCase(closestTiles)) {
+    return null;
+  }
+
+  /*
+    █   ██X
+    █   ██████   █
+    █            █
+    ██████████   █
+    inner corner case
+  */
+
+  if (isInnerCornerCase(closestTiles)) {
     return null;
   }
 
@@ -50,14 +70,28 @@ export function calculateGravityDirection(body: Body, tilemap: Tilemap) {
   compX.sort();
   compY.sort();
 
-  // cave case (artificial gravity)
+  /*
+    █   ██
+    █   ██████   █
+    █      X     █
+    ██████████   █
+    cave case
+  */
+
   if (compX.type === TYPE.SOLID_SOLID && compY.type === TYPE.SOLID_SOLID) {
     m_vector[0] = 0;
     m_vector[1] = 1;
     return m_vector;
   }
 
-  // chimney case (artificial gravity)
+  /*
+    █   ██
+    █ X ██████   █
+    █            █
+    ██████████   █
+    chimney case
+  */
+
   if (compX.type === TYPE.SOLID_SOLID && compY.type === TYPE.SOLID_BORDER) {
     if (compX.a.length === 1 && compX.b.length === 1) {
       m_vector[0] = 0;
@@ -66,11 +100,25 @@ export function calculateGravityDirection(body: Body, tilemap: Tilemap) {
     }
   }
 
-  // common cases
+  /*
+    █   ██   X
+    █   ██████   █
+    █            █
+    ██████████   █
+    common outside case
+  */
+
   if (compX.type === TYPE.SOLID_BORDER && compY.type === TYPE.SOLID_BORDER) {
     const closestRay = Ray.min(compX.a, compY.a);
     return closestRay ? closestRay.vector : null;
   }
+
+  /*
+    ██████████   █
+    .      X     █
+    ██████████   █
+    common inside cases
+  */
 
   if (compX.type === TYPE.SOLID_SOLID && compY.type === TYPE.SOLID_BORDER) {
     const closestRay = Ray.min(Ray.min(compX.a, compX.b), compY.a);
@@ -82,7 +130,13 @@ export function calculateGravityDirection(body: Body, tilemap: Tilemap) {
     return closestRay ? closestRay.vector : null;
   }
 
-  // gap cases
+  /*
+    ██████████   █
+    .          X █
+    ██████████   █
+    open gap cases
+  */
+
   if (compX.type === TYPE.SOLID_BORDER && compY.type === TYPE.BORDER_BORDER) {
     return compX.a.vector;
   }
@@ -90,6 +144,13 @@ export function calculateGravityDirection(body: Body, tilemap: Tilemap) {
   if (compX.type === TYPE.BORDER_BORDER && compY.type === TYPE.SOLID_BORDER) {
     return compY.a.vector;
   }
+
+  /*
+    ██████████   █
+    .      X  
+    ██████████   █
+    closed gap cases
+  */
 
   if (compX.type === TYPE.SOLID_SOLID && compY.type === TYPE.BORDER_BORDER) {
     if (compX.a.length < compX.b.length) {
@@ -110,8 +171,12 @@ export function calculateGravityDirection(body: Body, tilemap: Tilemap) {
     if (compY.a.length > compY.b.length) {
       return compY.b.vector;
     }
+    m_vector[0] = 0;
+    m_vector[1] = 1;
+    return m_vector;
   }
 
+  // default gravity
   m_vector[0] = 0;
   m_vector[1] = 1;
   return m_vector;

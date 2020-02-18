@@ -23,7 +23,7 @@ class Ray {
   }
 
   cast(tilemap: Tilemap, x: number, y: number) {
-    const length = tilemap.raycastInside(x, y, this.vector[0], this.vector[1]);
+    const length = tilemap.raycast(x, y, this.vector[0], this.vector[1]);
 
     if (length >= 0) {
       this.type = RAY_TYPE.SOLID;

@@ -49,11 +49,26 @@ export function getOutsideVector(
   }
 }
 
-export function isCornerCase(matrix: Array<number>) {
+/*
+  0 1 2
+  3 4 5
+  6 7 8
+*/
+
+export function isOuterCornerCase(matrix: Array<number>) {
   return (
     (matrix[6] && !matrix[3] && !matrix[7]) || // bottom-left
     (matrix[8] && !matrix[5] && !matrix[7]) || // bottom-right
     (matrix[0] && !matrix[3] && !matrix[1]) || // top-left
     (matrix[2] && !matrix[5] && !matrix[1]) //    top-right
+  );
+}
+
+export function isInnerCornerCase(matrix: Array<number>) {
+  return (
+    (matrix[3] && matrix[7]) || // bottom-left
+    (matrix[5] && matrix[7]) || // bottom-right
+    (matrix[1] && matrix[3]) || // top-left
+    (matrix[1] && matrix[5]) //    top-right
   );
 }
