@@ -1,7 +1,6 @@
 // @flow strict
 
 import {rotateEdge, rotateVector} from '@utils/physics';
-import Sound from '@core/Sound';
 import Trait from '@core/Trait';
 import Vector from '@core/physics/Vector';
 import Force from '@core/physics/Force';
@@ -14,9 +13,7 @@ const m_vector = Vector.create();
 
 class Jump extends Trait {
   force: Force;
-  jumpSound: Sound;
-
-  ready: number;
+  ready: boolean;
   requestTime: number;
   engageTime: number;
 
@@ -31,20 +28,16 @@ class Jump extends Trait {
       dex: 0.6,
     });
 
-    this.ready = 1;
+    this.ready = false;
     this.requestTime = 0;
     this.engageTime = 0;
 
     // parameters
     this.duration = 0.1;
-    this.gracePeriod = 0.1; // jump again before landing
 
-    // sounds
-    this.jumpSound = new Sound('jump_01', 'jump_02', 'jump_03', 'jump_04');
-  }
-
-  get falling() {
-    return this.ready < 0;
+    // it allows to make another jump when the user
+    // presses a button in short time before landing
+    this.gracePeriod = 0.1;
   }
 
   start() {
@@ -58,43 +51,40 @@ class Jump extends Trait {
 
   update(body: Body, deltaTime: number) {
     if (this.requestTime > 0) {
-      if (this.ready > 0) {
+      this.requestTime -= deltaTime;
+
+      if (this.ready) {
         this.engageTime = this.duration;
         this.requestTime = 0;
+        this.ready = false;
+        this.onEvent('jump');
       }
-      this.requestTime -= deltaTime;
     }
 
     if (this.engageTime > 0) {
-      if (this.ready === 1) {
-        // jumping sound
-        // this.jumpSound.playSequence();
-      }
       const direction = this.getJumpDirection(body);
       this.force.applyDirection(direction);
       this.force.applyTo(body.velocity);
-
       this.engageTime -= deltaTime;
     }
-
-    this.ready -= 1;
   }
 
   collide(body: Body, edge: EdgeType) {
+    if (this.ready) {
+      return;
+    }
     const rotatedEdge = body.gravity
       ? rotateEdge(body.gravity.vector, edge)
       : EDGE.BOTTOM;
 
     if (rotatedEdge === EDGE.BOTTOM) {
-      if (this.ready < 0) {
-        // landing sounds
-      }
       // after landing we should set jumping force without
       // lerp to align next jump with the surface immediately
       const direction = this.getJumpDirection(body);
       Vector.copy(this.force.vector, direction);
 
-      this.ready = 1;
+      this.ready = true;
+      this.onEvent('landing');
     } else if (rotatedEdge === EDGE.TOP) {
       this.cancel();
     }

@@ -17,6 +17,10 @@ class Trait {
   collide(body: Body, edge: EdgeType) {
     // fill in subclass
   }
+
+  onEvent(name: string) {
+    // fill in subclass
+  }
 }
 
 export default Trait;

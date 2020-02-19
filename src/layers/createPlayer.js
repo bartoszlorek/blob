@@ -35,11 +35,34 @@ function createPlayer({global, spriteset}: LayerProps) {
       firstId: id + 10,
       lastId: id + 17,
     },
+    jump: {
+      frame: 0,
+      firstId: id + 20,
+      lastId: id + 20,
+    },
   };
 
   player.sprite.animation.keyframes = keyframes;
   player.addTrait(new Jump());
   player.addTrait(new Move());
+
+  player.trait['jump'].onEvent = handleTraitEvent;
+  player.trait['move'].onEvent = handleTraitEvent;
+
+  function handleTraitEvent(name) {
+    if (!player) {
+      return;
+    }
+    if (!player.trait['jump'].ready) {
+      player.sprite.animation.play('jump', 1);
+      return;
+    }
+    if (name === 'move') {
+      player.sprite.animation.play('run');
+    } else {
+      player.sprite.animation.play('idle');
+    }
+  }
 
   const input = new Keyboard();
   input.on('ArrowRight KeyD', pressed => {

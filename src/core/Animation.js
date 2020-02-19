@@ -55,8 +55,12 @@ class Animation {
         if (this.iterations > 0) {
           this.iterations -= 1;
 
-          if (!this.iterations && this.callback) {
-            this.callback(this);
+          if (this.iterations === 0) {
+            this.stop();
+
+            if (this.callback) {
+              this.callback(this);
+            }
           }
         }
 
@@ -64,6 +68,7 @@ class Animation {
         return;
       }
     }
+
     keyframes.frame += 1;
   }
 
@@ -75,7 +80,6 @@ class Animation {
 
   stop() {
     this.playing = null;
-    this.callback = null;
   }
 
   destroy() {

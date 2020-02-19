@@ -101,8 +101,6 @@ class Level extends Scene {
       body: player,
       tiles: ground,
     });
-
-    player.sprite.animation.play('idle');
   }
 
   update(deltaTime: number) {
