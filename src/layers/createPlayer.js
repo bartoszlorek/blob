@@ -18,12 +18,6 @@ function createPlayer({global, spriteset}: LayerProps) {
 
   const {id, position} = layer.sprites[0]; // singleplayer
 
-  let player = new Body(
-    new AnimatedSprite(spriteset.spritesheet.getById(id)),
-    [position[0] * spriteset.tilesize, position[1] * spriteset.tilesize],
-    spriteset.tilesize / 2
-  );
-
   const keyframes: KeyframesType = {
     idle: {
       frame: 0,
@@ -40,7 +34,18 @@ function createPlayer({global, spriteset}: LayerProps) {
       firstId: id + 20,
       lastId: id + 20,
     },
+    land: {
+      frame: 0,
+      firstId: id + 21,
+      lastId: id + 24,
+    },
   };
+
+  let player = new Body(
+    new AnimatedSprite(spriteset.spritesheet.getById(id)),
+    [position[0] * spriteset.tilesize, position[1] * spriteset.tilesize],
+    spriteset.tilesize / 2
+  );
 
   player.sprite.animation.keyframes = keyframes;
   player.addTrait(new Jump());
@@ -49,15 +54,23 @@ function createPlayer({global, spriteset}: LayerProps) {
   player.trait['jump'].onEvent = handleTraitEvent;
   player.trait['move'].onEvent = handleTraitEvent;
 
+  function playIdleAnimation() {
+    if (player) {
+      player.sprite.animation.play('idle');
+    }
+  }
+
   function handleTraitEvent(name) {
     if (!player) {
       return;
     }
-    if (!player.trait['jump'].ready) {
+    if (player.trait['jump'].jumping) {
       player.sprite.animation.play('jump', 1);
       return;
     }
-    if (name === 'move') {
+    if (name === 'land') {
+      player.sprite.animation.play('land', 1, playIdleAnimation);
+    } else if (name === 'move') {
       player.sprite.animation.play('run');
     } else {
       player.sprite.animation.play('idle');

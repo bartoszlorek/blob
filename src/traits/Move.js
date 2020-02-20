@@ -10,6 +10,7 @@ import type Body from '@core/physics/Body';
 const m_vector = Vector.create();
 
 class Move extends Trait {
+  moving: boolean;
   direction: number;
   acceleration: number;
   deceleration: number;
@@ -18,6 +19,7 @@ class Move extends Trait {
   constructor() {
     super('move');
     this.direction = 0;
+    this.moving = false;
 
     // parameters
     this.acceleration = 650;
@@ -50,6 +52,8 @@ class Move extends Trait {
 
       // rotate sprite horizontally
       sprite.scale.x = this.direction;
+
+      this.moving = true;
       this.onEvent('move');
 
       // Deceleration Phase
@@ -57,10 +61,11 @@ class Move extends Trait {
       // prettier-ignore
       const dec = Math.min(Math.abs(velocity[axis]), this.deceleration * deltaTime);
       velocity[axis] += velocity[axis] > 0 ? -dec : dec;
+    }
 
-      if (velocity[axis] === 0) {
-        this.onEvent('stop');
-      }
+    if (this.moving && velocity[axis] === 0) {
+      this.moving = false;
+      this.onEvent('stop');
     }
 
     velocity[axis] *= this.dragFactor;

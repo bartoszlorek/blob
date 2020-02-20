@@ -13,12 +13,15 @@ const m_vector = Vector.create();
 
 class Jump extends Trait {
   force: Force;
-  ready: boolean;
+  jumping: boolean;
+
+  readyTime: number;
   requestTime: number;
   engageTime: number;
 
+  gracePeriodBeforeLand: number;
+  gracePeriodAfterFall: number;
   duration: number;
-  gracePeriod: number;
 
   constructor() {
     super('jump');
@@ -28,20 +31,19 @@ class Jump extends Trait {
       dex: 0.6,
     });
 
-    this.ready = false;
+    this.jumping = false;
+    this.readyTime = 0;
     this.requestTime = 0;
     this.engageTime = 0;
 
     // parameters
+    this.gracePeriodBeforeLand = 0.1;
+    this.gracePeriodAfterFall = 0.2;
     this.duration = 0.1;
-
-    // it allows to make another jump when the user
-    // presses a button in short time before landing
-    this.gracePeriod = 0.1;
   }
 
   start() {
-    this.requestTime = this.gracePeriod;
+    this.requestTime = this.gracePeriodBeforeLand;
   }
 
   cancel() {
@@ -53,10 +55,12 @@ class Jump extends Trait {
     if (this.requestTime > 0) {
       this.requestTime -= deltaTime;
 
-      if (this.ready) {
+      if (this.readyTime > 0) {
         this.engageTime = this.duration;
         this.requestTime = 0;
-        this.ready = false;
+        this.readyTime = 0;
+
+        this.jumping = true;
         this.onEvent('jump');
       }
     }
@@ -67,24 +71,26 @@ class Jump extends Trait {
       this.force.applyTo(body.velocity);
       this.engageTime -= deltaTime;
     }
+
+    this.readyTime -= deltaTime;
   }
 
   collide(body: Body, edge: EdgeType) {
-    if (this.ready) {
-      return;
-    }
     const rotatedEdge = body.gravity
       ? rotateEdge(body.gravity.vector, edge)
       : EDGE.BOTTOM;
 
     if (rotatedEdge === EDGE.BOTTOM) {
-      // after landing we should set jumping force without
-      // lerp to align next jump with the surface immediately
-      const direction = this.getJumpDirection(body);
-      Vector.copy(this.force.vector, direction);
+      if (this.readyTime < 0) {
+        // align direction with surface after landing
+        const direction = this.getJumpDirection(body);
+        Vector.copy(this.force.vector, direction);
 
-      this.ready = true;
-      this.onEvent('landing');
+        this.jumping = false;
+        this.onEvent('land');
+      }
+
+      this.readyTime = this.gracePeriodAfterFall;
     } else if (rotatedEdge === EDGE.TOP) {
       this.cancel();
     }
